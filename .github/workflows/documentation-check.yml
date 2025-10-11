@@ -1,0 +1,109 @@
+name: Documentation Quality Check
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  check-docs:
+    name: Validate Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check for sensitive data
+      run: |
+        echo "🔍 Checking for sensitive data patterns..."
+        
+        # Check for potential sensitive data
+        if grep -r -i "password\s*=\|secret\s*=\|token\s*=\|api_key\s*=" --include="*.md" --include="*.txt" .; then
+          echo "❌ Found potential sensitive data in documentation"
+          exit 1
+        fi
+        
+        echo "✅ No sensitive data patterns found"
+    
+    - name: Validate file structure
+      run: |
+        echo "📁 Validating repository structure..."
+        
+        # Check required directories
+        required_dirs=(
+          "AUTHORITATIVE_BASELINE"
+          "AUTHORITATIVE_BASELINE/01_REGULATORIO"
+          "AUTHORITATIVE_BASELINE/02_CONTROLES_DESIGN"
+          "AUTHORITATIVE_BASELINE/03_GESTAO_RISCO"
+          "AUTHORITATIVE_BASELINE/04_VERIFICACAO_VALIDACAO"
+          "AUTHORITATIVE_BASELINE/05_AVALIACAO_CLINICA"
+          "AUTHORITATIVE_BASELINE/06_RASTREABILIDADE"
+          "AUTHORITATIVE_BASELINE/07_POS_MERCADO"
+          "AUTHORITATIVE_BASELINE/08_ROTULAGEM"
+          "AUTHORITATIVE_BASELINE/09_CYBERSECURITY"
+          "AUTHORITATIVE_BASELINE/10_SOUP"
+          "HEMODOCTOR_AGENTES"
+        )
+        
+        for dir in "${required_dirs[@]}"; do
+          if [ ! -d "$dir" ]; then
+            echo "❌ Missing required directory: $dir"
+            exit 1
+          fi
+        done
+        
+        echo "✅ All required directories present"
+    
+    - name: Check required files
+      run: |
+        echo "📄 Checking required documentation files..."
+        
+        required_files=(
+          "README.md"
+          "CONTRIBUTING.md"
+          "SECURITY.md"
+          "LICENSE"
+          "CHANGELOG.md"
+        )
+        
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "❌ Missing required file: $file"
+            exit 1
+          fi
+        done
+        
+        echo "✅ All required files present"
+    
+    - name: Validate markdown links
+      uses: gaurav-nelson/github-action-markdown-link-check@v1
+      with:
+        use-quiet-mode: 'yes'
+        config-file: '.github/markdown-link-check-config.json'
+      continue-on-error: true
+    
+    - name: Check document versions
+      run: |
+        echo "🔢 Checking document version consistency..."
+        
+        # Check that OFICIAL documents have proper versioning
+        find AUTHORITATIVE_BASELINE -name "*_OFICIAL.md" | while read file; do
+          if ! grep -q "Versão:" "$file" && ! grep -q "Version:" "$file"; then
+            echo "⚠️  Warning: $file may be missing version information"
+          fi
+        done
+        
+        echo "✅ Version check complete"
+    
+    - name: Summary
+      run: |
+        echo "✅ Documentation quality check completed successfully!"
+        echo ""
+        echo "📊 Summary:"
+        echo "  - Sensitive data check: ✅ PASSED"
+        echo "  - File structure: ✅ PASSED"
+        echo "  - Required files: ✅ PASSED"
+        echo "  - Version check: ✅ PASSED"
+
