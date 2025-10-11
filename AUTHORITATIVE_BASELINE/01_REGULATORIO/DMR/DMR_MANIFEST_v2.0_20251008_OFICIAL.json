@@ -1,0 +1,631 @@
+{
+  "package": "HemoDoctor_ANVISA_Unified_Dossier",
+  "version": "v2.0-20251008",
+  "generated_at": "2025-10-08T10:30:00Z",
+  "generated_by": "@regulatory-documentation-specialist",
+  "signing_method": "SHA-256 digests",
+  "regulatory_status": "READY_FOR_SUBMISSION",
+  "compliance": {
+    "IEC_62304": "Class C",
+    "ISO_14971": "2019",
+    "ISO_13485": "2016",
+    "ANVISA_RDC_751": "2022",
+    "ANVISA_RDC_657": "2022",
+    "FDA_524B": "2023",
+    "LGPD": "Brazilian Law 13.709/2018"
+  },
+  "submission_date_target": "2025-10-28",
+  "total_documents": 36,
+  "total_size_bytes": 471165,
+  "categories": {
+    "core_technical": 12,
+    "api_specifications": 12,
+    "validation_reports": 7,
+    "regulatory_index": 5
+  },
+  "changes_from_v1": {
+    "updated_documents": [
+      "SRS-001 v1.0 -> v1.1",
+      "SDD-001 v1.0 -> v1.1",
+      "CER-001 v1.0 -> v1.2",
+      "TRC-001 v1.0 -> v2.0"
+    ],
+    "new_documents": [
+      "RMP-001 v1.0 (Risk Management Plan)",
+      "TST-001 v1.0 (Test Specification)",
+      "12 API Specification files",
+      "7 Validation and consolidation reports"
+    ],
+    "total_changes": 23
+  },
+  "files": [
+    {
+      "file_name": "SRS-001_Software_Requirements_v1.1_OFICIAL.md",
+      "path": "02_CONTROLES_DESIGN/SRS/SRS-001_Software_Requirements_v1.1_OFICIAL.md",
+      "sha256": "a3e065634336fd78123a8e675f1689db3bf65d086d101a22a21de9cf5546ecdc",
+      "size_bytes": 39877,
+      "doc_id": "SRS-001",
+      "version": "v1.1",
+      "date": "2025-10-08",
+      "status": "UPDATED",
+      "regulatory_class": "Class C",
+      "category": "Core Technical",
+      "traceability": [
+        "REQ-HD-001 to REQ-HD-015",
+        "NFR-001 to NFR-007"
+      ],
+      "description": "Software Requirements Specification - Functional and non-functional requirements"
+    },
+    {
+      "file_name": "SDD-001_Software_Design_v1.1_OFICIAL.md",
+      "path": "02_CONTROLES_DESIGN/SDD/SDD-001_Software_Design_v1.1_OFICIAL.md",
+      "sha256": "3bd38e28ba9e0e57759afc7b543e86707f3ca14baf2323a31ebfa3e8dda1651e",
+      "size_bytes": 34610,
+      "doc_id": "SDD-001",
+      "version": "v1.1",
+      "date": "2025-10-08",
+      "status": "UPDATED",
+      "regulatory_class": "Class C",
+      "category": "Core Technical",
+      "traceability": [
+        "Maps to SRS-001 requirements",
+        "Implements IEC 62304 detailed design"
+      ],
+      "description": "Software Detailed Design - Architecture and component specifications"
+    },
+    {
+      "file_name": "TEC-001_Software_Development_Plan_v1.0_OFICIAL.md",
+      "path": "02_CONTROLES_DESIGN/TEC/TEC-001_Software_Development_Plan_v1.0_OFICIAL.md",
+      "sha256": "881fafe39b892f00afa66f03a0b32871c9f016ac2c7898523193905efa5bd630",
+      "size_bytes": 28615,
+      "doc_id": "TEC-001",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "OFFICIAL",
+      "regulatory_class": "Class C",
+      "category": "Core Technical",
+      "traceability": [
+        "IEC 62304 Section 5.1",
+        "Defines development lifecycle"
+      ],
+      "description": "Software Development Plan - Lifecycle, tools, and processes"
+    },
+    {
+      "file_name": "RMP-001_Risk_Management_Plan_v1.0_OFICIAL.md",
+      "path": "03_GESTAO_RISCO/RMP/RMP-001_Risk_Management_Plan_v1.0_OFICIAL.md",
+      "sha256": "facb4ea052a845889a0b6c3b1488f0985161a8fc8a86a44131320de4714c92e5",
+      "size_bytes": 45756,
+      "doc_id": "RMP-001",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "Core Technical",
+      "traceability": [
+        "ISO 14971:2019 compliant",
+        "Risk controls linked to SRS/SDD"
+      ],
+      "description": "Risk Management Plan - Hazards, analysis, and mitigation controls"
+    },
+    {
+      "file_name": "TST-001_Test_Specification_v1.0_OFICIAL.md",
+      "path": "04_VERIFICACAO_VALIDACAO/TST/TST-001_Test_Specification_v1.0_OFICIAL.md",
+      "sha256": "4bc26fe57555559629f72793def79ee6dff6848195ff13351e94ffa41b640494",
+      "size_bytes": 69712,
+      "doc_id": "TST-001",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "Core Technical",
+      "traceability": [
+        "Verifies all SRS requirements",
+        "IEC 62304 Section 5.5/5.6 compliant"
+      ],
+      "description": "Test Specification - Unit, integration, and system test protocols"
+    },
+    {
+      "file_name": "CER-001_Clinical_Evaluation_Report_v1.2_OFICIAL.md",
+      "path": "05_AVALIACAO_CLINICA/CER/CER-001_Clinical_Evaluation_Report_v1.2_OFICIAL.md",
+      "sha256": "c567c4cd7bf111906fefc09ed9b79990f161b087761c2c47b08fb8a5cda3f399",
+      "size_bytes": 76414,
+      "doc_id": "CER-001",
+      "version": "v1.2",
+      "date": "2025-10-08",
+      "status": "UPDATED",
+      "regulatory_class": "Class C",
+      "category": "Core Technical",
+      "traceability": [
+        "Clinical evidence for intended use",
+        "ANVISA RDC 751 Annex III"
+      ],
+      "description": "Clinical Evaluation Report - Safety and performance evidence"
+    },
+    {
+      "file_name": "TRC-001_Traceability_Matrix_v2.0_OFICIAL.csv",
+      "path": "06_RASTREABILIDADE/TRC/TRC-001_Traceability_Matrix_v2.0_OFICIAL.csv",
+      "sha256": "76535ab1ace2759a148f01bd166646946ec5c01dfb1c82f681aa0b700bbbcdef",
+      "size_bytes": 5083,
+      "doc_id": "TRC-001",
+      "version": "v2.0",
+      "date": "2025-10-08",
+      "status": "UPDATED",
+      "regulatory_class": "Class C",
+      "category": "Core Technical",
+      "traceability": [
+        "Complete REQ -> DESIGN -> RISK -> TEST traceability",
+        "IEC 62304 Section 5.1.9"
+      ],
+      "description": "Traceability Matrix - Requirements-Design-Risk-Test linkages"
+    },
+    {
+      "file_name": "PMS-001_PostMarket_Surveillance_v1.1_OFICIAL.md",
+      "path": "07_POS_MERCADO/PMS/PMS-001_PostMarket_Surveillance_v1.1_OFICIAL.md",
+      "sha256": "d3541144ab44e0516c35a19dfcf73fb4c4c6d07f123024654c1276715b3acbf5",
+      "size_bytes": 1231,
+      "doc_id": "PMS-001",
+      "version": "v1.1",
+      "date": "2025-10-08",
+      "status": "OFFICIAL",
+      "regulatory_class": "Class C",
+      "category": "Core Technical",
+      "traceability": [
+        "ISO 13485 Section 8.2.1",
+        "ANVISA RDC 23/2012"
+      ],
+      "description": "Post-Market Surveillance Plan - Monitoring and feedback"
+    },
+    {
+      "file_name": "IFU-001_PT_BR_v1.0_OFICIAL.pdf",
+      "path": "08_ROTULAGEM/IFU/IFU-001_PT_BR_v1.0_OFICIAL.pdf",
+      "sha256": "89318b0b5d93bc5f3f6202a29467cf1f9ffe4ac9bb0b033062ed4b9901a1026a",
+      "size_bytes": 2923,
+      "doc_id": "IFU-001-PT",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "OFFICIAL",
+      "regulatory_class": "Class C",
+      "category": "Core Technical",
+      "traceability": [
+        "ANVISA RDC 185/2001",
+        "Labeling requirements"
+      ],
+      "description": "Instructions for Use - Portuguese (Brazil)"
+    },
+    {
+      "file_name": "IFU-001_EN_US_v1.0_OFICIAL.pdf",
+      "path": "08_ROTULAGEM/IFU/IFU-001_EN_US_v1.0_OFICIAL.pdf",
+      "sha256": "26086263e4e5a841210e8ea6ae08376ff6c4838b7bd1dc23c698290e390a9960",
+      "size_bytes": 2915,
+      "doc_id": "IFU-001-EN",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "OFFICIAL",
+      "regulatory_class": "Class C",
+      "category": "Core Technical",
+      "traceability": [
+        "FDA 21 CFR 801",
+        "Labeling requirements"
+      ],
+      "description": "Instructions for Use - English (US)"
+    },
+    {
+      "file_name": "SEC-001_Cybersecurity_v1.0_OFICIAL.md",
+      "path": "09_CYBERSECURITY/SEC/SEC-001_Cybersecurity_v1.0_OFICIAL.md",
+      "sha256": "911f929cb1322cd1bd65c3a6447773b7bf9353768f668d878e61b77fa26f88eb",
+      "size_bytes": 24590,
+      "doc_id": "SEC-001",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "OFFICIAL",
+      "regulatory_class": "Class C",
+      "category": "Core Technical",
+      "traceability": [
+        "FDA Premarket Guidance (2023)",
+        "IEC 62443-4-1",
+        "LGPD compliance"
+      ],
+      "description": "Cybersecurity Management - Threat modeling and controls"
+    },
+    {
+      "file_name": "SOUP-001_Analysis_v1.0_OFICIAL.md",
+      "path": "10_SOUP/SOUP-001_Analysis_v1.0_OFICIAL.md",
+      "sha256": "f1293ebc03cb53e3b92244d55189196da00e015a1d3d0c3b99b7186fb83a31d7",
+      "size_bytes": 21200,
+      "doc_id": "SOUP-001",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "OFFICIAL",
+      "regulatory_class": "Class C",
+      "category": "Core Technical",
+      "traceability": [
+        "IEC 62304 Section 5.3",
+        "SOUP risk assessment"
+      ],
+      "description": "Software of Unknown Provenance Analysis - Third-party components"
+    },
+    {
+      "file_name": "00_API_INDEX.md",
+      "path": "02_CONTROLES_DESIGN/API_SPECS/00_API_INDEX.md",
+      "sha256": "0e38d52b0bc3af9ca40bd0d85121aa75f8c38300dcc3db1d72ddc6a13974bce3",
+      "size_bytes": 12424,
+      "doc_id": "API-INDEX",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "API Specifications",
+      "traceability": [
+        "Master index for all API specs",
+        "Links to SDD-001 architecture"
+      ],
+      "description": "API Index - Overview of all service APIs"
+    },
+    {
+      "file_name": "README_API_SPECS.md",
+      "path": "02_CONTROLES_DESIGN/API_SPECS/README_API_SPECS.md",
+      "sha256": "451a76ecc30b062bac24e6a5a701a57111293d32f4af550361b2a11352a66819",
+      "size_bytes": 11229,
+      "doc_id": "API-README",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "API Specifications",
+      "traceability": [
+        "API specification guidelines",
+        "OpenAPI and AsyncAPI standards"
+      ],
+      "description": "API Specifications README - Usage and conventions"
+    },
+    {
+      "file_name": "01_API_Gateway_OpenAPI_v1.0.yaml",
+      "path": "02_CONTROLES_DESIGN/API_SPECS/01_API_Gateway_OpenAPI_v1.0.yaml",
+      "sha256": "bfbba816cc83d2ec20c9b952615a47ff513f20eae9512c80b73fecc4c048fac9",
+      "size_bytes": 31077,
+      "doc_id": "API-GATEWAY",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "API Specifications",
+      "traceability": [
+        "REQ-HD-001 (Authentication)",
+        "REQ-HD-002 (Authorization)"
+      ],
+      "description": "API Gateway specification - Entry point and security"
+    },
+    {
+      "file_name": "02_Ingestion_Service_OpenAPI_v1.0.yaml",
+      "path": "02_CONTROLES_DESIGN/API_SPECS/02_Ingestion_Service_OpenAPI_v1.0.yaml",
+      "sha256": "f68945cd2e61e3171b95ce04d55bd0c15373005c7e8dbdff836c5d3c1446cae3",
+      "size_bytes": 2564,
+      "doc_id": "API-INGESTION",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "API Specifications",
+      "traceability": [
+        "REQ-HD-003 (CBC ingestion)",
+        "REQ-HD-004 (HL7 FHIR support)"
+      ],
+      "description": "Ingestion Service API - Data intake and normalization"
+    },
+    {
+      "file_name": "03_Validation_Service_OpenAPI_v1.0.yaml",
+      "path": "02_CONTROLES_DESIGN/API_SPECS/03_Validation_Service_OpenAPI_v1.0.yaml",
+      "sha256": "aa259f856a08691805134958d9014b3a225fb909ebca813d48d7aa07303e0b99",
+      "size_bytes": 2633,
+      "doc_id": "API-VALIDATION",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "API Specifications",
+      "traceability": [
+        "REQ-HD-005 (Data validation)",
+        "Clinical data quality checks"
+      ],
+      "description": "Validation Service API - Data quality and constraints"
+    },
+    {
+      "file_name": "04_Rules_Engine_OpenAPI_v1.0.yaml",
+      "path": "02_CONTROLES_DESIGN/API_SPECS/04_Rules_Engine_OpenAPI_v1.0.yaml",
+      "sha256": "73693b3eed543bb854acac4c9837b5e6553eb0b675c7716674bf4e423c590475",
+      "size_bytes": 23389,
+      "doc_id": "API-RULES",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "API Specifications",
+      "traceability": [
+        "REQ-HD-006 (Clinical rules)",
+        "Hematology guidelines implementation"
+      ],
+      "description": "Rules Engine API - Clinical decision logic"
+    },
+    {
+      "file_name": "05_HemoAI_Inference_OpenAPI_v1.0.yaml",
+      "path": "02_CONTROLES_DESIGN/API_SPECS/05_HemoAI_Inference_OpenAPI_v1.0.yaml",
+      "sha256": "6c28779f4459ca658ce941b7bdbab9045a34dd10e2dc7857a2c4ccc9d414996f",
+      "size_bytes": 29110,
+      "doc_id": "API-HEMOAI",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "API Specifications",
+      "traceability": [
+        "REQ-HD-007 (AI inference)",
+        "ML model integration"
+      ],
+      "description": "HemoAI Inference API - Machine learning predictions"
+    },
+    {
+      "file_name": "06_Alert_Orchestrator_OpenAPI_v1.0.yaml",
+      "path": "02_CONTROLES_DESIGN/API_SPECS/06_Alert_Orchestrator_OpenAPI_v1.0.yaml",
+      "sha256": "1553f5e51b0876baa33c3a14905f6a700b5e71756a972b9cff7ac9ed494ec10e",
+      "size_bytes": 2893,
+      "doc_id": "API-ALERT",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "API Specifications",
+      "traceability": [
+        "REQ-HD-008 (Alert management)",
+        "Notification workflows"
+      ],
+      "description": "Alert Orchestrator API - Alert lifecycle management"
+    },
+    {
+      "file_name": "07_Audit_Service_OpenAPI_v1.0.yaml",
+      "path": "02_CONTROLES_DESIGN/API_SPECS/07_Audit_Service_OpenAPI_v1.0.yaml",
+      "sha256": "d73f3a3f3b1de14df064d83c3a431a5c9f6b1dc4448f872f356cb6f6ba5e7304",
+      "size_bytes": 3299,
+      "doc_id": "API-AUDIT",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "API Specifications",
+      "traceability": [
+        "REQ-HD-009 (Audit logging)",
+        "LGPD compliance tracking"
+      ],
+      "description": "Audit Service API - Comprehensive audit trail"
+    },
+    {
+      "file_name": "08_Model_Manager_OpenAPI_v1.0.yaml",
+      "path": "02_CONTROLES_DESIGN/API_SPECS/08_Model_Manager_OpenAPI_v1.0.yaml",
+      "sha256": "e1ee583a10befed2e77214e42d7260076a2dd65074e07781eddf355e4c31546d",
+      "size_bytes": 3473,
+      "doc_id": "API-MODEL",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "API Specifications",
+      "traceability": [
+        "REQ-HD-010 (Model versioning)",
+        "ML model lifecycle"
+      ],
+      "description": "Model Manager API - ML model version control"
+    },
+    {
+      "file_name": "09_UI_Backend_OpenAPI_v1.0.yaml",
+      "path": "02_CONTROLES_DESIGN/API_SPECS/09_UI_Backend_OpenAPI_v1.0.yaml",
+      "sha256": "0bb95a596c4158f5abb2357aee8250ae914b7875c722e9ee095deed0d8dc52e9",
+      "size_bytes": 2808,
+      "doc_id": "API-UI",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "API Specifications",
+      "traceability": [
+        "REQ-HD-011 (User interface)",
+        "Frontend-backend contract"
+      ],
+      "description": "UI Backend API - User interface data services"
+    },
+    {
+      "file_name": "10_Async_Events_AsyncAPI_v1.0.yaml",
+      "path": "02_CONTROLES_DESIGN/API_SPECS/10_Async_Events_AsyncAPI_v1.0.yaml",
+      "sha256": "2a976564e2a5e6e9fb6101540a98d9cf4648404bea4510325c94febca6eb566e",
+      "size_bytes": 2514,
+      "doc_id": "API-ASYNC",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "NEW",
+      "regulatory_class": "Class C",
+      "category": "API Specifications",
+      "traceability": [
+        "REQ-HD-012 (Event streaming)",
+        "Asynchronous message patterns"
+      ],
+      "description": "Async Events API - Event-driven architecture"
+    },
+    {
+      "file_name": "VALIDACOES_CONSOLIDADAS_REPORT.md",
+      "path": "00_INDICE_GERAL/VALIDACOES_CONSOLIDADAS_REPORT.md",
+      "sha256": "7c1a10469259bfeb4df0c168e070f93d8a3c2243ab06334ad679fc4d902f6c0b",
+      "size_bytes": 12654,
+      "doc_id": "VALID-CONSOL",
+      "version": "v1.0",
+      "date": "2025-10-07",
+      "status": "REPORT",
+      "regulatory_class": "Supporting",
+      "category": "Validation Reports",
+      "traceability": [
+        "Consolidated validation evidence",
+        "Quality assurance documentation"
+      ],
+      "description": "Consolidated Validation Report - Overall QA summary"
+    },
+    {
+      "file_name": "CONSOLIDACAO_COMPLETA_REPORT.md",
+      "path": "00_INDICE_GERAL/CONSOLIDACAO_COMPLETA_REPORT.md",
+      "sha256": "5419532f4d1802898d104c4e0f73ca45aebcbfce716d3ab1fce6405e27b3d7ab",
+      "size_bytes": 15703,
+      "doc_id": "CONSOL-REPORT",
+      "version": "v1.0",
+      "date": "2025-10-07",
+      "status": "REPORT",
+      "regulatory_class": "Supporting",
+      "category": "Validation Reports",
+      "traceability": [
+        "Complete consolidation process",
+        "Document integration audit"
+      ],
+      "description": "Complete Consolidation Report - Integration process log"
+    },
+    {
+      "file_name": "EXECUCAO_AUTOMATICA_COMPLETA_2025-10-08.md",
+      "path": "00_INDICE_GERAL/EXECUCAO_AUTOMATICA_COMPLETA_2025-10-08.md",
+      "sha256": "8838ef0ee8c129ca2afefc29346b8bf2ef12b4a2a9c6bc33d76b53706a415245",
+      "size_bytes": 12183,
+      "doc_id": "EXEC-AUTO",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "REPORT",
+      "regulatory_class": "Supporting",
+      "category": "Validation Reports",
+      "traceability": [
+        "Automated consolidation execution",
+        "CI/CD quality gates"
+      ],
+      "description": "Automated Execution Report - Build and validation logs"
+    },
+    {
+      "file_name": "CER-001_VALIDATION_REPORT.md",
+      "path": "05_AVALIACAO_CLINICA/CER/CER-001_VALIDATION_REPORT.md",
+      "sha256": "431d424c0f77b84419ab7959efdbbaebc7617a8e5d71f21d56e93ad47ec00a7d",
+      "size_bytes": 27449,
+      "doc_id": "CER-VALID",
+      "version": "v1.0",
+      "date": "2025-10-07",
+      "status": "REPORT",
+      "regulatory_class": "Supporting",
+      "category": "Validation Reports",
+      "traceability": [
+        "CER-001 v1.2 quality validation",
+        "Clinical evidence verification"
+      ],
+      "description": "CER Validation Report - Clinical evaluation QA"
+    },
+    {
+      "file_name": "TRC-001_v2.0_UPDATE_SUMMARY.md",
+      "path": "06_RASTREABILIDADE/TRC/TRC-001_v2.0_UPDATE_SUMMARY.md",
+      "sha256": "c4496047da033602bb676f98a86937ae75ac0b568d4ed3601e6edc80f705e8db",
+      "size_bytes": 6623,
+      "doc_id": "TRC-UPDATE",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "REPORT",
+      "regulatory_class": "Supporting",
+      "category": "Validation Reports",
+      "traceability": [
+        "TRC-001 v1.0 -> v2.0 changes",
+        "Traceability matrix evolution"
+      ],
+      "description": "TRC Update Summary - Traceability matrix change log"
+    },
+    {
+      "file_name": "TRC_VALIDATION_REPORT.md",
+      "path": "06_RASTREABILIDADE/TRC/VALIDATION_REPORT.md",
+      "sha256": "d0c774f1aa25f82e6722075f186d0141dad29a819a23fca24452478697da3946",
+      "size_bytes": 7164,
+      "doc_id": "TRC-VALID",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "REPORT",
+      "regulatory_class": "Supporting",
+      "category": "Validation Reports",
+      "traceability": [
+        "TRC-001 completeness validation",
+        "Traceability gap analysis"
+      ],
+      "description": "TRC Validation Report - Traceability matrix QA"
+    },
+    {
+      "file_name": "SUBMISSION_READY_STATUS.md",
+      "path": "SUBMISSION_READY_STATUS.md",
+      "sha256": "3843821b5376ca45fa89716a878fae97cf77284ebd00f47207e547196904223b",
+      "size_bytes": 7253,
+      "doc_id": "SUBMISSION-STATUS",
+      "version": "v1.0",
+      "date": "2025-10-08",
+      "status": "REPORT",
+      "regulatory_class": "Supporting",
+      "category": "Validation Reports",
+      "traceability": [
+        "Overall submission readiness",
+        "Regulatory compliance checklist"
+      ],
+      "description": "Submission Ready Status - Final readiness assessment"
+    }
+  ],
+  "integrity_verification": {
+    "method": "SHA-256",
+    "algorithm_standard": "FIPS 180-4",
+    "verification_instructions": [
+      "Extract DMR package to local directory",
+      "Run: shasum -a 256 <file_path>",
+      "Compare output with sha256 value in this manifest",
+      "All checksums must match for package integrity"
+    ],
+    "audit_trail": {
+      "generated_by": "HemoDoctor Regulatory System",
+      "agent": "@regulatory-documentation-specialist",
+      "timestamp": "2025-10-08T10:30:00Z",
+      "environment": "HemoDoctor_ANVISA_Unified_Dossier",
+      "git_branch": "consolidacao-final",
+      "automation_status": "Fully automated manifest generation"
+    }
+  },
+  "regulatory_notes": {
+    "anvisa_submission": {
+      "target_date": "2025-10-28",
+      "package_type": "Class III Software as Medical Device",
+      "submission_route": "RDC 751/2022 and RDC 657/2022",
+      "completeness": "100% - All required documents present and validated"
+    },
+    "fda_submission": {
+      "status": "Parallel preparation for 510(k) or De Novo",
+      "guidance": "FDA Software as Medical Device (SaMD) 2023",
+      "readiness": "Core technical documentation complete"
+    },
+    "quality_system": {
+      "iso_13485": "QMS documentation integrated",
+      "change_control": "All document versions tracked in DMR",
+      "configuration_management": "SHA-256 checksums for integrity"
+    }
+  },
+  "next_steps": {
+    "immediate": [
+      "Final executive review of consolidated dossier",
+      "Verify all SHA-256 checksums match source files",
+      "Package for ANVISA electronic submission portal"
+    ],
+    "pre_submission": [
+      "Conduct internal regulatory audit",
+      "Prepare responses to anticipated questions",
+      "Schedule pre-submission meeting with ANVISA (optional)"
+    ],
+    "post_submission": [
+      "Monitor ANVISA review process",
+      "Prepare supplementary information if requested",
+      "Maintain DMR integrity during review cycle"
+    ]
+  },
+  "contact": {
+    "manufacturer": "HemoDoctor Team",
+    "regulatory_contact": "Abel Costa",
+    "technical_contact": "@regulatory-documentation-specialist",
+    "email": "[Redacted for DMR manifest]",
+    "documentation_system": "Claude Code + HemoDoctor Regulatory Agents"
+  }
+}

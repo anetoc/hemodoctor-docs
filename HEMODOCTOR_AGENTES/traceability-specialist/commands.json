@@ -1,0 +1,94 @@
+{
+  "commands": {
+    "/traceability-matrix": {
+      "description": "Gerar matriz de rastreabilidade master (TRC-001)",
+      "usage": "/traceability-matrix [escopo] [níveis] [relacionamentos]",
+      "examples": [
+        "/traceability-matrix completa user-needs→evidence bidirecional",
+        "/traceability-matrix requirements design→test→validation forward+backward"
+      ],
+      "output": "TRC-001 com rastreabilidade completa e gaps identificados"
+    },
+    "/requirements-trace": {
+      "description": "Rastreabilidade específica de requisitos (TRC-002)",
+      "usage": "/requirements-trace [fonte] [destino] [cobertura]",
+      "examples": [
+        "/requirements-trace user-needs design-inputs 100%-coverage",
+        "/requirements-trace SRS test-cases verificação-completa"
+      ],
+      "output": "Matriz de requisitos com cobertura e gaps"
+    },
+    "/risk-traceability": {
+      "description": "Rastreabilidade de riscos e controles (TRC-003)",
+      "usage": "/risk-traceability [hazards] [controls] [effectiveness]",
+      "examples": [
+        "/risk-traceability identified implemented verified-effective",
+        "/risk-traceability clinical-risks procedural-controls monitored"
+      ],
+      "output": "Matriz hazard→control→verification→effectiveness"
+    },
+    "/test-traceability": {
+      "description": "Rastreabilidade de testes e verificação (TRC-004)",
+      "usage": "/test-traceability [requirements] [test-cases] [results]",
+      "examples": [
+        "/test-traceability SRS unit+integration+system results",
+        "/test-traceability design-outputs verification-activities evidences"
+      ],
+      "output": "Matriz requirement→test→result com cobertura"
+    },
+    "/document-links": {
+      "description": "Cross-referências entre documentos (TRC-005)",
+      "usage": "/document-links [documentos] [relacionamentos] [dependências]",
+      "examples": [
+        "/document-links 67-docs PKG01-PKG14 dependencies",
+        "/document-links regulatórios técnicos clinical references"
+      ],
+      "output": "Matriz de relacionamentos documentais"
+    },
+    "/configuration-baseline": {
+      "description": "Definir baseline de configuração",
+      "usage": "/configuration-baseline [versão] [componentes] [aprovação]",
+      "examples": [
+        "/configuration-baseline v1.0 software+docs+tests CCB-approved",
+        "/configuration-baseline release candidate completo quality-gate"
+      ],
+      "output": "Baseline com lista de itens controlados"
+    },
+    "/impact-analysis": {
+      "description": "Análise de impacto de mudanças",
+      "usage": "/impact-analysis [mudança] [escopo] [propagação]",
+      "examples": [
+        "/impact-analysis requirements-change design+test+docs cascading",
+        "/impact-analysis API-modification integration+validation dependencies"
+      ],
+      "output": "Relatório de impacto com itens afetados"
+    },
+    "/gap-detection": {
+      "description": "Detecção automática de lacunas de rastreabilidade",
+      "usage": "/gap-detection [matriz] [critérios] [cobertura]",
+      "examples": [
+        "/gap-detection master-matrix missing-links <100%-coverage",
+        "/gap-detection requirements orphaned-items bidirectional"
+      ],
+      "output": "Relatório de gaps com ações corretivas"
+    },
+    "/compliance-mapping": {
+      "description": "Mapeamento de conformidade regulatória",
+      "usage": "/compliance-mapping [normas] [requisitos] [evidências]",
+      "examples": [
+        "/compliance-mapping ISO13485+IEC62304+RDC657 todos implementation",
+        "/compliance-mapping ANVISA-requirements design+test+clinical evidences"
+      ],
+      "output": "Matriz regulation→requirement→implementation→evidence"
+    },
+    "/audit-package": {
+      "description": "Pacote de evidências para auditoria",
+      "usage": "/audit-package [escopo] [regulador] [formato]",
+      "examples": [
+        "/audit-package completo ANVISA digital+físico",
+        "/audit-package design-controls FDA hyperlinked-documents"
+      ],
+      "output": "Pacote organizado com rastreabilidade para inspeção"
+    }
+  }
+}

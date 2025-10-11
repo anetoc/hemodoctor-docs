@@ -1,0 +1,183 @@
+{
+  "package": "HemoDoctor_Audit_Export",
+  "version": "final-20250916",
+  "generated_at": "20250916",
+  "signing_method": "SHA-256 digests (no PKI key provided)",
+  "files": [
+    {
+      "file_name": "TRC-001_Traceability_Matrix_v0.4_20250916.csv",
+      "path": "/mnt/data/TRC-001_Traceability_Matrix_v0.4_20250916.csv",
+      "sha256": "67f05f87d1222992a4692bf1d5c14c4bbc9fafababfcabaf03bed8ef33933c45",
+      "size_bytes": 5155,
+      "doc_id": "TRC-001"
+    },
+    {
+      "file_name": "TRC-001_Gaps_Report_v0.4_20250916.csv",
+      "path": "/mnt/data/TRC-001_Gaps_Report_v0.4_20250916.csv",
+      "sha256": "899980087a1985a0cbdb213bcf1bbdf785589a430e1a8413fb113083aa6cf8c7",
+      "size_bytes": 15,
+      "doc_id": "TRC-001"
+    },
+    {
+      "file_name": "TRC-001_Coverage_Summary_v0.4_20250916.csv",
+      "path": "/mnt/data/TRC-001_Coverage_Summary_v0.4_20250916.csv",
+      "sha256": "c89ac9903c0b36481da63f9e735fa3fdc56ceb26a705ea9d0cc9e18cff060335",
+      "size_bytes": 98,
+      "doc_id": "TRC-001"
+    },
+    {
+      "file_name": "FDA_Cyber_Compliance_Checklist_RTA_v1.0_20250916.csv",
+      "path": "/mnt/data/FDA_Cyber_Compliance_Checklist_RTA_v1.0_20250916.csv",
+      "sha256": "51f91da3aae4626be5cc730a782b20adeb59cb7f30e1959e570c644e7598c9a2",
+      "size_bytes": 1931,
+      "doc_id": "OTHER"
+    },
+    {
+      "file_name": "SEC-001_Cybersecurity_DPIA_Strategy_v1.0_20250916.md",
+      "path": "/mnt/data/SEC-001_Cybersecurity_DPIA_Strategy_v1.0_20250916.md",
+      "sha256": "d490eb0a9445f843fd37eddb2a9365376a5180599956917651601799ffb87838",
+      "size_bytes": 573,
+      "doc_id": "SEC-001"
+    },
+    {
+      "file_name": "REG-001_Addendum_Cyber_Integration_v1.0_20250916.md",
+      "path": "/mnt/data/REG-001_Addendum_Cyber_Integration_v1.0_20250916.md",
+      "sha256": "564a4e9a2c897db5d9e7a05b863899f9071f47c7305753e961018dc95f5339ec",
+      "size_bytes": 2780,
+      "doc_id": "REG-001"
+    },
+    {
+      "file_name": "TEC-001_Addendum_Cyber_Integration_v1.0_20250916.md",
+      "path": "/mnt/data/TEC-001_Addendum_Cyber_Integration_v1.0_20250916.md",
+      "sha256": "d81ebce3fc2a9dc07db673c988060ebaa42925927e86835eee3c1cc8e89977cf",
+      "size_bytes": 2732,
+      "doc_id": "TEC-001"
+    },
+    {
+      "file_name": "IFU-001_EN_US_v0.3_20250916.html",
+      "path": "/mnt/data/IFU-001_EN_US_v0.3_20250916.html",
+      "sha256": "fb668c264faf334dc1407d9303ef324fd9e244f5290df2a099c790f792a85d81",
+      "size_bytes": 2654,
+      "doc_id": "IFU-001"
+    },
+    {
+      "file_name": "IFU-001_EN_US_v0.3_A4_20250916.pdf",
+      "path": "/mnt/data/IFU-001_EN_US_v0.3_A4_20250916.pdf",
+      "sha256": "cdd6edca5bf6c1a0a5dd8d6510c2a8fd0cf4081e346054278b03f19f79d2dbcc",
+      "size_bytes": 27,
+      "doc_id": "IFU-001"
+    },
+    {
+      "file_name": "SBOM_CycloneDX_v1.6_20250916.json",
+      "path": "/mnt/data/SBOM_CycloneDX_v1.6_20250916.json",
+      "sha256": "a155d404802212174b6bda7eed7d012c039c1fc877bd33b1c434d406bccebac8",
+      "size_bytes": 946,
+      "doc_id": "SBOM"
+    },
+    {
+      "file_name": "SBOM_SPDX_v3.0_20250916.json",
+      "path": "/mnt/data/SBOM_SPDX_v3.0_20250916.json",
+      "sha256": "30b8e189fc4c93e12a42a795f32708e2596d41df976f56cf99c5a60796648e4f",
+      "size_bytes": 779,
+      "doc_id": "SBOM"
+    },
+    {
+      "file_name": "TEC-001_Diagram_Global_Architecture_20250916.png",
+      "path": "/mnt/data/TEC-001_Diagram_Global_Architecture_20250916.png",
+      "sha256": "4818b44bc5fdcd0f821e69c2f6c30c0a37557c6023fa04a7749b00e3cd5794cd",
+      "size_bytes": 152945,
+      "doc_id": "TEC-001"
+    },
+    {
+      "file_name": "TEC-001_Diagram_MultiPatient_Updateability_20250916.png",
+      "path": "/mnt/data/TEC-001_Diagram_MultiPatient_Updateability_20250916.png",
+      "sha256": "da73ce7afb58ab008e6f0a5c24785f9c5d6700127cd23be4afd23f3f837e55ec",
+      "size_bytes": 113709,
+      "doc_id": "TEC-001"
+    },
+    {
+      "file_name": "TEC-001_Diagram_Security_Use_Cases_20250916.png",
+      "path": "/mnt/data/TEC-001_Diagram_Security_Use_Cases_20250916.png",
+      "sha256": "22523a565b9fd5042ed2a387990120a1def700004b2501ff48fcb866bb1c63dd",
+      "size_bytes": 114365,
+      "doc_id": "TEC-001"
+    },
+    {
+      "file_name": "TEST-HD-004_Report_20250916.pdf",
+      "path": "/mnt/data/evidence_20250916/TEST-HD-004_Report_20250916.pdf",
+      "sha256": "a72a30f0f4d5295f93273e907ec996f347ce8b4cbf3e94dc8d27eb881eaf0463",
+      "size_bytes": 2273,
+      "doc_id": "TEST-HD"
+    },
+    {
+      "file_name": "TEST-HD-005_Report_20250916.pdf",
+      "path": "/mnt/data/evidence_20250916/TEST-HD-005_Report_20250916.pdf",
+      "sha256": "ed88a3c5033f1f5740f8441a0f5f596038bdf090baf0aad95ce2211ae04e9128",
+      "size_bytes": 2308,
+      "doc_id": "TEST-HD"
+    },
+    {
+      "file_name": "TEST-HD-007_Report_20250916.pdf",
+      "path": "/mnt/data/evidence_20250916/TEST-HD-007_Report_20250916.pdf",
+      "sha256": "65755836d9f09e64a7f354c6f9da7c4074795a88f14c7b7cdb985e9578e46fc0",
+      "size_bytes": 2239,
+      "doc_id": "TEST-HD"
+    },
+    {
+      "file_name": "TEST-HD-008_Report_20250916.pdf",
+      "path": "/mnt/data/evidence_20250916/TEST-HD-008_Report_20250916.pdf",
+      "sha256": "73b9d3f0bd160bae888866bb84fa82cd22b85a738af45e574b5da162c8c04fc7",
+      "size_bytes": 2261,
+      "doc_id": "TEST-HD"
+    },
+    {
+      "file_name": "TEST-HD-010_Report_20250916.pdf",
+      "path": "/mnt/data/evidence_20250916/TEST-HD-010_Report_20250916.pdf",
+      "sha256": "b15d911b9c29f15cb7f56de49a8858a59ce3d787557e1f4664ad7951dbd39d4b",
+      "size_bytes": 2231,
+      "doc_id": "TEST-HD"
+    },
+    {
+      "file_name": "TEST-HD-011_Report_20250916.pdf",
+      "path": "/mnt/data/evidence_20250916/TEST-HD-011_Report_20250916.pdf",
+      "sha256": "34a177c8a2ffd3f727ccbf45ab78a8636b8c9fc5fa5ef7d51bb696d927231fa7",
+      "size_bytes": 2266,
+      "doc_id": "TEST-HD"
+    },
+    {
+      "file_name": "TEST-HD-012_Report_20250916.pdf",
+      "path": "/mnt/data/evidence_20250916/TEST-HD-012_Report_20250916.pdf",
+      "sha256": "4c07b877e3d6dbb73d5584783aeb4ad57ebc80c4b23207c204964f04696059bf",
+      "size_bytes": 2250,
+      "doc_id": "TEST-HD"
+    },
+    {
+      "file_name": "TEST-HD-013_Report_20250916.pdf",
+      "path": "/mnt/data/evidence_20250916/TEST-HD-013_Report_20250916.pdf",
+      "sha256": "856fc83db2d747432752b42cc184ba42149d4f04b2d5d76d29fdc5fa7c70237d",
+      "size_bytes": 2209,
+      "doc_id": "TEST-HD"
+    },
+    {
+      "file_name": "TEST-HD-014_Report_20250916.pdf",
+      "path": "/mnt/data/evidence_20250916/TEST-HD-014_Report_20250916.pdf",
+      "sha256": "c1b823eb53b18e16fe745a4416ed58d4a795b5b3c08542e7821a1b2a4deeb5a6",
+      "size_bytes": 2359,
+      "doc_id": "TEST-HD"
+    },
+    {
+      "file_name": "TEST-HD-015_Report_20250916.pdf",
+      "path": "/mnt/data/evidence_20250916/TEST-HD-015_Report_20250916.pdf",
+      "sha256": "d464e22063cf11e96c143524fa8cbe528e7090ffbf244a646322c3017dca1c46",
+      "size_bytes": 2259,
+      "doc_id": "TEST-HD"
+    },
+    {
+      "file_name": "TEST-HD-016_Report_20250916.pdf",
+      "path": "/mnt/data/evidence_20250916/TEST-HD-016_Report_20250916.pdf",
+      "sha256": "53f388867e9c51c97d85c1eafe2d88e6cdafde60d81740c7ebd126e1e8fec991",
+      "size_bytes": 2235,
+      "doc_id": "TEST-HD"
+    }
+  ]
+}

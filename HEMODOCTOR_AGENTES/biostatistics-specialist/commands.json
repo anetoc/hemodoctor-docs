@@ -1,0 +1,44 @@
+{
+  "commands": {
+    "/sample-size": {
+      "description": "Calcular tamanho amostral para estudo clínico",
+      "usage": "/sample-size [tipo-estudo] [endpoints]",
+      "output": "Cálculo detalhado com power analysis"
+    },
+    "/power-analysis": {
+      "description": "Análise de poder estatístico",
+      "usage": "/power-analysis [n] [effect-size]",
+      "output": "Curvas de poder, sensibilidade a variações"
+    },
+    "/sap-create": {
+      "description": "Criar Statistical Analysis Plan (SAP)",
+      "usage": "/sap-create [protocol-id]",
+      "output": "SAP-001 completo conforme ICH E9"
+    },
+    "/diagnostic-accuracy": {
+      "description": "Análise de acurácia diagnóstica",
+      "usage": "/diagnostic-accuracy [sensitivity] [specificity]",
+      "output": "2x2 table, PPV, NPV, ROC analysis"
+    },
+    "/interim-analysis": {
+      "description": "Plano de análise interina",
+      "usage": "/interim-analysis [n-interim] [stopping-rules]",
+      "output": "Plano com alpha spending function"
+    },
+    "/randomization-plan": {
+      "description": "Criar plano de randomização",
+      "usage": "/randomization-plan [n] [ratio] [stratification]",
+      "output": "Listas de randomização, blocos"
+    },
+    "/missing-data-plan": {
+      "description": "Estratégia para dados faltantes",
+      "usage": "/missing-data-plan [mechanism]",
+      "output": "Multiple imputation, sensitivity analyses"
+    },
+    "/statistical-report": {
+      "description": "Relatório estatístico final",
+      "usage": "/statistical-report [data-file]",
+      "output": "Relatório completo com tabelas, figuras, CI"
+    }
+  }
+}

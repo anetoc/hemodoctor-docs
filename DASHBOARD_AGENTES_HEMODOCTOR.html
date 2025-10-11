@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 Dashboard - Agentes HemoDoctor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .agent-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .agent-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            text-transform: capitalize;
+        }
+
+        .agent-status {
+            font-size: 2em;
+        }
+
+        .agent-commands {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .commands-label {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .command-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .command-item {
+            background: white;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #333;
+            border-left: 3px solid #667eea;
+        }
+
+        .command-count {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .search-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        footer {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: #666;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .expertise-tag {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin: 3px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .agents-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Dashboard - Agentes HemoDoctor</h1>
+            <p class="subtitle">Sistema de Análise e Visualização de Agentes Claude Code</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalAgents">13</div>
+                <div class="stat-label">Total de Agentes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="installedAgents">13</div>
+                <div class="stat-label">Agentes Instalados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalCommands">138</div>
+                <div class="stat-label">Total de Comandos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgCommands">10.6</div>
+                <div class="stat-label">Média Comandos/Agente</div>
+            </div>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Buscar agentes ou comandos...">
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterAgents('all')">Todos</button>
+                <button class="filter-btn" onclick="filterAgents('installed')">✅ Instalados</button>
+                <button class="filter-btn" onclick="filterAgents('high-commands')">🚀 Mais Comandos (≥12)</button>
+                <button class="filter-btn" onclick="filterAgents('regulatory')">📋 Regulatórios</button>
+                <button class="filter-btn" onclick="filterAgents('technical')">🔧 Técnicos</button>
+            </div>
+        </div>
+
+        <div class="agents-grid" id="agentsGrid"></div>
+
+        <footer>
+            <p><strong>HemoDoctor Agent Analyzer</strong> | Última atualização: <span id="lastUpdate"></span></p>
+            <p>Baseado no BMAD AgentAnalyzer | Versão 1.0</p>
+        </footer>
+    </div>
+
+    <script>
+        // Agent data
+        const agents = [
+            {
+                name: "anvisa-regulatory-specialist",
+                displayName: "ANVISA Regulatory Specialist",
+                installed: true,
+                commandCount: 8,
+                commands: ["/reg-strategy", "/gap-analysis", "/consulta-anvisa", "/intended-use", "/regulatory-intel", "/submission-package", "/classification-analysis", "/compliance-check"],
+                category: "regulatory"
+            },
+            {
+                name: "clinical-evidence-specialist",
+                displayName: "Clinical Evidence Specialist",
+                installed: true,
+                commandCount: 9,
+                commands: ["/clinical-protocol", "/sample-size", "/endpoints-definition", "/statistical-plan", "/clinical-sites", "/crf-design", "/interim-analysis", "/clinical-report", "/real-world-evidence"],
+                category: "regulatory"
+            },
+            {
+                name: "documentation-finalization-specialist",
+                displayName: "Documentation Finalization Specialist",
+                installed: true,
+                commandCount: 12,
+                commands: ["/expand-document", "/package-assembly", "/cross-reference-integration", "/regulatory-writing", "/submission-package-complete", "/document-quality-assurance", "/executive-summary-master", "/template-application", "/version-control-final", "/submission-checklist-complete", "/document-index-master", "/compliance-final-validation"],
+                category: "regulatory"
+            },
+            {
+                name: "external-regulatory-consultant",
+                displayName: "External Regulatory Consultant",
+                installed: true,
+                commandCount: 14,
+                commands: ["/independent-validation", "/global-regulatory-update", "/benchmark-similar-devices", "/cost-optimization-analysis", "/external-gap-identification", "/regulatory-risk-assessment", "/best-practices-validation", "/facilitate-agent-discussion", "/agent-knowledge-validation", "/consensus-building", "/competitive-intelligence", "/market-access-strategy", "/regulatory-precedent-analysis", "/multi-region-harmonization"],
+                category: "regulatory"
+            },
+            {
+                name: "hematology-technical-specialist",
+                displayName: "Hematology Technical Specialist",
+                installed: true,
+                commandCount: 12,
+                commands: ["/clinical-workflow-validation", "/variable-clinical-mapping", "/reference-ranges-specification", "/algorithm-clinical-review", "/api-routes-clinical-spec", "/data-dictionary-complete", "/clinical-equivalencies", "/database-schema-clinical", "/dev-team-guidance", "/clinical-technical-bridge", "/modification-requirements", "/critical-values-setup"],
+                category: "technical"
+            },
+            {
+                name: "quality-systems-specialist",
+                displayName: "Quality Systems Specialist",
+                installed: true,
+                commandCount: 10,
+                commands: ["/quality-manual", "/document-control", "/capa-system", "/internal-audit", "/supplier-control", "/management-review", "/training-system", "/design-controls", "/quality-metrics", "/change-control"],
+                category: "regulatory"
+            },
+            {
+                name: "regulatory-review-specialist",
+                displayName: "Regulatory Review Specialist",
+                installed: true,
+                commandCount: 12,
+                commands: ["/comprehensive-review", "/gap-analysis", "/context-alignment", "/checklist-master", "/quality-gate", "/submission-readiness", "/cross-validation", "/asset-utilization", "/compliance-audit", "/timeline-validation", "/stakeholder-alignment", "/risk-benefit-review"],
+                category: "regulatory"
+            },
+            {
+                name: "risk-management-specialist",
+                displayName: "Risk Management Specialist",
+                installed: true,
+                commandCount: 9,
+                commands: ["/risk-analysis", "/hazard-identification", "/fmea-analysis", "/risk-controls", "/risk-benefit", "/post-market-risks", "/risk-matrix", "/residual-risk", "/clinical-risks"],
+                category: "regulatory"
+            },
+            {
+                name: "software-architecture-specialist",
+                displayName: "Software Architecture Specialist",
+                installed: true,
+                commandCount: 9,
+                commands: ["/system-architecture", "/api-specification", "/database-design", "/security-architecture", "/performance-specs", "/integration-design", "/iec62304-compliance", "/ai-architecture", "/deployment-strategy"],
+                category: "technical"
+            },
+            {
+                name: "traceability-specialist",
+                displayName: "Traceability Specialist",
+                installed: true,
+                commandCount: 10,
+                commands: ["/traceability-matrix", "/requirements-trace", "/risk-traceability", "/test-traceability", "/document-links", "/configuration-baseline", "/impact-analysis", "/gap-detection", "/compliance-mapping", "/audit-package"],
+                category: "regulatory"
+            },
+            {
+                name: "biostatistics-specialist",
+                displayName: "Biostatistics Specialist",
+                installed: true,
+                commandCount: 8,
+                commands: ["/sample-size", "/power-analysis", "/sap-create", "/diagnostic-accuracy", "/interim-analysis", "/randomization-plan", "/missing-data-plan", "/statistical-report"],
+                category: "regulatory"
+            },
+            {
+                name: "cep-protocol-specialist",
+                displayName: "CEP Protocol Specialist",
+                installed: true,
+                commandCount: 10,
+                commands: ["/protocol-create", "/tcle-create", "/opt-out-justification", "/crf-design", "/dpia-create", "/institutional-approvals", "/plataforma-brasil", "/cep-submission-package", "/tale-create", "/cep-response"],
+                category: "regulatory"
+            },
+            {
+                name: "hemodoctor-orchestrator",
+                displayName: "HemoDoctor Orchestrator ⭐",
+                installed: true,
+                commandCount: 15,
+                commands: ["/cold-start", "/delegate", "/parallel-execute", "/consolidate", "/backlog-status", "/backlog-update", "/priority-set", "/roadmap", "/agent-status", "/agent-capabilities", "/conflict-detect", "/dependency-map", "/handoff", "/help", "/health-check"],
+                category: "orchestrator"
+            }
+        ];
+
+        // Render agents
+        function renderAgents(filteredAgents = agents) {
+            const grid = document.getElementById('agentsGrid');
+            grid.innerHTML = '';
+
+            filteredAgents.forEach(agent => {
+                const card = document.createElement('div');
+                card.className = 'agent-card';
+                card.dataset.category = agent.category;
+
+                card.innerHTML = `
+                    <div class="agent-header">
+                        <div class="agent-name">${agent.displayName}</div>
+                        <div class="agent-status">${agent.installed ? '✅' : '⏳'}</div>
+                    </div>
+                    <div class="agent-commands">
+                        <div class="commands-label">
+                            ${agent.commandCount} Comandos disponíveis
+                        </div>
+                        <div class="command-list">
+                            ${agent.commands.map(cmd => `<div class="command-item">${cmd}</div>`).join('')}
+                        </div>
+                    </div>
+                    <div class="expertise-tag">${agent.category === 'regulatory' ? '📋 Regulatório' : '🔧 Técnico'}</div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = agents.filter(agent =>
+                agent.displayName.toLowerCase().includes(searchTerm) ||
+                agent.commands.some(cmd => cmd.toLowerCase().includes(searchTerm))
+            );
+            renderAgents(filtered);
+        });
+
+        // Filter functionality
+        function filterAgents(filter) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            let filtered = agents;
+            switch(filter) {
+                case 'installed':
+                    filtered = agents.filter(a => a.installed);
+                    break;
+                case 'high-commands':
+                    filtered = agents.filter(a => a.commandCount >= 12);
+                    break;
+                case 'regulatory':
+                    filtered = agents.filter(a => a.category === 'regulatory');
+                    break;
+                case 'technical':
+                    filtered = agents.filter(a => a.category === 'technical');
+                    break;
+            }
+            renderAgents(filtered);
+        }
+
+        // Set last update date
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('pt-BR');
+
+        // Initial render
+        renderAgents();
+    </script>
+</body>
+</html>

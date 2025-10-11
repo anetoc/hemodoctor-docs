@@ -1,0 +1,975 @@
+openapi: 3.1.0
+
+info:
+  title: HemoAI Inference Service API
+  version: 1.0.0
+  description: |
+    **Internal Class C microservice** for ML-based probabilistic risk scoring.
+
+    **IEC 62304 Classification:** Class C (ML-based diagnostic support, patient safety critical)
+
+    **Responsibilities:**
+    - Compute risk scores for differential diagnoses
+    - Provide confidence intervals and prediction intervals
+    - Generate explainability (SHAP values, feature importance)
+    - Support model versioning and A/B testing
+    - Calibrated probability outputs (Platt scaling)
+
+    **Model Architecture:** Logistic Regression (baseline) / XGBoost (production candidate)
+
+    **Security:** JWT with `scope: clinical_analysis` required. Only accessible from Rules Engine.
+
+    **Traceability:** SDD-001 §3.5 | REQ-HD-001, REQ-HD-003 (SRS-001)
+
+  contact:
+    name: HemoDoctor Internal API Support
+    email: internal-api@hemodoctor.com
+
+  license:
+    name: Proprietary
+
+servers:
+  - url: http://hemoai-inference-classc:8081/api/internal
+    description: Internal Class C network (Kubernetes service)
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Inference
+    description: ML model inference (Class C)
+  - name: Explainability
+    description: Model explainability and interpretability
+  - name: Health
+    description: Service health monitoring
+
+paths:
+  /predict:
+    post:
+      summary: Compute probabilistic risk scores
+      description: |
+        **CRITICAL CLASS C ENDPOINT**
+
+        Computes ML-based risk scores for differential diagnoses with explainability.
+
+        **Workflow:**
+        1. Receive rules engine output (deterministic diagnoses)
+        2. Extract features from CBC data
+        3. Run XGBoost model inference (or fallback to logistic regression)
+        4. Apply Platt scaling for calibrated probabilities
+        5. Generate SHAP explanations for top predictions
+        6. Return risk scores with confidence intervals
+        7. Pass to Alert Orchestrator
+
+        **Performance SLA:** P95 <2s (per NFR-001)
+
+        **Safety:** All predictions logged to Audit Service with model version.
+
+        **Traceability:** REQ-HD-001, REQ-HD-003 (SRS-001)
+
+      operationId: predictRiskScore
+      tags:
+        - Inference
+
+      security:
+        - BearerAuth: []
+
+      parameters:
+        - name: X-Trace-ID
+          in: header
+          description: Distributed trace ID (required for audit trail)
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Model-Version
+          in: header
+          description: Optional model version override (for A/B testing)
+          required: false
+          schema:
+            type: string
+            example: "hemoai-v1.2.3"
+
+      requestBody:
+        description: Rules engine output + validated CBC data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InferenceRequest'
+            examples:
+              severe_anemia:
+                summary: Severe iron deficiency anemia
+                value:
+                  case_id: "8ea459ea-ee8a-3ca4-894e-db77e160355f"
+                  order_id: "ORD-2025-001235"
+                  patient:
+                    age: 35
+                    sex: "F"
+                    pregnancy: false
+                  cbc_features:
+                    hemoglobin: 6.2
+                    hematocrit: 20.5
+                    mcv: 65
+                    mch: 21.2
+                    mchc: 32.8
+                    rdw: 18.5
+                    wbc: 7.2
+                    platelets: 280
+                    ferritin: 8
+                  rules_output:
+                    differential_diagnoses:
+                      - diagnosis: "Severe iron deficiency anemia"
+                        confidence: "HIGH"
+                      - diagnosis: "Thalassemia minor"
+                        confidence: "LOW"
+                    alert_level: "CRITICAL"
+                    rules_version: "rules-v2.3.1"
+              normal_hemogram:
+                summary: Normal adult male hemogram
+                value:
+                  case_id: "6fa459ea-ee8a-3ca4-894e-db77e160355e"
+                  order_id: "ORD-2025-001234"
+                  patient:
+                    age: 45
+                    sex: "M"
+                    pregnancy: false
+                  cbc_features:
+                    hemoglobin: 14.5
+                    hematocrit: 43.5
+                    mcv: 88
+                    mch: 29.5
+                    mchc: 33.5
+                    rdw: 13.2
+                    wbc: 7.5
+                    platelets: 250
+                  rules_output:
+                    differential_diagnoses:
+                      - diagnosis: "Normal hemogram"
+                        confidence: "HIGH"
+                    alert_level: "NONE"
+                    rules_version: "rules-v2.3.1"
+
+      responses:
+        '200':
+          description: Risk scores computed successfully
+          headers:
+            X-Model-Version:
+              schema:
+                type: string
+              description: Model version used for prediction
+              example: "hemoai-v1.2.3"
+            X-Inference-Time-Ms:
+              schema:
+                type: integer
+              description: Inference time in milliseconds
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InferenceResult'
+              examples:
+                critical_anemia_prediction:
+                  summary: High-risk iron deficiency anemia prediction
+                  value:
+                    case_id: "8ea459ea-ee8a-3ca4-894e-db77e160355f"
+                    predicted_at: "2025-10-08T15:35:21.456Z"
+                    model_version: "hemoai-v1.2.3"
+                    model_type: "XGBoost"
+                    risk_score: 0.92
+                    confidence_interval:
+                      lower: 0.87
+                      upper: 0.96
+                      confidence_level: 0.95
+                    top_predictions:
+                      - diagnosis: "Iron deficiency anemia"
+                        probability: 0.92
+                        confidence: 0.98
+                        clinical_rationale: "Severe microcytic anemia (Hb 6.2, MCV 65) with low ferritin (8 ng/mL) is highly specific for iron deficiency"
+                        shap_values:
+                          hemoglobin: -0.45
+                          mcv: -0.28
+                          ferritin: -0.19
+                          rdw: 0.12
+                        feature_importance:
+                          - feature: "hemoglobin"
+                            importance: 0.45
+                            direction: "decreased"
+                          - feature: "mcv"
+                            importance: 0.28
+                            direction: "decreased"
+                          - feature: "ferritin"
+                            importance: 0.19
+                            direction: "decreased"
+                      - diagnosis: "Thalassemia minor"
+                        probability: 0.06
+                        confidence: 0.65
+                        clinical_rationale: "MCV <70 could suggest thalassemia, but severe anemia and low ferritin favor iron deficiency"
+                      - diagnosis: "Anemia of chronic disease"
+                        probability: 0.02
+                        confidence: 0.45
+                        clinical_rationale: "Low probability due to low ferritin (typically normal/elevated in ACD)"
+                    calibration_metrics:
+                      expected_calibration_error: 0.032
+                      brier_score: 0.045
+                    recommendations:
+                      - "Iron panel confirmation (serum iron, TIBC, transferrin saturation)"
+                      - "Reticulocyte count to assess bone marrow response"
+                      - "GI bleeding investigation (fecal occult blood test)"
+                      - "Gynecological evaluation for menstrual blood loss"
+                    next_step:
+                      service: "alert-orchestrator"
+                      endpoint: "/api/internal/alerts/generate"
+                      payload_summary: "Send to Alert Orchestrator for CRITICAL alert generation"
+                normal_prediction:
+                  summary: Low-risk normal hemogram prediction
+                  value:
+                    case_id: "6fa459ea-ee8a-3ca4-894e-db77e160355e"
+                    predicted_at: "2025-10-08T15:32:09.789Z"
+                    model_version: "hemoai-v1.2.3"
+                    model_type: "XGBoost"
+                    risk_score: 0.05
+                    confidence_interval:
+                      lower: 0.02
+                      upper: 0.09
+                      confidence_level: 0.95
+                    top_predictions:
+                      - diagnosis: "Normal hemogram"
+                        probability: 0.95
+                        confidence: 0.99
+                        clinical_rationale: "All CBC parameters within normal reference ranges for adult male age 45"
+                        shap_values:
+                          hemoglobin: 0.02
+                          mcv: 0.01
+                          rdw: -0.01
+                      - diagnosis: "Mild physiological variation"
+                        probability: 0.05
+                        confidence: 0.70
+                    calibration_metrics:
+                      expected_calibration_error: 0.028
+                      brier_score: 0.038
+                    recommendations:
+                      - "No additional tests required"
+                      - "Routine follow-up as per clinical protocol"
+                    next_step:
+                      service: "alert-orchestrator"
+                      endpoint: "/api/internal/alerts/generate"
+                      payload_summary: "Send to Alert Orchestrator (no alert expected)"
+
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          description: Model not loaded or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: "https://api.hemodoctor.com/errors/model-unavailable"
+                title: "Model unavailable"
+                status: 503
+                detail: "XGBoost model hemoai-v1.2.3 not loaded. Fallback to rules-only mode."
+                trace_id: "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+        '504':
+          description: Inference timeout (>5s)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: "https://api.hemodoctor.com/errors/timeout"
+                title: "Inference timeout"
+                status: 504
+                detail: "Model inference exceeded 5000ms timeout (P95 SLA: 2000ms)"
+                trace_id: "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+
+  /explain/{case_id}:
+    get:
+      summary: Retrieve detailed SHAP explanation for a prediction
+      description: |
+        Retrieve detailed SHAP force plot and waterfall chart data for a specific case.
+
+        **Used by:** UI Service for clinician review and education.
+
+      operationId: getExplanation
+      tags:
+        - Explainability
+
+      security:
+        - BearerAuth: []
+
+      parameters:
+        - name: case_id
+          in: path
+          description: Unique case identifier
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+        '200':
+          description: Explanation retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExplanationDetail'
+              example:
+                case_id: "8ea459ea-ee8a-3ca4-894e-db77e160355f"
+                model_version: "hemoai-v1.2.3"
+                prediction: "Iron deficiency anemia"
+                probability: 0.92
+                base_value: 0.15
+                shap_values:
+                  - feature: "hemoglobin"
+                    value: 6.2
+                    shap_value: -0.45
+                    contribution_percent: 45.0
+                    interpretation: "Severely decreased hemoglobin (6.2 g/dL) strongly indicates anemia"
+                  - feature: "mcv"
+                    value: 65
+                    shap_value: -0.28
+                    contribution_percent: 28.0
+                    interpretation: "Low MCV (65 fL) indicates microcytic anemia, consistent with iron deficiency"
+                  - feature: "ferritin"
+                    value: 8
+                    shap_value: -0.19
+                    contribution_percent: 19.0
+                    interpretation: "Low ferritin (8 ng/mL) confirms depleted iron stores"
+                  - feature: "rdw"
+                    value: 18.5
+                    shap_value: 0.12
+                    contribution_percent: 12.0
+                    interpretation: "Elevated RDW (18.5%) indicates anisocytosis, common in iron deficiency"
+                force_plot_data:
+                  type: "shap_force_plot"
+                  base_value: 0.15
+                  prediction: 0.92
+                  features_pushing_higher: ["rdw"]
+                  features_pushing_lower: ["hemoglobin", "mcv", "ferritin"]
+                  visualization_url: "https://ui.hemodoctor.com/shap/8ea459ea-ee8a-3ca4-894e-db77e160355f"
+
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /models:
+    get:
+      summary: List available models
+      description: |
+        Retrieve all available model versions with metadata.
+
+        **Used for:** A/B testing, model rollback, performance monitoring.
+
+      operationId: listModels
+      tags:
+        - Inference
+
+      security:
+        - BearerAuth: []
+
+      responses:
+        '200':
+          description: Models retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  current_model:
+                    type: string
+                    example: "hemoai-v1.2.3"
+                  models:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ModelMetadata'
+              example:
+                current_model: "hemoai-v1.2.3"
+                models:
+                  - version: "hemoai-v1.2.3"
+                    model_type: "XGBoost"
+                    released_at: "2025-10-01T10:00:00Z"
+                    status: "ACTIVE"
+                    performance_metrics:
+                      roc_auc: 0.89
+                      precision: 0.87
+                      recall: 0.91
+                      expected_calibration_error: 0.032
+                    training_dataset:
+                      samples: 15000
+                      date_range: "2020-01-01 to 2024-09-30"
+                    validation_dataset:
+                      samples: 3000
+                      date_range: "2024-10-01 to 2024-10-15"
+                  - version: "hemoai-v1.2.2"
+                    model_type: "XGBoost"
+                    released_at: "2025-09-15T10:00:00Z"
+                    status: "DEPRECATED"
+                    performance_metrics:
+                      roc_auc: 0.87
+                      precision: 0.85
+                      recall: 0.89
+                      expected_calibration_error: 0.045
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /health:
+    get:
+      summary: Health check endpoint
+      description: |
+        Class C service health check.
+
+        **Monitored by:** Kubernetes liveness/readiness probes.
+
+      operationId: healthCheck
+      tags:
+        - Health
+
+      security: []
+
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - timestamp
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy]
+                  timestamp:
+                    type: string
+                    format: date-time
+                  model_version:
+                    type: string
+                  model_loaded:
+                    type: boolean
+                  safety_class:
+                    type: string
+                    enum: [C]
+              example:
+                status: healthy
+                timestamp: "2025-10-08T15:32:10Z"
+                model_version: "hemoai-v1.2.3"
+                model_loaded: true
+                safety_class: "C"
+
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /ready:
+    get:
+      summary: Readiness probe
+      description: |
+        Kubernetes readiness probe.
+
+        Returns 200 only if ML model is loaded and ready for inference.
+
+      operationId: readinessCheck
+      tags:
+        - Health
+
+      security: []
+
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ready]
+                  model_loaded:
+                    type: boolean
+                  model_version:
+                    type: string
+              example:
+                status: ready
+                model_loaded: true
+                model_version: "hemoai-v1.2.3"
+
+        '503':
+          description: Service not ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [not_ready]
+                  model_loaded:
+                    type: boolean
+                  error:
+                    type: string
+              example:
+                status: not_ready
+                model_loaded: false
+                error: "XGBoost model file not found: /models/hemoai-v1.2.3.pkl"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token with `scope: clinical_analysis` required.
+        Only Rules Engine has valid tokens for this endpoint.
+
+  schemas:
+    InferenceRequest:
+      type: object
+      required:
+        - case_id
+        - order_id
+        - patient
+        - cbc_features
+        - rules_output
+      properties:
+        case_id:
+          type: string
+          format: uuid
+        order_id:
+          type: string
+        patient:
+          $ref: '#/components/schemas/PatientProfile'
+        cbc_features:
+          $ref: '#/components/schemas/CBCFeatures'
+        rules_output:
+          $ref: '#/components/schemas/RulesOutput'
+
+    PatientProfile:
+      type: object
+      required:
+        - age
+        - sex
+      properties:
+        age:
+          type: integer
+          minimum: 0
+          maximum: 120
+        sex:
+          type: string
+          enum: [M, F, Other]
+        pregnancy:
+          type: boolean
+
+    CBCFeatures:
+      type: object
+      description: Feature vector for ML model (all numeric, normalized)
+      required:
+        - hemoglobin
+        - hematocrit
+        - mcv
+        - rdw
+        - wbc
+        - platelets
+      properties:
+        hemoglobin:
+          type: number
+        hematocrit:
+          type: number
+        mcv:
+          type: number
+        mch:
+          type: number
+        mchc:
+          type: number
+        rdw:
+          type: number
+        wbc:
+          type: number
+        platelets:
+          type: number
+        neutrophils:
+          type: number
+        lymphocytes:
+          type: number
+        monocytes:
+          type: number
+        eosinophils:
+          type: number
+        basophils:
+          type: number
+        reticulocytes:
+          type: number
+        ferritin:
+          type: number
+        iron:
+          type: number
+        transferrin:
+          type: number
+
+    RulesOutput:
+      type: object
+      required:
+        - differential_diagnoses
+        - alert_level
+        - rules_version
+      properties:
+        differential_diagnoses:
+          type: array
+          items:
+            type: object
+            properties:
+              diagnosis:
+                type: string
+              confidence:
+                type: string
+                enum: [HIGH, MEDIUM, LOW]
+        alert_level:
+          type: string
+          enum: [CRITICAL, HIGH, MEDIUM, LOW, NONE]
+        rules_version:
+          type: string
+
+    InferenceResult:
+      type: object
+      required:
+        - case_id
+        - predicted_at
+        - model_version
+        - model_type
+        - risk_score
+        - confidence_interval
+        - top_predictions
+      properties:
+        case_id:
+          type: string
+          format: uuid
+        predicted_at:
+          type: string
+          format: date-time
+        model_version:
+          type: string
+        model_type:
+          type: string
+          enum: [LogisticRegression, XGBoost]
+        risk_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Overall risk score (0-1 scale)
+        confidence_interval:
+          $ref: '#/components/schemas/ConfidenceInterval'
+        top_predictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Prediction'
+          minItems: 1
+          maxItems: 5
+        calibration_metrics:
+          $ref: '#/components/schemas/CalibrationMetrics'
+        recommendations:
+          type: array
+          items:
+            type: string
+        next_step:
+          $ref: '#/components/schemas/NextStep'
+
+    Prediction:
+      type: object
+      required:
+        - diagnosis
+        - probability
+        - confidence
+      properties:
+        diagnosis:
+          type: string
+        probability:
+          type: number
+          minimum: 0
+          maximum: 1
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Model confidence in this prediction
+        clinical_rationale:
+          type: string
+        shap_values:
+          type: object
+          additionalProperties:
+            type: number
+          description: SHAP values for key features
+        feature_importance:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureImportance'
+
+    FeatureImportance:
+      type: object
+      required:
+        - feature
+        - importance
+        - direction
+      properties:
+        feature:
+          type: string
+        importance:
+          type: number
+          minimum: 0
+          maximum: 1
+        direction:
+          type: string
+          enum: [increased, decreased, normal]
+
+    ConfidenceInterval:
+      type: object
+      required:
+        - lower
+        - upper
+        - confidence_level
+      properties:
+        lower:
+          type: number
+          minimum: 0
+          maximum: 1
+        upper:
+          type: number
+          minimum: 0
+          maximum: 1
+        confidence_level:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Confidence level (typically 0.95 for 95% CI)
+
+    CalibrationMetrics:
+      type: object
+      properties:
+        expected_calibration_error:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Expected calibration error (ECE)
+        brier_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Brier score for probability calibration
+
+    NextStep:
+      type: object
+      required:
+        - service
+        - endpoint
+      properties:
+        service:
+          type: string
+          enum: [alert-orchestrator]
+        endpoint:
+          type: string
+        payload_summary:
+          type: string
+
+    ExplanationDetail:
+      type: object
+      required:
+        - case_id
+        - model_version
+        - prediction
+        - probability
+        - shap_values
+      properties:
+        case_id:
+          type: string
+          format: uuid
+        model_version:
+          type: string
+        prediction:
+          type: string
+        probability:
+          type: number
+        base_value:
+          type: number
+          description: Baseline prediction (average output over training set)
+        shap_values:
+          type: array
+          items:
+            $ref: '#/components/schemas/SHAPValue'
+        force_plot_data:
+          $ref: '#/components/schemas/ForcePlotData'
+
+    SHAPValue:
+      type: object
+      required:
+        - feature
+        - value
+        - shap_value
+        - contribution_percent
+      properties:
+        feature:
+          type: string
+        value:
+          type: number
+          description: Actual feature value
+        shap_value:
+          type: number
+          description: SHAP value (positive = pushes prediction higher, negative = lower)
+        contribution_percent:
+          type: number
+          minimum: 0
+          maximum: 100
+        interpretation:
+          type: string
+          description: Human-readable explanation
+
+    ForcePlotData:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [shap_force_plot]
+        base_value:
+          type: number
+        prediction:
+          type: number
+        features_pushing_higher:
+          type: array
+          items:
+            type: string
+        features_pushing_lower:
+          type: array
+          items:
+            type: string
+        visualization_url:
+          type: string
+          format: uri
+
+    ModelMetadata:
+      type: object
+      required:
+        - version
+        - model_type
+        - released_at
+        - status
+        - performance_metrics
+      properties:
+        version:
+          type: string
+        model_type:
+          type: string
+          enum: [LogisticRegression, XGBoost]
+        released_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [ACTIVE, DEPRECATED, ARCHIVED]
+        performance_metrics:
+          $ref: '#/components/schemas/PerformanceMetrics'
+        training_dataset:
+          $ref: '#/components/schemas/DatasetInfo'
+        validation_dataset:
+          $ref: '#/components/schemas/DatasetInfo'
+
+    PerformanceMetrics:
+      type: object
+      required:
+        - roc_auc
+        - precision
+        - recall
+      properties:
+        roc_auc:
+          type: number
+          minimum: 0
+          maximum: 1
+        precision:
+          type: number
+          minimum: 0
+          maximum: 1
+        recall:
+          type: number
+          minimum: 0
+          maximum: 1
+        expected_calibration_error:
+          type: number
+          minimum: 0
+          maximum: 1
+
+    DatasetInfo:
+      type: object
+      properties:
+        samples:
+          type: integer
+          minimum: 0
+        date_range:
+          type: string
+
+    ProblemDetail:
+      type: object
+      description: RFC 7807 Problem Details
+      required:
+        - type
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri
+        trace_id:
+          type: string
+          format: uuid
+
+  responses:
+    BadRequest:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    Unauthorized:
+      description: Authentication required or invalid token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    ServiceUnavailable:
+      description: Service temporarily unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'

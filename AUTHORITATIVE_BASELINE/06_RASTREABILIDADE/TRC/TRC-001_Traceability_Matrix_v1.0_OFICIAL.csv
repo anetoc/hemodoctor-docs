@@ -1,0 +1,8 @@
+User_Need,REQ_ID,Design_Ref,TEST_ID,RISK_ID,Label_Ref,PMS_Ref
+Faster diagnosis,REQ-HD-001 (Sens>=0.90),SDD-001 §3.2,TEST-HD-011 (ROC/PR),RISK-HD-001,IFU-001 §Performance,PMS-001 §SLAs
+Manage alert burden,REQ-HD-002 (Alerts<15%),SDD-001 §3.4,TEST-HD-012 (Alert burden),RISK-HD-002,IFU-001 §Warnings,PMS-001 §SLAs
+Mitigate automation bias,REQ-HD-003 (Training/UI),SDD-001 §5.1,TEST-HD-013 (HFE Summative),RISK-HD-003,IFU-001 §Warnings,PMS-001 §Training
+Robust to drift,REQ-HD-004 (Drift monitors),SDD-001 §4.3,TEST-HD-014 (Drift sim),RISK-HD-004,IFU-001 §Limitations,PMS-001 §Monitoring
+High availability,REQ-HD-005 (99.5% uptime),DEP-001 §3,TEST-HD-015 (Load/latency),RISK-HD-005,IFU-001 §Fallback,PMS-001 §Ops KPIs
+Cybersecure,REQ-HD-006 (§524B),SEC-001,TEST-HD-016 (Patch SLA),RISK-HD-006,IFU-001 §Cyber,PMS-001 §Vuln Mgmt
+Privacy by design,REQ-HD-007 (DPIA),SEC-001 §DPIA,TEST-HD-017 (Log scrub),RISK-HD-007,IFU-001 §Privacy,PMS-001 §Audits

@@ -1,0 +1,92 @@
+openapi: 3.1.0
+info:
+  title: HemoDoctor Validation Service API
+  version: 1.0.0
+  description: |
+    **Internal Class B microservice** for CBC data validation and normalization.
+    
+    **IEC 62304 Classification:** Class B (validation, no diagnostic decision)
+    
+    **Responsibilities:**
+    - Unit conversion (g/dL ↔ g/L, etc.)
+    - LOINC code mapping
+    - Patient-profile-specific reference range validation
+    - Out-of-range flagging
+    - Data quality checks
+    
+    **Traceability:** SDD-001 §3.3 | REQ-HD-002 (SRS-001)
+
+servers:
+  - url: http://validation-service:8001/api/internal
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Validation
+  - name: Health
+
+paths:
+  /validate:
+    post:
+      summary: Validate and normalize CBC data
+      operationId: validateCBC
+      tags: [Validation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [case_id, patient, cbc_raw]
+              properties:
+                case_id: {type: string, format: uuid}
+                patient:
+                  type: object
+                  properties:
+                    age: {type: integer}
+                    sex: {type: string, enum: [M, F, Other]}
+                cbc_raw: {type: object}
+      responses:
+        '200':
+          description: CBC data validated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  case_id: {type: string, format: uuid}
+                  validated_at: {type: string, format: date-time}
+                  hemogram:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        value: {type: number}
+                        unit: {type: string}
+                        loinc_code: {type: string}
+                        reference_range: {type: object}
+                        flag: {type: string, enum: [CRITICAL_LOW, LOW, NORMAL, HIGH, CRITICAL_HIGH]}
+
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags: [Health]
+      security: []
+      responses:
+        '200':
+          description: Service healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: {type: string, enum: [healthy]}
+                  safety_class: {type: string, enum: [B]}
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

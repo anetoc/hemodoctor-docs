@@ -1,0 +1,111 @@
+openapi: 3.1.0
+info:
+  title: HemoDoctor UI Backend API
+  version: 1.0.0
+  description: |
+    **Internal Class B microservice** providing minimal backend API for React SPA.
+    
+    **IEC 62304 Classification:** Class B (displays clinical data but does not generate diagnoses)
+    
+    **Responsibilities:**
+    - Serve React SPA static assets
+    - Proxy API calls to backend services
+    - User session management
+    - Export reports (PDF, CSV)
+    
+    **Traceability:** SDD-001 §3.8 | REQ-HD-003, NFR-003 (SRS-001)
+
+servers:
+  - url: http://ui-service:3000/api
+
+security:
+  - OAuth2: [read:results, write:orders]
+
+tags:
+  - name: UI Backend
+  - name: Export
+  - name: Health
+
+paths:
+  /session:
+    get:
+      summary: Get current user session
+      operationId: getSession
+      tags: [UI Backend]
+      responses:
+        '200':
+          description: Session retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id: {type: string}
+                  roles: {type: array, items: {type: string}}
+                  tenant_id: {type: string}
+
+  /export/{case_id}/pdf:
+    get:
+      summary: Export case report as PDF
+      operationId: exportPDF
+      tags: [Export]
+      parameters:
+        - name: case_id
+          in: path
+          required: true
+          schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: PDF generated
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+  /export/{case_id}/csv:
+    get:
+      summary: Export case data as CSV
+      operationId: exportCSV
+      tags: [Export]
+      parameters:
+        - name: case_id
+          in: path
+          required: true
+          schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: CSV generated
+          content:
+            text/csv:
+              schema:
+                type: string
+
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags: [Health]
+      security: []
+      responses:
+        '200':
+          description: Service healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: {type: string, enum: [healthy]}
+                  safety_class: {type: string, enum: [B]}
+
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.hemodoctor.com/oauth2/authorize
+          tokenUrl: https://auth.hemodoctor.com/oauth2/token
+          scopes:
+            read:results: Read analysis results
+            write:orders: Submit orders

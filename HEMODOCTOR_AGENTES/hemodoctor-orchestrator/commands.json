@@ -1,0 +1,79 @@
+{
+  "commands": {
+    "/cold-start": {
+      "description": "Inicializar nova sessão (ler contexto + backlog + identificar P0) - <2 min",
+      "usage": "/cold-start",
+      "output": "Contexto completo carregado + P0 bloqueadores + next actions"
+    },
+    "/delegate": {
+      "description": "Delegar tarefa ao agente especializado correto",
+      "usage": "/delegate \"[task description]\" [--sequential|--parallel]",
+      "output": "Task delegada + execution plan + agent assigned"
+    },
+    "/parallel-execute": {
+      "description": "Executar múltiplos agentes em paralelo (tasks independentes)",
+      "usage": "/parallel-execute \"[task1]\" \"[task2]\" ...",
+      "output": "Parallel execution + consolidated results"
+    },
+    "/consolidate": {
+      "description": "Consolidar resultados de múltiplos agentes",
+      "usage": "/consolidate [agent1] [agent2] ...",
+      "output": "Unified report com findings consolidados"
+    },
+    "/backlog-status": {
+      "description": "Mostrar status do backlog (P0/P1/P2/P3)",
+      "usage": "/backlog-status [--priority P0|P1|P2|P3] [--agent @agent-name]",
+      "output": "Backlog summary + metrics + critical path"
+    },
+    "/backlog-update": {
+      "description": "Atualizar tarefa no backlog unificado",
+      "usage": "/backlog-update \"[task-id]\" \"[status: completed|in_progress|blocked]\"",
+      "output": "BACKLOG_UNIFICADO.md atualizado + changelog entry"
+    },
+    "/priority-set": {
+      "description": "Definir/mudar prioridade de tarefa (P0/P1/P2/P3)",
+      "usage": "/priority-set \"[task-id]\" \"[priority: P0|P1|P2|P3]\"",
+      "output": "Prioridade atualizada + backlog reorganizado"
+    },
+    "/roadmap": {
+      "description": "Mostrar roadmap consolidado (18 meses)",
+      "usage": "/roadmap [--phase Phase1|Phase2|Phase3|Phase4]",
+      "output": "Timeline + milestones + critical path"
+    },
+    "/agent-status": {
+      "description": "Status dos 12 agentes (online, workload, last used)",
+      "usage": "/agent-status [agent-name]",
+      "output": "Agent health status + workload % + capabilities"
+    },
+    "/agent-capabilities": {
+      "description": "Listar comandos de um agente específico",
+      "usage": "/agent-capabilities \"@agent-name\"",
+      "output": "Lista de comandos + descrições + usage examples"
+    },
+    "/conflict-detect": {
+      "description": "Detectar conflitos entre tarefas (resource, dependency, timeline, scope)",
+      "usage": "/conflict-detect [--scope backlog|P0|P1]",
+      "output": "Lista de conflitos + severity + resolution suggestions"
+    },
+    "/dependency-map": {
+      "description": "Mapear dependências entre tarefas (critical path)",
+      "usage": "/dependency-map \"[task-id]\" [--depth 1|2|3]",
+      "output": "Dependency graph + blockers + critical path"
+    },
+    "/handoff": {
+      "description": "Fazer handoff para próxima sessão (atualizar status + backlog + context)",
+      "usage": "/handoff [--summary]",
+      "output": "Handoff package criado (STATUS + BACKLOG + CONTEXT atualizado)"
+    },
+    "/help": {
+      "description": "Ajuda geral do sistema HemoDoctor (12 agentes + 123 comandos)",
+      "usage": "/help [topic: agents|commands|backlog|workflow]",
+      "output": "Guia de uso + exemplos + best practices"
+    },
+    "/health-check": {
+      "description": "Verificar saúde do sistema (12 agentes + docs + backlog + structure)",
+      "usage": "/health-check [--full]",
+      "output": "System health report + issues found + recommendations"
+    }
+  }
+}

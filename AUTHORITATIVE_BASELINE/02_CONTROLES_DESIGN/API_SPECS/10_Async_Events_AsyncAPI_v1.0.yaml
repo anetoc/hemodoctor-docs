@@ -1,0 +1,83 @@
+asyncapi: 2.6.0
+info:
+  title: HemoDoctor Async Events
+  version: 1.0.0
+  description: |
+    Asynchronous event communication between HemoDoctor microservices.
+    
+    **Messaging Infrastructure:** AMQP / RabbitMQ / Kafka (configurable)
+    
+    **Event-driven patterns:**
+    - CBC ingestion completed → Validation
+    - Validation completed → Rules Engine
+    - Analysis completed → Alert generation
+    - Alert generated → Audit logging + UI notification
+    - Model deployed → HemoAI service refresh
+
+servers:
+  development:
+    url: amqp://rabbitmq-dev:5672
+    protocol: amqp
+    description: Development RabbitMQ
+
+channels:
+  cbc.ingestion.completed:
+    description: CBC data successfully ingested
+    publish:
+      operationId: publishIngestionCompleted
+      message:
+        payload:
+          type: object
+          properties:
+            order_id: {type: string}
+            case_id: {type: string, format: uuid}
+            timestamp: {type: string, format: date-time}
+
+  cbc.validation.completed:
+    description: CBC data validated
+    publish:
+      operationId: publishValidationCompleted
+      message:
+        payload:
+          type: object
+          properties:
+            case_id: {type: string, format: uuid}
+            validated_at: {type: string, format: date-time}
+
+  cbc.analysis.completed:
+    description: Rules + ML analysis completed
+    publish:
+      operationId: publishAnalysisCompleted
+      message:
+        payload:
+          type: object
+          properties:
+            case_id: {type: string, format: uuid}
+            risk_score: {type: number}
+            alert_level: {type: string, enum: [CRITICAL, HIGH, MEDIUM, LOW, NONE]}
+
+  alerts.generated:
+    description: Clinical alert generated
+    publish:
+      operationId: publishAlertGenerated
+      message:
+        payload:
+          type: object
+          properties:
+            alert_id: {type: string, format: uuid}
+            case_id: {type: string, format: uuid}
+            level: {type: string, enum: [CRITICAL, HIGH, MEDIUM, LOW]}
+            message: {type: string}
+            triggered_at: {type: string, format: date-time}
+
+  model.deployed:
+    description: New ML model deployed
+    publish:
+      operationId: publishModelDeployed
+      message:
+        payload:
+          type: object
+          properties:
+            model_version: {type: string}
+            deployed_at: {type: string, format: date-time}
+            model_type: {type: string, enum: [XGBoost, LogisticRegression]}

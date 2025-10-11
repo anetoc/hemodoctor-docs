@@ -1,0 +1,744 @@
+openapi: 3.1.0
+
+info:
+  title: HemoDoctor Rules Engine API
+  version: 1.0.0
+  description: |
+    **Internal Class C microservice** for deterministic clinical rule execution.
+
+    **IEC 62304 Classification:** Class C (direct diagnostic decisions, patient safety critical)
+
+    **Responsibilities:**
+    - Execute deterministic clinical rules
+    - Generate preliminary differential diagnoses
+    - Flag critical values (e.g., Hb <7 g/dL)
+    - Apply patient-specific reference ranges (age/sex/pregnancy)
+
+    **Security:** JWT with `scope: clinical_analysis` required. Only accessible from Validation Service.
+
+    **Traceability:** SDD-001 §3.4 | REQ-HD-001, REQ-HD-003 (SRS-001)
+
+  contact:
+    name: HemoDoctor Internal API Support
+    email: internal-api@hemodoctor.com
+
+  license:
+    name: Proprietary
+
+servers:
+  - url: http://rules-engine-classc:8080/api/internal
+    description: Internal Class C network (Kubernetes service)
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Rules Execution
+    description: Clinical rule execution (Class C)
+  - name: Health
+    description: Service health monitoring
+
+paths:
+  /rules/execute:
+    post:
+      summary: Execute clinical rules on validated CBC data
+      description: |
+        **CRITICAL CLASS C ENDPOINT**
+
+        Executes deterministic clinical rules to generate preliminary diagnoses.
+
+        **Workflow:**
+        1. Receive validated CBC data from Validation Service
+        2. Apply patient-specific reference ranges (age, sex, pregnancy)
+        3. Execute rule set (versioned, e.g., rules-v2.3.1)
+        4. Generate differential diagnoses with clinical rationale
+        5. Flag critical values (CRITICAL/HIGH/MEDIUM/LOW)
+        6. Pass results to HemoAI Inference Service
+
+        **Safety:** All executions logged to Audit Service.
+
+        **Traceability:** REQ-HD-001, REQ-HD-003 (SRS-001)
+
+      operationId: executeRules
+      tags:
+        - Rules Execution
+
+      security:
+        - BearerAuth: []
+
+      parameters:
+        - name: X-Trace-ID
+          in: header
+          description: Distributed trace ID (required for audit trail)
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      requestBody:
+        description: Validated CBC data with patient demographics
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidatedCBCData'
+            examples:
+              severe_microcytic_anemia:
+                summary: Severe microcytic anemia (triggers CRITICAL rule)
+                value:
+                  case_id: "8ea459ea-ee8a-3ca4-894e-db77e160355f"
+                  order_id: "ORD-2025-001235"
+                  patient:
+                    age: 35
+                    sex: "F"
+                    pregnancy: false
+                  hemogram:
+                    hemoglobin:
+                      value: 6.2
+                      unit: "g/dL"
+                      loinc_code: "718-7"
+                      reference_range:
+                        low: 12.0
+                        high: 16.0
+                      flag: "CRITICAL_LOW"
+                    hematocrit:
+                      value: 20.5
+                      unit: "%"
+                      loinc_code: "4544-3"
+                      reference_range:
+                        low: 36.0
+                        high: 46.0
+                      flag: "CRITICAL_LOW"
+                    mcv:
+                      value: 65
+                      unit: "fL"
+                      loinc_code: "787-2"
+                      reference_range:
+                        low: 80
+                        high: 100
+                      flag: "LOW"
+                    rdw:
+                      value: 18.5
+                      unit: "%"
+                      loinc_code: "788-0"
+                      reference_range:
+                        low: 11.5
+                        high: 14.5
+                      flag: "HIGH"
+                  complementary:
+                    ferritin:
+                      value: 8
+                      unit: "ng/mL"
+                      loinc_code: "2276-4"
+                      reference_range:
+                        low: 15
+                        high: 150
+                      flag: "LOW"
+                  validation_metadata:
+                    validated_at: "2025-10-08T15:35:20Z"
+                    validation_version: "validation-v1.0.5"
+                    quality_score: 1.0
+              normal_hemogram:
+                summary: Normal adult male hemogram
+                value:
+                  case_id: "6fa459ea-ee8a-3ca4-894e-db77e160355e"
+                  order_id: "ORD-2025-001234"
+                  patient:
+                    age: 45
+                    sex: "M"
+                    pregnancy: false
+                  hemogram:
+                    hemoglobin:
+                      value: 14.5
+                      unit: "g/dL"
+                      loinc_code: "718-7"
+                      reference_range:
+                        low: 13.5
+                        high: 17.5
+                      flag: "NORMAL"
+                    mcv:
+                      value: 88
+                      unit: "fL"
+                      loinc_code: "787-2"
+                      reference_range:
+                        low: 80
+                        high: 100
+                      flag: "NORMAL"
+                  validation_metadata:
+                    validated_at: "2025-10-08T15:32:08Z"
+                    validation_version: "validation-v1.0.5"
+                    quality_score: 1.0
+
+      responses:
+        '200':
+          description: Rules executed successfully
+          headers:
+            X-Rules-Version:
+              schema:
+                type: string
+              description: Version of rule set executed
+              example: "rules-v2.3.1"
+            X-Execution-Time-Ms:
+              schema:
+                type: integer
+              description: Rule execution time in milliseconds
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesExecutionResult'
+              examples:
+                critical_anemia_result:
+                  summary: Severe iron deficiency anemia (CRITICAL)
+                  value:
+                    case_id: "8ea459ea-ee8a-3ca4-894e-db77e160355f"
+                    executed_at: "2025-10-08T15:35:21Z"
+                    rules_version: "rules-v2.3.1"
+                    total_rules_evaluated: 47
+                    triggered_rules:
+                      - rule_id: "RULE-ANEMIA-CRITICAL-001"
+                        rule_name: "Severe anemia detection"
+                        condition: "hemoglobin < 7.0 AND mcv < 80"
+                        triggered: true
+                        severity: "CRITICAL"
+                        diagnosis: "Severe microcytic anemia - possible iron deficiency"
+                        clinical_rationale: "Hb 6.2 g/dL indicates severe anemia requiring immediate intervention. MCV 65 fL suggests microcytic origin (iron deficiency or thalassemia)."
+                        suggested_tests:
+                          - "Iron panel confirmation"
+                          - "Ferritin serum level"
+                          - "Reticulocyte count"
+                          - "GI bleeding investigation"
+                        supporting_parameters:
+                          - "hemoglobin: 6.2 g/dL (CRITICAL_LOW)"
+                          - "mcv: 65 fL (LOW)"
+                          - "ferritin: 8 ng/mL (LOW)"
+                      - rule_id: "RULE-RDW-ELEVATED-002"
+                        rule_name: "Elevated RDW in anemia"
+                        condition: "rdw > 15 AND hemoglobin < 12"
+                        triggered: true
+                        severity: "MEDIUM"
+                        diagnosis: "Anisocytosis consistent with iron deficiency or mixed anemia"
+                        clinical_rationale: "RDW 18.5% indicates significant variation in RBC size, supporting iron deficiency diagnosis."
+                        suggested_tests:
+                          - "Peripheral blood smear"
+                        supporting_parameters:
+                          - "rdw: 18.5% (HIGH)"
+                          - "hemoglobin: 6.2 g/dL (CRITICAL_LOW)"
+                    differential_diagnoses:
+                      - rank: 1
+                        diagnosis: "Severe iron deficiency anemia"
+                        confidence: "HIGH"
+                        supporting_rules:
+                          - "RULE-ANEMIA-CRITICAL-001"
+                          - "RULE-RDW-ELEVATED-002"
+                        clinical_rationale: "Severe microcytic anemia (Hb 6.2, MCV 65) with low ferritin (8 ng/mL) and elevated RDW (18.5%) is pathognomonic for iron deficiency."
+                      - rank: 2
+                        diagnosis: "Thalassemia minor"
+                        confidence: "LOW"
+                        supporting_rules: []
+                        clinical_rationale: "MCV <70 could suggest thalassemia, but severe anemia and low ferritin favor iron deficiency. Hemoglobin electrophoresis recommended for definitive diagnosis."
+                    alert_level: "CRITICAL"
+                    recommended_actions:
+                      - "Immediate physician notification"
+                      - "Transfusion protocol evaluation"
+                      - "Iron supplementation initiation"
+                      - "Investigate source of blood loss (GI, gynecological)"
+                    next_step:
+                      service: "hemoai-inference"
+                      endpoint: "/api/internal/predict"
+                      payload_summary: "Send to HemoAI for probabilistic risk scoring"
+                normal_result:
+                  summary: Normal hemogram (no rules triggered)
+                  value:
+                    case_id: "6fa459ea-ee8a-3ca4-894e-db77e160355e"
+                    executed_at: "2025-10-08T15:32:09Z"
+                    rules_version: "rules-v2.3.1"
+                    total_rules_evaluated: 47
+                    triggered_rules: []
+                    differential_diagnoses:
+                      - rank: 1
+                        diagnosis: "Normal hemogram"
+                        confidence: "HIGH"
+                        supporting_rules: []
+                        clinical_rationale: "All CBC parameters within normal reference ranges for adult male age 45."
+                    alert_level: "NONE"
+                    recommended_actions:
+                      - "No additional tests required"
+                      - "Routine follow-up as per clinical protocol"
+                    next_step:
+                      service: "hemoai-inference"
+                      endpoint: "/api/internal/predict"
+                      payload_summary: "Send to HemoAI for confirmatory scoring"
+
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '504':
+          description: Rule execution timeout (>5s)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: "https://api.hemodoctor.com/errors/timeout"
+                title: "Rule execution timeout"
+                status: 504
+                detail: "Rule execution exceeded 5000ms timeout"
+                trace_id: "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+
+  /rules/versions:
+    get:
+      summary: List available rule set versions
+      description: |
+        Retrieve all available rule set versions with metadata.
+
+        **Used for:** Model promotion, rollback decisions, audit trail verification.
+
+      operationId: listRuleVersions
+      tags:
+        - Rules Execution
+
+      security:
+        - BearerAuth: []
+
+      responses:
+        '200':
+          description: Rule versions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  current_version:
+                    type: string
+                    example: "rules-v2.3.1"
+                  versions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RuleVersion'
+              example:
+                current_version: "rules-v2.3.1"
+                versions:
+                  - version: "rules-v2.3.1"
+                    released_at: "2025-10-01T10:00:00Z"
+                    status: "ACTIVE"
+                    total_rules: 47
+                    changes_summary: "Added thalassemia screening rules, updated iron deficiency thresholds"
+                  - version: "rules-v2.3.0"
+                    released_at: "2025-09-15T10:00:00Z"
+                    status: "DEPRECATED"
+                    total_rules: 45
+                    changes_summary: "Initial production release"
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /health:
+    get:
+      summary: Health check endpoint
+      description: |
+        Class C service health check.
+
+        **Monitored by:** Kubernetes liveness/readiness probes.
+
+      operationId: healthCheck
+      tags:
+        - Health
+
+      security: []
+
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - timestamp
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy]
+                  timestamp:
+                    type: string
+                    format: date-time
+                  rules_version:
+                    type: string
+                  safety_class:
+                    type: string
+                    enum: [C]
+              example:
+                status: healthy
+                timestamp: "2025-10-08T15:32:10Z"
+                rules_version: "rules-v2.3.1"
+                safety_class: "C"
+
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /ready:
+    get:
+      summary: Readiness probe
+      description: |
+        Kubernetes readiness probe.
+
+        Returns 200 only if service is ready to accept traffic (rules loaded, database connected).
+
+      operationId: readinessCheck
+      tags:
+        - Health
+
+      security: []
+
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ready]
+                  rules_loaded:
+                    type: boolean
+                  database_connected:
+                    type: boolean
+              example:
+                status: ready
+                rules_loaded: true
+                database_connected: true
+
+        '503':
+          description: Service not ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [not_ready]
+                  rules_loaded:
+                    type: boolean
+                  database_connected:
+                    type: boolean
+              example:
+                status: not_ready
+                rules_loaded: false
+                database_connected: true
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token with `scope: clinical_analysis` required.
+        Only Validation Service has valid tokens for this endpoint.
+
+  schemas:
+    ValidatedCBCData:
+      type: object
+      required:
+        - case_id
+        - order_id
+        - patient
+        - hemogram
+        - validation_metadata
+      properties:
+        case_id:
+          type: string
+          format: uuid
+        order_id:
+          type: string
+        patient:
+          $ref: '#/components/schemas/PatientProfile'
+        hemogram:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ValidatedParameter'
+        complementary:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ValidatedParameter'
+        validation_metadata:
+          $ref: '#/components/schemas/ValidationMetadata'
+
+    PatientProfile:
+      type: object
+      required:
+        - age
+        - sex
+      properties:
+        age:
+          type: integer
+          minimum: 0
+          maximum: 120
+        sex:
+          type: string
+          enum: [M, F, Other]
+        pregnancy:
+          type: boolean
+
+    ValidatedParameter:
+      type: object
+      required:
+        - value
+        - unit
+        - loinc_code
+        - reference_range
+        - flag
+      properties:
+        value:
+          type: number
+        unit:
+          type: string
+        loinc_code:
+          type: string
+        reference_range:
+          type: object
+          required:
+            - low
+            - high
+          properties:
+            low:
+              type: number
+            high:
+              type: number
+        flag:
+          type: string
+          enum: [CRITICAL_LOW, LOW, NORMAL, HIGH, CRITICAL_HIGH]
+
+    ValidationMetadata:
+      type: object
+      required:
+        - validated_at
+        - validation_version
+        - quality_score
+      properties:
+        validated_at:
+          type: string
+          format: date-time
+        validation_version:
+          type: string
+        quality_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Data quality score (1.0 = perfect quality)
+
+    RulesExecutionResult:
+      type: object
+      required:
+        - case_id
+        - executed_at
+        - rules_version
+        - total_rules_evaluated
+        - triggered_rules
+        - differential_diagnoses
+        - alert_level
+      properties:
+        case_id:
+          type: string
+          format: uuid
+        executed_at:
+          type: string
+          format: date-time
+        rules_version:
+          type: string
+        total_rules_evaluated:
+          type: integer
+          minimum: 0
+        triggered_rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/TriggeredRule'
+        differential_diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/DifferentialDiagnosis'
+          minItems: 1
+        alert_level:
+          type: string
+          enum: [CRITICAL, HIGH, MEDIUM, LOW, NONE]
+        recommended_actions:
+          type: array
+          items:
+            type: string
+        next_step:
+          $ref: '#/components/schemas/NextStep'
+
+    TriggeredRule:
+      type: object
+      required:
+        - rule_id
+        - rule_name
+        - condition
+        - triggered
+        - severity
+      properties:
+        rule_id:
+          type: string
+        rule_name:
+          type: string
+        condition:
+          type: string
+          description: Logical condition that triggered the rule
+        triggered:
+          type: boolean
+        severity:
+          type: string
+          enum: [CRITICAL, HIGH, MEDIUM, LOW]
+        diagnosis:
+          type: string
+        clinical_rationale:
+          type: string
+        suggested_tests:
+          type: array
+          items:
+            type: string
+        supporting_parameters:
+          type: array
+          items:
+            type: string
+
+    DifferentialDiagnosis:
+      type: object
+      required:
+        - rank
+        - diagnosis
+        - confidence
+      properties:
+        rank:
+          type: integer
+          minimum: 1
+        diagnosis:
+          type: string
+        confidence:
+          type: string
+          enum: [HIGH, MEDIUM, LOW]
+        supporting_rules:
+          type: array
+          items:
+            type: string
+        clinical_rationale:
+          type: string
+
+    NextStep:
+      type: object
+      required:
+        - service
+        - endpoint
+      properties:
+        service:
+          type: string
+          enum: [hemoai-inference]
+        endpoint:
+          type: string
+        payload_summary:
+          type: string
+
+    RuleVersion:
+      type: object
+      required:
+        - version
+        - released_at
+        - status
+        - total_rules
+      properties:
+        version:
+          type: string
+        released_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [ACTIVE, DEPRECATED, ARCHIVED]
+        total_rules:
+          type: integer
+        changes_summary:
+          type: string
+
+    ProblemDetail:
+      type: object
+      description: RFC 7807 Problem Details
+      required:
+        - type
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri
+        trace_id:
+          type: string
+          format: uuid
+
+  responses:
+    BadRequest:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+          example:
+            type: "https://api.hemodoctor.com/errors/validation-error"
+            title: "Invalid validated CBC data"
+            status: 400
+            detail: "Missing required field: validation_metadata"
+            trace_id: "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+
+    Unauthorized:
+      description: Authentication required or invalid token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+          example:
+            type: "https://api.hemodoctor.com/errors/authentication-required"
+            title: "Authentication required"
+            status: 401
+            detail: "Missing or invalid JWT token with scope: clinical_analysis"
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+          example:
+            type: "https://api.hemodoctor.com/errors/internal-error"
+            title: "Rule execution error"
+            status: 500
+            detail: "Exception in rule RULE-ANEMIA-CRITICAL-001"
+            trace_id: "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+
+    ServiceUnavailable:
+      description: Service temporarily unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+          example:
+            type: "https://api.hemodoctor.com/errors/service-unavailable"
+            title: "Service unavailable"
+            status: 503
+            detail: "Rules not loaded (container restarting)"

@@ -1,0 +1,27 @@
+documento_tipo,versao,data_arquivo,path_fonte,dossie_origem,path_destino,status_consolidacao,versao_canonica,prioridade,observacoes
+SRS-001,v1.0,2025-09-19,./SRS-001_v1.0_20250919.md,ROOT,02_CONTROLES_DESIGN/SRS/SRS-001_v1.0_OFICIAL.md,pending,AVALIAR,ALTA,Arquivo raiz - verificar se é mais completo
+SRS-001,v1.0,unknown,./Hemodoctor_SaMD_gpt_v1.2/SRS-001_v1.0.docx,Hemodoctor_SaMD_gpt_v1.2,02_CONTROLES_DESIGN/SRS/,pending,false,MEDIA,Formato DOCX - converter para MD
+SRS-001,v1.0,unknown,./Projeto/SRS-001_ Especificação de Requisitos de Software v1.0.docx,Projeto,02_CONTROLES_DESIGN/SRS/,pending,false,MEDIA,Formato DOCX - comparar com outras versões
+SRS-001,v0.0,2025-09-16,./hemodoctor_docs_compilados/SRS-001_Software_Requirements_v0.0_20250916.md,hemodoctor_docs_compilados,02_CONTROLES_DESIGN/SRS/,pending,false,ALTA,v0.0 mas contém declaração Classe C crítica
+SDD-001,v1.0,2025-09-19,./SDD-001_v1.0_20250919.md,ROOT,02_CONTROLES_DESIGN/SDD/SDD-001_v1.0_OFICIAL.md,pending,AVALIAR,ALTA,Arquivo raiz - verificar diagramas
+SDD-001,v1.0,unknown,./Hemodoctor_SaMD_gpt_v1.2/SDD-001_v1.0.docx,Hemodoctor_SaMD_gpt_v1.2,02_CONTROLES_DESIGN/SDD/,pending,false,MEDIA,Formato DOCX - converter para MD
+SDD-001,v1.0,unknown,./Projeto/SDD-001_ Documento de Design de Software v1.0.docx,Projeto,02_CONTROLES_DESIGN/SDD/,pending,false,MEDIA,Formato DOCX - comparar com outras versões
+TEC-001,v1.0,unknown,./Hemodoctor_SaMD_gpt_v1.2/TEC-001_v1.0.docx,Hemodoctor_SaMD_gpt_v1.2,02_CONTROLES_DESIGN/TEC/TEC-001_v1.0_OFICIAL.md,pending,AVALIAR,ALTA,Plano de desenvolvimento - converter DOCX
+TEC-001,v1.0,unknown,./Projeto/TEC-001_ Plano de Desenvolvimento de Software (SDP) v1.0.docx,Projeto,02_CONTROLES_DESIGN/TEC/,pending,false,ALTA,Comparar build procedures entre versões
+SEC-001,v1.0,2025-09-19,./SEC-001_v1.0_20250919.md,ROOT,09_CYBERSECURITY/SEC/SEC-001_v1.0_OFICIAL.md,pending,AVALIAR,ALTA,Cybersecurity §524B - arquivo raiz
+SEC-001,v1.0,unknown,./Hemodoctor_SaMD_gpt_v1.2/SEC-001_v1.0.docx,Hemodoctor_SaMD_gpt_v1.2,09_CYBERSECURITY/SEC/,pending,false,MEDIA,DOCX - comparar SBOM
+SEC-001,v1.0,unknown,./Projeto/SEC-001_ DPIA_LGPD e Cibersegurança v1.0.docx,Projeto,09_CYBERSECURITY/SEC/,pending,false,MEDIA,Inclui DPIA/LGPD - importante
+PMS-001,v1.0,unknown,./Hemodoctor_SaMD_gpt_v1.2/PMS-001_v1.0.docx,Hemodoctor_SaMD_gpt_v1.2,07_POS_MERCADO/PMS/PMS-001_v1.0_OFICIAL.md,pending,AVALIAR,ALTA,Post-Market Surveillance
+PMS-001,v1.0,unknown,./Projeto/PMS-001_ Plano de Pós-Mercado e Tecnovigilância v1.0.docx,Projeto,07_POS_MERCADO/PMS/,pending,false,ALTA,Comparar SLAs entre versões
+PMS-001,v1.1,unknown,./HemoDoctor_ANVISA_Submission_Package_20251009/docs_anvisa_structured/07_post_market/pms_plan/PMS-001_PostMarket_Surveillance_v1.1.md,ANVISA_Submission_Package,07_POS_MERCADO/PMS/,pending,true,ALTA,v1.1 mais recente - provável canônica
+PMS-001,v0.1,2025-09-16,./HemoDoctor_ANVISA_Submission_Package_20251009/docs_anvisa_structured/07_post_market/pms_plan/PMS-001_SLA_Addendum_v0.1_20250915.md,ANVISA_Submission_Package,07_POS_MERCADO/PMS/,pending,false,MEDIA,Addendum de SLAs - complementar
+PMS-001,v1.0,unknown,./HemoDoctor_ANVISA_Submission_Package_20251009/docs_anvisa_structured/07_post_market/pms_plan/PMS-001_PSUR_Template_ClassIII_v1.pdf,ANVISA_Submission_Package,07_POS_MERCADO/PMS/,pending,false,MEDIA,Template PSUR Classe III
+PMS-001,v1.0,unknown,./HemoDoctor_ANVISA_Submission_Package_20251009/docs_anvisa_structured/07_post_market/pms_plan/PMS-001_PSUR_Workbook_ClassIII_v1.xlsx,ANVISA_Submission_Package,07_POS_MERCADO/PMS/,pending,false,MEDIA,Workbook PSUR
+CER-001,v1.1,unknown,./Projeto/CER-001_ Relatório de Avaliação Clínica (SaMD) v1.1.docx,Projeto,05_AVALIACAO_CLINICA/CER/CER-001_v1.1_OFICIAL.md,pending,AVALIAR,CRITICA,RDC 657 - precisa validação
+IFU-001,v1.0,2025-09-17,./HemoDoctor_ANVISA_Submission_Package_20251009/docs_anvisa_structured/08_labeling/ifu/IFU-001_EN_US_v1.0_A4_20250917.pdf,ANVISA_Submission_Package,08_ROTULAGEM/IFU/IFU-001_EN_US_v1.0_OFICIAL.pdf,pending,true,ALTA,IFU inglês oficial v1.0
+IFU-001,v1.0,2025-09-17,./HemoDoctor_ANVISA_Submission_Package_20251009/docs_anvisa_structured/08_labeling/ifu/IFU-001_PT_BR_v1.0_A4_20250917.pdf,ANVISA_Submission_Package,08_ROTULAGEM/IFU/IFU-001_PT_BR_v1.0_OFICIAL.pdf,pending,true,ALTA,IFU português oficial v1.0
+IFU-001,v0.5,2025-09-17,./HemoDoctor_ANVISA_Submission_Package_20251009/docs_anvisa_structured/08_labeling/ifu/IFU-001_PT_BR_v0.5_A4_20250917.pdf,ANVISA_Submission_Package,08_ROTULAGEM/IFU/,pending,false,BAIXA,Versão anterior
+IFU-001,v1.2,unknown,./HemoDoctor_ANVISA_Submission_Package_20251009/docs_anvisa_structured/08_labeling/ifu/IFU-001_pt_v1.2.md,ANVISA_Submission_Package,08_ROTULAGEM/IFU/,pending,false,MEDIA,v1.2 em MD - verificar se é mais recente
+IFU-001,v1.2,unknown,./HemoDoctor_ANVISA_Submission_Package_20251009/docs_anvisa_structured/08_labeling/ifu/IFU-001_en_v1.2.md,ANVISA_Submission_Package,08_ROTULAGEM/IFU/,pending,false,MEDIA,v1.2 em MD - verificar se é mais recente
+TRC-001,v1.0,2025-09-17,./hemodoctor_docs_compilados/TRC-001_Traceability_Matrix_v1.0_20250917.csv,hemodoctor_docs_compilados,06_RASTREABILIDADE/TRC/TRC-001_v1.0_OFICIAL.csv,pending,true,CRITICA,18 requisitos 100% rastreados
+DMR_MANIFEST,final,2025-09-16,./hemodoctor_docs_compilados/DMR_MANIFEST_final_20250916.json,hemodoctor_docs_compilados,01_REGULATORIO/DMR/DMR_MANIFEST_OFICIAL.json,pending,true,CRITICA,25 arquivos + SHA256 checksums
