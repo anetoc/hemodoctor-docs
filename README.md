@@ -1,119 +1,239 @@
-# HemoDoctor - Sistema de Documentação Regulatória para Oncologia Hematológica
+# HemoDoctor - Sistema de Documentação Regulatória para Dispositivos Médicos
 
 ## 📋 Visão Geral
 
-HemoDoctor é um sistema completo de documentação técnica e regulatória para dispositivos médicos na área de oncologia hematológica, especificamente focado em neoplasias hematológicas.
+HemoDoctor é um sistema completo de documentação técnica e regulatória para dispositivos médicos SaMD (Software as a Medical Device) na área de oncologia hematológica, desenvolvido em conformidade com normas ANVISA, FDA e IMDRF.
 
-## 🎯 Características Principais
+## 🎯 Objetivo
 
-- **Scout Clinical Trials**: Sistema integrado para busca e análise de ensaios clínicos
-- **Validação Automática**: Validação inteligente de dados de NCTs com ClinicalTrials.gov
-- **Processamento de PDFs**: Análise local e segura de protocolos (Olympia-4)
-- **Integração N8N**: Workflows automatizados no N8N IDOR.org
-- **Sistema de Agentes**: Múltiplos agentes especializados para diferentes aspectos regulatórios
+Prover documentação técnica completa e rastreável para submissão regulatória de dispositivos médicos de Classe III focados em suporte à decisão clínica em neoplasias hematológicas.
 
 ## 🏗️ Estrutura do Projeto
 
 ### AUTHORITATIVE_BASELINE/
-Base autoritativa de documentação regulatória organizada em 10 módulos:
+Base autoritativa de documentação regulatória organizada em 10 módulos conforme requisitos ANVISA/FDA:
 
-1. **00_INDICE_GERAL**: Índices e documentação geral
-2. **01_REGULATORIO**: Certificações, declarações, DMR, QMS
-3. **02_CONTROLES_DESIGN**: Arquitetura, API specs, SDD, SRS, TEC
-4. **03_GESTAO_RISCO**: Análises de risco, matrizes, RMP
-5. **04_VERIFICACAO_VALIDACAO**: Testes, cobertura, relatórios
-6. **05_AVALIACAO_CLINICA**: CER, evidências clínicas, literatura
-7. **06_RASTREABILIDADE**: Matrizes de rastreabilidade
-8. **07_POS_MERCADO**: PMS, vigilância pós-mercado
-9. **08_ROTULAGEM**: IFU, labels
-10. **09_CYBERSECURITY**: SBOM, análises de segurança
-11. **10_SOUP**: Análise de Software of Unknown Provenance
+#### **00_INDICE_GERAL**
+- Índices mestres
+- Checksums de validação
+- Relatórios de consolidação
+- Estratégia de consolidação
+
+#### **01_REGULATORIO**
+- **Certificados**: Certificações ISO 13485, ISO 27001
+- **Declarações**: DoC (Declaration of Conformity)
+- **DMR** (Device Master Record): Manifesto completo do dispositivo
+- **QMS**: Sistema de Gestão da Qualidade
+
+#### **02_CONTROLES_DESIGN**
+- **API_SPECS**: 10 especificações OpenAPI/AsyncAPI
+  - API Gateway, Ingestion Service, Validation Service
+  - Rules Engine, HemoAI Inference, Alert Orchestrator
+  - Audit Service, Model Manager, UI Backend
+  - Async Events (mensageria)
+- **Arquitetura**: Diagramas de arquitetura do sistema
+- **SDD** (Software Design Document): 3 versões (v1.0, v1.1, v2.0)
+- **SRS** (Software Requirements Specification): 5 versões até v2.2
+- **TEC** (Technical File): Plano de desenvolvimento de software
+
+#### **03_GESTAO_RISCO**
+- **Análises**: Análises de risco detalhadas
+- **Matrizes**: Matrizes de risco
+- **RMP** (Risk Management Plan): Plano de gestão de riscos ISO 14971
+
+#### **04_VERIFICACAO_VALIDACAO**
+- **Cobertura**: Relatórios de cobertura de testes
+- **TestReports**: Relatórios de testes executados
+- **TST** (Test Specification): Especificações de teste
+- **VVP** (Verification & Validation Plan): Planos V&V
+
+#### **05_AVALIACAO_CLINICA**
+- **CER** (Clinical Evaluation Report): Avaliação clínica v1.2
+- **Evidências**: Evidências clínicas coletadas
+- **Literatura**: Revisão sistemática de literatura
+
+#### **06_RASTREABILIDADE**
+- **Matrizes**: Matrizes de rastreabilidade
+- **TRC**: Matriz de rastreabilidade completa (v1.0, v2.0, v2.1)
+  - Requisitos → Design → Testes → Riscos
+
+#### **07_POS_MERCADO**
+- **PMS** (Post-Market Surveillance): Vigilância pós-mercado
+- **Vigilância**: Planos de vigilância
+
+#### **08_ROTULAGEM**
+- **IFU** (Instructions For Use): 
+  - IFU-001_EN_US_v1.0_OFICIAL.pdf (Inglês)
+  - IFU-001_PT_BR_v1.0_OFICIAL.pdf (Português)
+- **Labels**: Rótulos do produto
+
+#### **09_CYBERSECURITY**
+- **SBOM** (Software Bill of Materials): Lista completa de componentes
+- **SEC**: Análise de segurança cibernética
+- **VEX** (Vulnerability Exploitability eXchange): Análise de vulnerabilidades
+
+#### **10_SOUP**
+- **SOUP-001**: Análise de Software of Unknown Provenance
+  - Componentes de terceiros
+  - Análise de riscos de SOUP
+
+## 🤖 Sistema de Agentes Especializados
 
 ### HEMODOCTOR_AGENTES/
-Sistema de agentes especializados:
 
-- **anvisa-regulatory-specialist**: Especialista em regulamentação ANVISA
-- **biostatistics-specialist**: Análises bioestatísticas
-- **cep-protocol-specialist**: Protocolos CEP
-- **clinical-evidence-specialist**: Evidências clínicas
-- **documentation-finalization-specialist**: Finalização de documentação
-- **external-regulatory-consultant**: Consultoria regulatória externa
+Sistema multi-agente para automação de processos regulatórios:
+
+#### **Agentes Regulatórios**
+- **anvisa-regulatory-specialist**: Especialista em regulamentação ANVISA RDC 185/2001, RDC 657/2022
+- **external-regulatory-consultant**: Consultoria FDA, MDR europeu, IMDRF
+- **regulatory-review-specialist**: Revisão de submissões regulatórias
+
+#### **Agentes Técnicos**
+- **software-architecture-specialist**: Arquitetura de software IEC 62304
+- **risk-management-specialist**: Gestão de riscos ISO 14971
 - **hematology-technical-specialist**: Especialista técnico em hematologia
-- **hemodoctor-orchestrator**: Orquestrador do sistema
-- **quality-systems-specialist**: Sistemas de qualidade
-- **regulatory-review-specialist**: Revisão regulatória
-- **risk-management-specialist**: Gestão de riscos
-- **software-architecture-specialist**: Arquitetura de software
-- **traceability-specialist**: Rastreabilidade
+
+#### **Agentes de Qualidade**
+- **quality-systems-specialist**: Sistemas de qualidade ISO 13485
+- **traceability-specialist**: Rastreabilidade de requisitos
+- **documentation-finalization-specialist**: Finalização de documentação
+
+#### **Agentes Clínicos**
+- **clinical-evidence-specialist**: Avaliação de evidências clínicas
+- **cep-protocol-specialist**: Protocolos para Comitê de Ética
+- **biostatistics-specialist**: Análises bioestatísticas
+
+#### **Orquestração**
+- **hemodoctor-orchestrator**: Coordenador central do sistema
+
+Cada agente possui:
+- `CLAUDE.md`: Instruções específicas do agente
+- `commands.json`: Comandos disponíveis
+- Scripts Python quando aplicável
+
+## 📊 Metodologia BMAD
 
 ### BMAD-METHOD/
-Metodologia BMAD (Biomedical Automated Documentation) com ferramentas e templates.
+Biomedical Automated Documentation Method - Framework para documentação automatizada:
 
-## 🚀 Sistema Scout Clinical Trials
+- Templates de documentos regulatórios
+- Ferramentas de validação
+- Padrões de rastreabilidade
+- Guias de conformidade
 
-### Funcionalidades
-- ✅ Chat AI com reconhecimento de linguagem natural
-- ✅ Extração automática de entidades (idade, diagnóstico)
-- ✅ Análise de compatibilidade paciente-estudo
-- ✅ Processamento seguro de PDFs localmente
-- ✅ Validação automática com ClinicalTrials.gov API
-- ✅ Score de qualidade (0-100) com bloqueio automático < 30
-- ✅ 0% chance de NCTs inválidos no workflow
+## 📈 Status do Projeto
 
-### Endpoints Ativos (N8N IDOR.org)
-- `ask-ai`: Chat inteligente em português
-- `analyze-pdf`: Análise de protocolos
-- `scout-clinical-trials`: Busca de ensaios clínicos
+### ✅ Documentos Completos (Status: SUBMISSION READY)
 
-### Status de Validação
-71% dos estudos confirmados via API ClinicalTrials.gov:
+- [x] DMR v2.0 - Device Master Record
+- [x] SRS v2.2 - Software Requirements Specification
+- [x] SDD v2.0 - Software Design Document
+- [x] TRC v2.1 - Traceability Matrix (100% coverage)
+- [x] RMP v1.0 - Risk Management Plan
+- [x] CER v1.2 - Clinical Evaluation Report (validado)
+- [x] TST v1.0 - Test Specification
+- [x] PMS v1.1 - Post-Market Surveillance
+- [x] SOUP v1.0 - Software of Unknown Provenance Analysis
+- [x] SEC v1.0 - Cybersecurity Analysis
+- [x] SBOM v1.0 - Software Bill of Materials
+- [x] IFU v1.0 - Instructions For Use (PT-BR e EN-US)
 
-**Confirmados:**
-- NCT06500884 (Talquetamab MonumenTAL)
-- NCT05083169 (Teclistamab MajesTEC)
-- NCT05317416 (Elranatamab MagnetisMM)
-- NCT02303821 (Carfilzomib ALL)
+### 📝 Relatórios Disponíveis
 
-## 📊 Relatórios e Análises
-
-O projeto inclui diversos relatórios de análise:
-- Análise de agentes do sistema
-- Comparação de migração
+- Análise completa de agentes
+- Comparação de migrações
 - Auditoria do sistema
+- Dashboard de agentes (HTML)
 - Análise de conhecimento do projeto
-- Dashboard de agentes
+- Relatórios de consolidação
 
-## 🔒 Segurança e Privacidade
+## 🔧 Ferramentas e Scripts
 
-- Processamento local de documentos sensíveis
-- Análise segura de PDFs
-- Sem exposição de dados de pacientes
-- Conformidade com regulamentações ANVISA
+### Scripts de Migração
+- `migrate_p0_files.sh`: Migração arquivos prioridade 0
+- `migrate_p1_files.sh`: Migração arquivos prioridade 1
+- `validate_p0.sh`: Validação P0
+- `validate_p1.sh`: Validação P1
+
+### Scripts de Análise
+- `analyze_hemodoctor_agents.js`: Análise do sistema de agentes
+- `analyze_project_knowledge.js`: Análise de conhecimento
+- `analyze_command_duplicates.js`: Análise de duplicações
+- `compare_migration.py`: Comparação de migrações
+
+### Scripts de Organização
+- `reorganize_repository_v2.0.sh`: Reorganização v2.0
+- `install-ceo-consultant.sh`: Instalação do CEO Consultant
 
 ## 🏥 Contexto Clínico
 
-Desenvolvido no IDOR-SP (Instituto D'Or de Pesquisa e Ensino) com foco em:
-- Mieloma Múltiplo
-- Linfomas
-- Leucemias
-- Outras neoplasias hematológicas
+### Área de Aplicação
+- **Especialidade**: Hematologia e Oncologia Hematológica
+- **Indicações Clínicas**:
+  - Mieloma Múltiplo
+  - Linfomas (Hodgkin e Não-Hodgkin)
+  - Leucemias (Agudas e Crônicas)
+  - Síndromes Mielodisplásicas
+  - Outras neoplasias hematológicas
 
-## 👥 Principais Investigadores
+### Classe do Dispositivo
+- **Classificação**: Classe III (Alto Risco)
+- **Tipo**: SaMD - Software as a Medical Device
+- **Função**: Suporte à decisão clínica
 
-- Dr. Abel Costa (IDOR-SP)
-- Dr. Eduardo Rego
+## 📚 Referências Científicas
 
-## 📝 Licença
+### HEMODOCTOR_REFERENCIAS/
 
-Este é um projeto de documentação técnica e regulatória médica. Todos os direitos reservados.
+#### Artigos Científicos
+- POC JAMIA 5.1 - Proof of Concept publicado
+- Dados de coorte
+- Métricas primárias e secundárias
+- Relatórios de validação
 
-## 🔗 Links Importantes
+#### Apresentações
+- HemoDoctor.pptx - Apresentação principal
+- Pacote de Auditoria e Prontidão para Submissão
 
-- N8N IDOR: https://n8n.idor.org
-- Workflow ID: dXlTWy6FOjwUC6R4
+## 🔒 Conformidade Regulatória
+
+### Normas Aplicadas
+- ✅ **ANVISA**: RDC 185/2001, RDC 657/2022
+- ✅ **ISO 13485**: Sistema de Gestão da Qualidade
+- ✅ **ISO 14971**: Gestão de Riscos
+- ✅ **IEC 62304**: Software de Dispositivo Médico
+- ✅ **ISO 27001**: Segurança da Informação
+- ✅ **IMDRF**: SaMD Guidelines
+
+### Segurança e Privacidade
+- Conformidade LGPD
+- Análise de cybersecurity completa
+- SBOM e VEX atualizados
+- Auditoria de componentes SOUP
+
+## 👥 Instituição
+
+**IDOR-SP** (Instituto D'Or de Pesquisa e Ensino)
+- Desenvolvimento institucional
+- Validação clínica em ambiente real
+- Conformidade ética (CEP)
+
+## 📦 Versão Consolidada
+
+Disponível versão empacotada:
+- `HEMODOCTOR_CONSOLIDADO_v2.0_20251010.zip`
+- `HEMODOCTOR_CONSOLIDADO_v2.0_20251010/` (descompactado)
+
+## 📄 Licença
+
+Este é um projeto de documentação técnica e regulatória de dispositivo médico. Todos os direitos reservados.
+
+## 📞 Contato
+
+Para questões sobre o projeto ou submissões regulatórias, entre em contato através dos canais oficiais do IDOR-SP.
 
 ---
 
-**Status**: Sistema 100% funcional e deployado
+**Status Atual**: ✅ SUBMISSION READY - Pronto para submissão ANVISA
 **Última Atualização**: Outubro 2025
-
+**Versão da Documentação**: v2.0
