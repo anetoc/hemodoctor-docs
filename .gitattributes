@@ -1,0 +1,213 @@
+# =========================================
+# HemoDoctor - Medical Device Documentation
+# Git Attributes Configuration
+# =========================================
+# 
+# Purpose: Ensure consistent file handling across different
+# operating systems and Git clients for regulatory compliance
+#
+# Last Updated: 2025-10-12
+# =========================================
+
+# =====================================
+# Auto detect
+# =====================================
+* text=auto
+
+# =====================================
+# Line Endings
+# =====================================
+# Enforce Unix-style line endings for better cross-platform compatibility
+*.md text eol=lf
+*.txt text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.xml text eol=lf
+*.csv text eol=lf
+
+# Source code
+*.js text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Configuration files
+*.conf text eol=lf
+*.config text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.editorconfig text eol=lf
+
+# =====================================
+# Binary Files (No EOL conversion)
+# =====================================
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.webp binary
+
+# Documents
+*.pdf binary
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary
+*.ppt binary
+*.pptx binary
+
+# Archives
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+*.rar binary
+
+# =====================================
+# Diff Configuration
+# =====================================
+# Enhanced diffs for specific file types
+
+# Markdown files - Show full context
+*.md diff=markdown
+
+# JSON - Pretty print in diffs
+*.json diff
+
+# CSV - Treat as text for better diffs
+*.csv diff
+
+# YAML - Better diff display
+*.yaml diff
+*.yml diff
+
+# =====================================
+# Merge Strategies
+# =====================================
+# Critical files should NOT be auto-merged
+
+# Official regulatory documents - Manual merge only
+AUTHORITATIVE_BASELINE/**/*.md merge=ours
+AUTHORITATIVE_BASELINE/**/*.pdf binary merge=ours
+
+# Version control files
+CHANGELOG.md merge=union
+
+# =====================================
+# Export-ignore (files not in archive/release)
+# =====================================
+# These files won't be included in git archive exports
+
+.gitignore export-ignore
+.gitattributes export-ignore
+.github/ export-ignore
+.vscode/ export-ignore
+.editorconfig export-ignore
+
+# Development scripts (not for distribution)
+scripts/ export-ignore
+docs/archive/ export-ignore
+
+# Test and temporary files
+*.tmp export-ignore
+*.bak export-ignore
+*.backup export-ignore
+temp/ export-ignore
+tmp/ export-ignore
+
+# Draft documents (not official)
+*DRAFT*.md export-ignore
+*WIP*.md export-ignore
+
+# =====================================
+# Language Statistics
+# =====================================
+# Help GitHub understand the repository composition
+
+# Documentation languages
+*.md linguist-documentation=true
+*.txt linguist-documentation=true
+
+# Generated files (exclude from language stats)
+docs/reports/*.md linguist-generated=true
+*RELATORIO*.md linguist-generated=true
+*REPORT*.md linguist-generated=true
+
+# Configuration files
+*.json linguist-language=JSON
+*.yaml linguist-language=YAML
+*.yml linguist-language=YAML
+
+# =====================================
+# Large File Support (LFS) - Optional
+# =====================================
+# Uncomment if using Git LFS for large files
+
+# *.pdf filter=lfs diff=lfs merge=lfs -text
+# *.zip filter=lfs diff=lfs merge=lfs -text
+# *.pptx filter=lfs diff=lfs merge=lfs -text
+
+# =====================================
+# Medical Device Specific
+# =====================================
+
+# Official regulatory documents - Critical
+# These files require special attention
+AUTHORITATIVE_BASELINE/**/*_OFICIAL.md diff=patience merge=ours
+AUTHORITATIVE_BASELINE/**/*.pdf binary diff=none
+
+# Traceability matrices - Show all changes
+*.csv text eol=lf diff
+
+# API Specifications
+*.yaml text eol=lf diff
+
+# Risk management documents - Manual review required
+*RMP*.md merge=ours
+*RISK*.md merge=ours
+
+# Test specifications - Careful merge
+*TST*.md merge=ours
+*TEST*.md merge=ours
+
+# =====================================
+# Security & Compliance
+# =====================================
+
+# Certificates and keys - Never auto-merge
+*.pem binary merge=ours
+*.key binary merge=ours
+*.cer binary merge=ours
+*.crt binary merge=ours
+*.p12 binary merge=ours
+
+# SBOM and security files - Manual review
+*SBOM*.json diff merge=ours
+*VEX*.json diff merge=ours
+*SEC*.md diff merge=ours
+
+# =====================================
+# Submodules
+# =====================================
+# BMAD-METHOD is a separate repository
+# Handled by .gitmodules
+
+# =====================================
+# END OF .GITATTRIBUTES
+# =====================================
+
+# NOTE: This configuration ensures:
+# 1. Consistent line endings across platforms
+# 2. Proper handling of binary files
+# 3. Protected merge strategies for critical documents
+# 4. Clean export archives for submissions
+# 5. Accurate language statistics
+#
+# DO NOT MODIFY without regulatory team approval.
+#
+# Questions? Contact: quality-hemodoctor@idor.org
+

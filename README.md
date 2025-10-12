@@ -147,23 +147,34 @@ Biomedical Automated Documentation Method - Framework para documentação automa
 - Análise de conhecimento do projeto
 - Relatórios de consolidação
 
-## 🔧 Ferramentas e Scripts
+## 📂 Documentação Adicional
 
-### Scripts de Migração
-- `migrate_p0_files.sh`: Migração arquivos prioridade 0
-- `migrate_p1_files.sh`: Migração arquivos prioridade 1
-- `validate_p0.sh`: Validação P0
-- `validate_p1.sh`: Validação P1
+### docs/
+Documentação adicional organizada:
+- **reports/**: Relatórios de análise, auditorias e avaliações
+- **archive/**: Documentos históricos e propostas implementadas
+- **ceo-consultant/**: Documentação do CEO Consultant Agent
 
-### Scripts de Análise
-- `analyze_hemodoctor_agents.js`: Análise do sistema de agentes
-- `analyze_project_knowledge.js`: Análise de conhecimento
-- `analyze_command_duplicates.js`: Análise de duplicações
-- `compare_migration.py`: Comparação de migrações
+### scripts/
+Scripts de utilidade consolidados:
+- **Migração**: `migrate_p0_files.sh`, `migrate_p1_files.sh`
+- **Validação**: `validate_p0.sh`, `validate_p1.sh`
+- **Análise**: `analyze_hemodoctor_agents.js`, `analyze_project_knowledge.js`
+- **Organização**: `reorganize_repository_v2.0.sh`
 
-### Scripts de Organização
-- `reorganize_repository_v2.0.sh`: Reorganização v2.0
-- `install-ceo-consultant.sh`: Instalação do CEO Consultant
+## 📋 Controle de Versão
+
+Para informações detalhadas sobre versionamento, histórico de mudanças e roadmap, consulte:
+
+📖 **[VERSION.md](VERSION.md)** - Controle completo de versões
+
+**Versão Atual**: `v2.0.0` (12 de Outubro de 2025)
+
+### Próximos Milestones
+- **v2.1.0** (19 Out): Submissão ao Comitê de Ética (CEP)
+- **v2.2.0** (26 Out): Completar Verificação e Validação
+- **v2.3.0** (2 Nov): Procedimentos de Pós-Mercado
+- **v3.0.0** (16 Nov): Submissão ANVISA Completa
 
 ## 🏥 Contexto Clínico
 
@@ -234,6 +245,7 @@ Para questões sobre o projeto ou submissões regulatórias, entre em contato at
 
 ---
 
-**Status Atual**: ✅ SUBMISSION READY - Pronto para submissão ANVISA
-**Última Atualização**: Outubro 2025
-**Versão da Documentação**: v2.0
+**Status Atual**: ✅ SUBMISSION READY - Pronto para submissão ANVISA  
+**Última Atualização**: 12 de Outubro de 2025  
+**Versão da Documentação**: v2.0.0  
+**Completude Geral**: 75% (8/10 módulos completos)
