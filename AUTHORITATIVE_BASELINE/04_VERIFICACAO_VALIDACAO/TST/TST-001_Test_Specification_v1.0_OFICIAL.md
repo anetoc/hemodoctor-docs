@@ -14,7 +14,7 @@
 ## 1. Introduction
 
 ### 1.1 Scope
-This Test Specification Document defines comprehensive test cases for **HemoDoctor SaMD Class C**, focusing on the 10 new functional requirements added in SRS-001 v1.1 (REQ-HD-006 to REQ-HD-015). These test cases ensure verification and validation compliance with IEC 62304 Class C requirements and ANVISA RDC 657/751 regulations.
+This Test Specification Document defines comprehensive test cases for **HemoDoctor SaMD Class C**, focusing on the 10 new functional requirements added in SRS-001 v1.0 (REQ-HD-006 to REQ-HD-015). These test cases ensure verification and validation compliance with IEC 62304 Class C requirements and ANVISA RDC 657/751 regulations.
 
 ### 1.2 Purpose
 - Define detailed test cases for systematic verification of new requirements
@@ -43,7 +43,7 @@ Per IEC 62304 §5.5-5.8, testing is organized in four levels:
 - **§5.8 Software Release Testing:** Pre-release regression testing of all CRITICAL/HIGH test cases
 
 ### 2.2 Test Coverage Targets
-- **Class C Components:** 100% requirement coverage (all 28 requirements in SRS-001 v1.1)
+- **Class C Components:** 100% requirement coverage (all 28 requirements in SRS-001 v1.0)
 - **Code Coverage:** Minimum 80% (target: 90% for Class C modules)
 - **Critical Paths:** 100% coverage (e.g., anemia detection, alert generation)
 
@@ -1605,10 +1605,10 @@ The following test cases were defined for REQ-HD-001 to REQ-HD-005 (documented i
 - `test_fhir_export.py` - TEST-HD-029 FHIR validation
 
 ### 8.3 References
-- **SRS-001 v1.1:** Software Requirements Specification
+- **SRS-001 v1.0:** Software Requirements Specification
 - **SDD-001:** Software Design Document
 - **RMP-001:** Risk Management Plan
-- **TRC-001 v1.1:** Traceability Matrix
+- **TRC-001 v1.0:** Traceability Matrix
 - **IFU-001:** Instructions for Use
 - **PMS-001:** Post-Market Surveillance Plan
 - **IEC 62304:2006/Amd 1:2015:** Medical device software lifecycle

@@ -1,20 +1,20 @@
 # TEC-002 — Risk Management File (RMF)
 
 **Código:** TEC-002
-**Versão:** v2.0 AUTHORITATIVE
-**Data:** 2025-10-08
-**Autores:** Risk Management Team | Abel Costa (Consolidation)
+**Versão:** v1.0
+**Data:** 2025-10-12
+**Autores:** Risk Management Team | Abel Costa
 **Revisores:** {Clinical Lead} | {Quality Manager} | {Security Officer}
 **Aprovadores:** {Regulatory Affairs} | {CEO}
-**Status:** QW-011 Consolidated - Ready for ANVISA Submission
+**Status:** OFICIAL - Primeira Submissão ANVISA
 **Confidencialidade:** Confidencial
 
 **CONSOLIDATION NOTE:**
 This document consolidates 36+ TEC-002 versions found across archive directories (fernanda v1.2, fernanda v1.1, paulo, carlos, etc.) into a single authoritative ISO 14971:2019-compliant baseline. Key enhancements:
 - Comprehensive hazard analysis (34 hazards: functional, ML-specific, cybersecurity, usability)
 - Integration of SEC-001 cybersecurity risks (RISK-HD-CYB-001 to RISK-HD-CYB-010)
-- New RISK-HD-016 pediatric misdiagnosis risk (from SRS-001 v2.1 REQ-HD-016)
-- Updated RISK-HD-001 performance timeout risk (from SRS-001 v2.1 NFR-001 P99 ≤5s)
+- New RISK-HD-016 pediatric misdiagnosis risk (from SRS-001 v1.0 REQ-HD-016)
+- Updated RISK-HD-001 performance timeout risk (from SRS-001 v1.0 NFR-001 P99 ≤5s)
 - Complete traceability matrix (REQ ↔ RISK ↔ TEST ↔ IFU ↔ PMS)
 - ISO 14971:2019 + AAMI TIR34971:2023 (AI/ML risk management) compliance
 - Residual risk analysis with ALARP justification
@@ -219,7 +219,7 @@ The following table documents **34 identified hazards** across all risk categori
 | **PERFORMANCE HAZARDS** |
 | **RISK-HD-PERF-001** | Latency timeout - **P99 latency >30s, no result returned** (UPDATED) | Network spike OR database overload → P99 latency exceeds 5s, escalates to 30s timeout → Clinician receives no HemoDoctor recommendation → Manual CBC interpretation (slower workflow, loss of CDSS benefit) | Delayed time-to-diagnosis (TTD) | **S2** | **P2** | **10** | **MEDIUM** |
 | **RISK-HD-PERF-002** | Database query performance - **Slow historical data retrieval** | Large patient history (10+ years of CBCs) → Database query timeout → Trend analysis unavailable | Minor harm (reduced functionality) | **S2** | **P2** | **10** | **MEDIUM** |
-| **PEDIATRIC-SPECIFIC HAZARDS (NEW - FROM SRS-001 v2.1 REQ-HD-016)** |
+| **PEDIATRIC-SPECIFIC HAZARDS (NEW - FROM SRS-001 v1.0 REQ-HD-016)** |
 | **RISK-HD-016** | Pediatric misdiagnosis - **Incorrect age classification or reference range application** | **SCENARIO A:** Age input error (12 months entered as 12 years) → Wrong reference range applied → False critical alert for physiologic infant anemia (Hb 10.5 g/dL flagged as critical using adult threshold 12 g/dL) → Unnecessary bone marrow biopsy <br><br> **SCENARIO B:** Physiologic variant NOT suppressed → Lymphocyte predominance in 2-year-old (65% lymphocytes) flagged as leukemia → Unnecessary oncology referral <br><br> **SCENARIO C:** Critical pediatric condition MISSED → Newborn severe anemia (Hb 9.0 g/dL, critical threshold <11.0) flagged as "borderline" using wrong adult threshold → Delayed transfusion | **Scenario A/B:** Moderate harm (unnecessary invasive procedures, family anxiety) <br><br> **Scenario C:** Serious harm (delayed critical treatment, risk of cardiac decompensation) | **S4** (worst case) | **P3** (age errors occasional) | **20** | **HIGH** |
 | **RISK-HD-017** | Adolescent sex divergence misapplication - **Wrong sex-specific reference range for 13-18y** | Male adolescent (16y, Hb 12.5 g/dL) flagged as anemic using female threshold (12.0-16.0) instead of male threshold (13.0-17.0) → Unnecessary iron studies | Minor harm (over-testing) | **S2** | **P2** | **10** | **MEDIUM** |
 | **ENVIRONMENTAL HAZARDS** |
@@ -509,7 +509,7 @@ After implementing risk controls, residual risks were re-evaluated:
 | v1.0 | 2025-09-17 | Risk Team | Added cybersecurity hazards (STRIDE), ALARP justification |
 | v1.1 | 2025-09-18 | Risk Team | Updated traceability matrix, added PMS integration |
 | v1.2 | 2025-09-19 | Risk Team | Final review before release |
-| **v2.0 AUTHORITATIVE** | **2025-10-08** | **Abel Costa (QW-011)** | **Consolidated 36+ archive versions: Added RISK-HD-016 pediatric misdiagnosis risk (from SRS-001 v2.1 REQ-HD-016), updated RISK-HD-PERF-001 with NFR-001 P99 ≤5s + 30s timeout, integrated 10 SEC-001 cybersecurity risks (RISK-HD-CYB-001 to CYB-010), comprehensive 34-hazard analysis, complete ISO 14971:2019 compliance, all residual risks ≤MEDIUM, ALARP justification for all MEDIUM risks, risk/benefit analysis demonstrates net clinical benefit, 100% traceability (REQ ↔ RISK ↔ TEST ↔ IFU ↔ PMS), ready for ANVISA submission** |
+| **v2.0 AUTHORITATIVE** | **2025-10-08** | **Abel Costa (QW-011)** | **Consolidated 36+ archive versions: Added RISK-HD-016 pediatric misdiagnosis risk (from SRS-001 v1.0 REQ-HD-016), updated RISK-HD-PERF-001 with NFR-001 P99 ≤5s + 30s timeout, integrated 10 SEC-001 cybersecurity risks (RISK-HD-CYB-001 to CYB-010), comprehensive 34-hazard analysis, complete ISO 14971:2019 compliance, all residual risks ≤MEDIUM, ALARP justification for all MEDIUM risks, risk/benefit analysis demonstrates net clinical benefit, 100% traceability (REQ ↔ RISK ↔ TEST ↔ IFU ↔ PMS), ready for ANVISA submission** |
 
 ---
 

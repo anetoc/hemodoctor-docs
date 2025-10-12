@@ -23,20 +23,27 @@
     "validation_reports": 7,
     "regulatory_index": 5
   },
-  "changes_from_v1": {
-    "updated_documents": [
-      "SRS-001 v1.0 -> v1.1",
-      "SDD-001 v1.0 -> v1.1",
-      "CER-001 v1.0 -> v1.2",
-      "TRC-001 v1.0 -> v2.0"
+  "standardization_note": {
+    "action": "Version Unification to v1.0",
+    "date": "2025-10-12",
+    "description": "All documents standardized to v1.0 OFICIAL for first ANVISA submission. Previous versions (v1.1, v1.2, v2.0, v2.1, v2.2) consolidated into unified baseline.",
+    "standardized_documents": [
+      "SRS-001: v2.2 -> v1.0 (consolidated pediatric requirements)",
+      "SDD-001: v2.0 -> v1.0 (consolidated design)",
+      "CER-001: v1.2 -> v1.0 (consolidated clinical evidence)",
+      "TRC-001: v2.1 -> v1.0 (consolidated traceability)",
+      "PMS-001: v1.1 -> v1.0",
+      "TEC-002: v2.0 -> v1.0"
     ],
-    "new_documents": [
-      "RMP-001 v1.0 (Risk Management Plan)",
-      "TST-001 v1.0 (Test Specification)",
-      "12 API Specification files",
-      "7 Validation and consolidation reports"
+    "documents_already_v1": [
+      "TEC-001 v1.0",
+      "RMP-001 v1.0",
+      "TST-001 v1.0",
+      "IFU-001 v1.0",
+      "SEC-001 v1.0",
+      "SOUP-001 v1.0"
     ],
-    "total_changes": 23
+    "total_official_documents": 14
   },
   "files": [
     {
@@ -57,14 +64,14 @@
       "description": "Software Requirements Specification - Functional and non-functional requirements"
     },
     {
-      "file_name": "SDD-001_Software_Design_v1.1_OFICIAL.md",
-      "path": "02_CONTROLES_DESIGN/SDD/SDD-001_Software_Design_v1.1_OFICIAL.md",
-      "sha256": "3bd38e28ba9e0e57759afc7b543e86707f3ca14baf2323a31ebfa3e8dda1651e",
-      "size_bytes": 34610,
+      "file_name": "SDD-001_Software_Design_v1.0_OFICIAL.md",
+      "path": "02_CONTROLES_DESIGN/SDD/SDD-001_Software_Design_v1.0_OFICIAL.md",
+      "sha256": "TO_BE_REGENERATED",
+      "size_bytes": 61440,
       "doc_id": "SDD-001",
-      "version": "v1.1",
-      "date": "2025-10-08",
-      "status": "UPDATED",
+      "version": "v1.0",
+      "date": "2025-10-12",
+      "status": "OFICIAL",
       "regulatory_class": "Class C",
       "category": "Core Technical",
       "traceability": [
@@ -125,14 +132,14 @@
       "description": "Test Specification - Unit, integration, and system test protocols"
     },
     {
-      "file_name": "CER-001_Clinical_Evaluation_Report_v1.2_OFICIAL.md",
-      "path": "05_AVALIACAO_CLINICA/CER/CER-001_Clinical_Evaluation_Report_v1.2_OFICIAL.md",
-      "sha256": "c567c4cd7bf111906fefc09ed9b79990f161b087761c2c47b08fb8a5cda3f399",
+      "file_name": "CER-001_Clinical_Evaluation_Report_v1.0_OFICIAL.md",
+      "path": "05_AVALIACAO_CLINICA/CER/CER-001_Clinical_Evaluation_Report_v1.0_OFICIAL.md",
+      "sha256": "TO_BE_REGENERATED",
       "size_bytes": 76414,
       "doc_id": "CER-001",
-      "version": "v1.2",
-      "date": "2025-10-08",
-      "status": "UPDATED",
+      "version": "v1.0",
+      "date": "2025-10-12",
+      "status": "OFICIAL",
       "regulatory_class": "Class C",
       "category": "Core Technical",
       "traceability": [
@@ -142,14 +149,14 @@
       "description": "Clinical Evaluation Report - Safety and performance evidence"
     },
     {
-      "file_name": "TRC-001_Traceability_Matrix_v2.0_OFICIAL.csv",
-      "path": "06_RASTREABILIDADE/TRC/TRC-001_Traceability_Matrix_v2.0_OFICIAL.csv",
-      "sha256": "76535ab1ace2759a148f01bd166646946ec5c01dfb1c82f681aa0b700bbbcdef",
-      "size_bytes": 5083,
+      "file_name": "TRC-001_Traceability_Matrix_v1.0_OFICIAL.csv",
+      "path": "06_RASTREABILIDADE/TRC/TRC-001_Traceability_Matrix_v1.0_OFICIAL.csv",
+      "sha256": "TO_BE_REGENERATED",
+      "size_bytes": 7168,
       "doc_id": "TRC-001",
-      "version": "v2.0",
-      "date": "2025-10-08",
-      "status": "UPDATED",
+      "version": "v1.0",
+      "date": "2025-10-12",
+      "status": "OFICIAL",
       "regulatory_class": "Class C",
       "category": "Core Technical",
       "traceability": [
@@ -159,14 +166,14 @@
       "description": "Traceability Matrix - Requirements-Design-Risk-Test linkages"
     },
     {
-      "file_name": "PMS-001_PostMarket_Surveillance_v1.1_OFICIAL.md",
-      "path": "07_POS_MERCADO/PMS/PMS-001_PostMarket_Surveillance_v1.1_OFICIAL.md",
-      "sha256": "d3541144ab44e0516c35a19dfcf73fb4c4c6d07f123024654c1276715b3acbf5",
+      "file_name": "PMS-001_PostMarket_Surveillance_v1.0_OFICIAL.md",
+      "path": "07_POS_MERCADO/PMS/PMS-001_PostMarket_Surveillance_v1.0_OFICIAL.md",
+      "sha256": "TO_BE_REGENERATED",
       "size_bytes": 1231,
       "doc_id": "PMS-001",
-      "version": "v1.1",
-      "date": "2025-10-08",
-      "status": "OFFICIAL",
+      "version": "v1.0",
+      "date": "2025-10-12",
+      "status": "OFICIAL",
       "regulatory_class": "Class C",
       "category": "Core Technical",
       "traceability": [
