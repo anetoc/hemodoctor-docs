@@ -95,7 +95,7 @@ Exemplos de representação incluem:
 
 Instâncias de comportamento abusivo, de assédio ou inaceitável podem ser reportadas contatando a equipe do projeto em:
 
-**Email**: conduta-hemodoctor@idor.org
+**Email**: conduta-hemodoctor@hemodoctor.com
 
 ### Processo de Investigação
 
@@ -164,9 +164,9 @@ Diretrizes de Impacto na Comunidade foram inspiradas pela [escada de aplicação
 
 ## 📞 Contatos
 
-- **Conduta**: conduta-hemodoctor@idor.org
-- **Segurança**: seguranca-hemodoctor@idor.org
-- **Geral**: hemodoctor@idor.org
+- **Conduta**: conduta-hemodoctor@hemodoctor.com
+- **Segurança**: seguranca-hemodoctor@hemodoctor.com
+- **Geral**: hemodoctor@hemodoctor.com
 - **Website**: https://www.idor.org
 
 ## 🔄 Atualizações

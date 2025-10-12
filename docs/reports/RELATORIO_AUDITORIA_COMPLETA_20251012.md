@@ -271,7 +271,7 @@ Cada workspace contém:
 - ✅ `CONTRIBUTING.md` - Guia de contribuição
 - ✅ `CODE_OF_CONDUCT.md` - Código de conduta
 - ✅ `SECURITY.md` - Política de segurança
-- ✅ `LICENSE` - Licença proprietária IDOR-SP
+- ✅ `LICENSE` - Licença proprietária HemoDoctor-SP
 
 #### Guias de Uso
 - ✅ `GUIA_USO_WORKSPACES.md` - Como usar workspaces (novo)

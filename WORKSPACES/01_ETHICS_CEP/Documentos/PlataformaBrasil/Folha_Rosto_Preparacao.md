@@ -78,7 +78,7 @@ Validação Clínica HemoDoctor SaMD
 **Número Total de Participantes no Brasil:** 1.500
 
 **Por Centro:**
-- IDOR São Paulo (coordenador): 800
+- HemoDoctor São Paulo (coordenador): 800
 - Hospital Universitário 1: 400
 - Laboratório Clínico 2: 300
 
@@ -112,12 +112,12 @@ Validação Clínica HemoDoctor SaMD
 
 **Nome da Instituição:**
 ```
-Instituto D'Or de Pesquisa e Ensino - IDOR São Paulo
+Instituto D'Or de Pesquisa e Ensino - HemoDoctor São Paulo
 ```
 
 **CNPJ:**
 ```
-{Preencher CNPJ IDOR}
+{Preencher CNPJ HemoDoctor}
 ```
 
 **Unidade/Órgão:**
@@ -140,7 +140,7 @@ CEP: {CEP}
 
 **E-mail Institucional:**
 ```
-pesquisa@idor.org
+pesquisa@hemodoctor.com
 ```
 
 ---
@@ -186,7 +186,7 @@ Telefone Fixo: {Preencher}
 
 **E-mail:**
 ```
-abel.costa@idor.org
+abel.costa@hemodoctor.com
 ```
 
 **Titulação Máxima:**
@@ -211,7 +211,7 @@ abel.costa@idor.org
 **Vínculo Institucional:**
 ```
 Cargo: Pesquisador
-Instituição: Instituto D'Or de Pesquisa e Ensino (IDOR)
+Instituição: Instituto D'Or de Pesquisa e Ensino (HemoDoctor)
 Regime de Trabalho: {CLT / Estatutário / Autônomo}
 Carga Horária Semanal: 40 horas
 ```
@@ -227,12 +227,12 @@ http://lattes.cnpq.br/{ID Lattes}
 
 **Nome do CEP:**
 ```
-Comitê de Ética em Pesquisa - IDOR
+Comitê de Ética em Pesquisa - HemoDoctor
 ```
 
 **Instituição à qual pertence:**
 ```
-Instituto D'Or de Pesquisa e Ensino - IDOR
+Instituto D'Or de Pesquisa e Ensino - HemoDoctor
 ```
 
 **Número de Registro CONEP:**
@@ -254,7 +254,7 @@ Cidade: São Paulo - SP
 
 **E-mail CEP:**
 ```
-cep@idor.org
+cep@hemodoctor.com
 ```
 
 **Horário de Atendimento:**
@@ -268,7 +268,7 @@ Segunda a Sexta-feira, 9h às 17h
 
 **Há Patrocinador Externo?**
 - [ ] Sim
-- [x] Não (Recursos Institucionais IDOR)
+- [x] Não (Recursos Institucionais HemoDoctor)
 
 **Se SIM, preencher:**
 
@@ -284,7 +284,7 @@ Responsável: ___________________________________________
 **Valor Total Estimado:** R$ 170.500,00
 
 **Fontes de Financiamento:**
-- [x] Recursos Institucionais (IDOR)
+- [x] Recursos Institucionais (HemoDoctor)
 - [ ] Agência de Fomento (especificar): __________
 - [ ] Empresa Privada
 - [ ] Recursos Próprios do Pesquisador
@@ -337,7 +337,7 @@ Benefícios diretos: diagnóstico potencialmente mais rápido (redução de 35% 
 
 **Descrição dos Procedimentos (resumo):**
 ```
-1. Recrutamento: Pacientes com indicação clínica de hemograma (CBC) em 3 centros (IDOR-SP, HC1, LC2)
+1. Recrutamento: Pacientes com indicação clínica de hemograma (CBC) em 3 centros (HemoDoctor-SP, HC1, LC2)
 2. Consentimento: Assinatura TCLE (ou responsável legal + assentimento se pediátrico)
 3. Coleta de Dados: CBC realizado conforme rotina + dados clínicos mínimos (idade, sexo, queixa) cadastrados em REDCap (anonimizados)
 4. Análise HemoDoctor: CBC inserido via API no sistema (dados anonimizados), geração de hipóteses diagnósticas
@@ -403,7 +403,7 @@ Recrutamento consecutivo em ambiente ambulatorial/hospitalar. Médicos assistent
 - [ ] **Orçamento Detalhado** (ORCAMENTO-001 v1.0 em Excel/PDF)
 - [ ] **Cronograma** (CRONOGRAMA-001 v1.0 em PDF)
 - [ ] **Currículo Lattes** do Pesquisador Principal (PDF)
-- [ ] **Declaração de Infraestrutura** (carta institucional IDOR assinada)
+- [ ] **Declaração de Infraestrutura** (carta institucional HemoDoctor assinada)
 - [ ] **Termo de Compromisso do Pesquisador** (template padrão assinado)
 - [ ] **Termo de Confidencialidade** da Equipe de Pesquisa
 - [ ] **Declaração de Anuência** dos Centros Colaboradores (HC1, LC2)
@@ -443,7 +443,7 @@ Recrutamento consecutivo em ambiente ambulatorial/hospitalar. Médicos assistent
 - [ ] Não
 
 **Número de centros:** 3
-- Centro 1 (coordenador): IDOR São Paulo
+- Centro 1 (coordenador): HemoDoctor São Paulo
 - Centro 2: {Hospital Universitário 1}
 - Centro 3: {Laboratório Clínico 2}
 

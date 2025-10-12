@@ -77,7 +77,7 @@ ESTRUTURA OBRIGATÓRIA (12 seções):
 
 5.1. Identificação do Incidente
 - Qualquer pessoa pode relatar
-- Canais: Email (incidentes@idor.org), telefone 24/7, formulário web
+- Canais: Email (incidentes@hemodoctor.com), telefone 24/7, formulário web
 - Disponibilidade: 24/7 para incidentes graves
 
 5.2. Classificação de Severidade (CRÍTICO - RDC 67/2009)
@@ -133,7 +133,7 @@ Tabela obrigatória:
 - Atualizar status de investigação
 
 8. COMUNICAÇÃO INTERNA
-- Email imediato para: qualidade@idor.org, rt@idor.org
+- Email imediato para: qualidade@hemodoctor.com, rt@hemodoctor.com
 - Reunião de análise em 48h para incidentes graves
 - Atualização semanal em quadro Kanban de qualidade
 - Relatório mensal para direção
@@ -175,7 +175,7 @@ version: "1.0"
 status: "OFICIAL"
 date: "2025-10-XX"
 author: "ANVISA Regulatory Specialist"
-organization: "IDOR-SP"
+organization: "HemoDoctor"
 classification: "Dispositivo Médico - Classe II"
 compliance:
   - "ANVISA RDC 67/2009"
@@ -547,7 +547,7 @@ version: "1.0"
 status: "OFICIAL"
 date: "2025-10-XX"
 author: "Risk Management Specialist"
-organization: "IDOR-SP"
+organization: "HemoDoctor"
 classification: "Dispositivo Médico - Classe II"
 compliance:
   - "ISO 13485:2016 (§8.5)"
@@ -1108,7 +1108,7 @@ version: "1.0"
 status: "OFICIAL"
 date: "2025-10-XX"
 author: "Quality Systems Specialist"
-organization: "IDOR-SP"
+organization: "HemoDoctor"
 classification: "Dispositivo Médico - Classe II"
 compliance:
   - "ISO 13485:2016 (§8.5.2 e §8.5.3)"
@@ -1217,7 +1217,7 @@ Estrutura completa (8 seções conforme PROC-003 §5):
 **Arquivo**: AUTHORITATIVE_BASELINE/07_POS_MERCADO/Vigilancia/Formularios/FORM-004_Notificacao_ANVISA_v1.0.md
 
 Estrutura conforme Portal NOTIVISA:
-1. Dados da Empresa (IDOR-SP, CNPJ, endereço, RT)
+1. Dados da Empresa (HemoDoctor, CNPJ, endereço, RT)
 2. Dados do Produto (HemoDoctor, registro ANVISA, versão)
 3. Dados do Evento (data, local, descrição)
 4. Classificação (GRAVE/NÃO GRAVE conforme RDC 67/2009)

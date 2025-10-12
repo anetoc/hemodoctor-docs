@@ -439,6 +439,6 @@ Todas as mudanças em documentos regulatórios são:
 
 ---
 
-**Mantido por**: Equipe HemoDoctor IDOR-SP  
+**Mantido por**: Equipe HemoDoctor HemoDoctor  
 **Última Atualização**: 2025-10-11
 

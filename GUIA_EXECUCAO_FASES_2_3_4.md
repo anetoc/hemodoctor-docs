@@ -475,7 +475,7 @@ Padronizar todos os documentos oficiais para v1.0 unificada, criando baseline su
 - [ ] Aprovar merge para main
 
 ## 📞 Responsável
-Dr. Abel Costa - IDOR-SP
+Dr. Abel Costa - HemoDoctor-SP
 ```
 
 ### 5.3. Após Aprovação - Merge e Tag
@@ -495,7 +495,7 @@ git tag -a v1.0.0-baseline-unificada -m "Release v1.0.0 - Baseline Unificada
 - 100% submission-ready
 
 Data: 12 de Outubro de 2025
-Responsável: Dr. Abel Costa - IDOR-SP"
+Responsável: Dr. Abel Costa - HemoDoctor-SP"
 
 git push origin v1.0.0-baseline-unificada
 ```

@@ -31,7 +31,7 @@ Se você descobrir uma vulnerabilidade de segurança no HemoDoctor:
 
 #### 2. **Reporte Privadamente**
 
-**Email de Segurança**: seguranca-hemodoctor@idor.org
+**Email de Segurança**: seguranca-hemodoctor@hemodoctor.com
 
 **Informações a Incluir**:
 ```
@@ -203,7 +203,7 @@ Incidentes graves são reportados:
 
 ### Equipe de Segurança
 
-- **Email Principal**: seguranca-hemodoctor@idor.org
+- **Email Principal**: seguranca-hemodoctor@hemodoctor.com
 - **PGP Key**: [Disponível mediante solicitação]
 - **Telefone de Emergência**: [Disponível para parceiros autorizados]
 
@@ -211,9 +211,9 @@ Incidentes graves são reportados:
 
 | Nível | Contato | Prazo de Resposta |
 |-------|---------|-------------------|
-| L1 - Técnico | security@idor.org | 2 horas |
-| L2 - Gerência | security-manager@idor.org | 4 horas |
-| L3 - Executivo | ciso@idor.org | 8 horas |
+| L1 - Técnico | security@hemodoctor.com | 2 horas |
+| L2 - Gerência | security-manager@hemodoctor.com | 4 horas |
+| L3 - Executivo | ciso@hemodoctor.com | 8 horas |
 
 ## 🏆 Hall of Fame
 
@@ -258,7 +258,7 @@ Pesquisadores que seguirem esta política não estarão sujeitos a ações legai
 
 **Data**: Outubro 2025  
 **Versão**: 1.0  
-**Responsável**: Equipe de Cybersecurity IDOR-SP
+**Responsável**: Equipe de Cybersecurity HemoDoctor
 
 ---
 

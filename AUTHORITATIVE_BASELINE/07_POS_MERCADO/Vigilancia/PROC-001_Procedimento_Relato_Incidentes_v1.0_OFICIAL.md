@@ -5,7 +5,7 @@ version: "1.0"
 status: "OFICIAL"
 date: "2025-10-12"
 author: "ANVISA Regulatory Specialist"
-organization: "IDOR-SP"
+organization: "HemoDoctor"
 classification: "Dispositivo Médico - Classe II"
 compliance:
   - "ANVISA RDC 67/2009"
@@ -39,7 +39,7 @@ Este procedimento aplica-se a:
 
 - **Todos os usuários do HemoDoctor**: Médicos, enfermeiros, técnicos de laboratório, residentes
 - **Pacientes**: Que direta ou indiretamente sejam afetados pelo dispositivo
-- **Equipe IDOR-SP**: Desenvolvedores, equipe clínica, suporte técnico, gestão de qualidade
+- **Equipe HemoDoctor**: Desenvolvedores, equipe clínica, suporte técnico, gestão de qualidade
 - **Parceiros**: Distribuidores, revendedores, implementadores
 
 ### 2.2. Tipos de Incidentes Cobertos
@@ -98,7 +98,7 @@ Para efeitos deste procedimento, aplicam-se as seguintes definições:
 - **Aguardar orientação** antes de continuar usando o sistema em caso de incidente grave
 - **Disponibilidade** para entrevistas de investigação
 
-### 4.2. Equipe Clínica (IDOR-SP)
+### 4.2. Equipe Clínica (HemoDoctor)
 
 - **Documentar** incidentes recebidos de forma completa e estruturada
 - **Realizar avaliação preliminar** de severidade do incidente
@@ -148,10 +148,10 @@ Qualquer pessoa pode relatar um incidente:
 
 | Canal | Disponibilidade | Uso Recomendado |
 |-------|-----------------|-----------------|
-| **Email**: incidentes@idor.org | 24/7 | Incidentes não urgentes, documentação detalhada |
+| **Email**: incidentes@hemodoctor.com | 24/7 | Incidentes não urgentes, documentação detalhada |
 | **Telefone**: +55 11 3456-7890 | 24/7 (plantão) | Incidentes GRAVES, situação urgente |
-| **Formulário Web**: https://idor.org/relatar-incidente | 24/7 | Relato estruturado com campos obrigatórios |
-| **Presencial**: Setor de Qualidade IDOR-SP | Horário comercial | Incidentes complexos, entrega de evidências físicas |
+| **Formulário Web**: https://hemodoctor.com/relatar-incidente | 24/7 | Relato estruturado com campos obrigatórios |
+| **Presencial**: Setor de Qualidade HemoDoctor | Horário comercial | Incidentes complexos, entrega de evidências físicas |
 
 #### 5.1.3. Informações Mínimas para Relato Inicial
 
@@ -219,7 +219,7 @@ Em situações de dúvida sobre a classificação:
 #### 5.3.1. Preenchimento do FORM-001
 
 - **Prazo**: Máximo 24 horas após identificação do incidente
-- **Responsável**: Primeiro profissional que tomar conhecimento do incidente (pode ser usuário final, equipe de suporte, ou equipe clínica IDOR)
+- **Responsável**: Primeiro profissional que tomar conhecimento do incidente (pode ser usuário final, equipe de suporte, ou equipe clínica HemoDoctor)
 - **Formulário**: FORM-001_Relato_Incidente (ver seção 11)
 - **Campos obrigatórios**:
   - Descrição detalhada do incidente
@@ -318,12 +318,12 @@ A tabela abaixo resume os prazos obrigatórios da ANVISA RDC 67/2009 para notifi
 
 **Importante**:
 - **Dias úteis**: Considerar calendário de dias úteis brasileiros (excluir sábados, domingos e feriados nacionais)
-- **Marco inicial**: Data em que o IDOR-SP tomou conhecimento do incidente (não a data do incidente em si)
+- **Marco inicial**: Data em que a HemoDoctor tomou conhecimento do incidente (não a data do incidente em si)
 - **Prazo fatal**: Se o último dia cair em final de semana ou feriado, o prazo se estende ao próximo dia útil
 
 **Exemplo de cálculo:**
 - Incidente GRAVE ocorreu em 15/março (sexta-feira)
-- IDOR tomou conhecimento em 16/março (sábado, mas relato via email)
+- HemoDoctor tomou conhecimento em 16/março (sábado, mas relato via email)
 - Marco inicial: 18/março (segunda-feira - primeiro dia útil)
 - Notificação ANVISA deve ser feita até: 01/abril (10 dias úteis após 18/março, considerando feriados)
 
@@ -338,7 +338,7 @@ A notificação ao portal NOTIVISA deve incluir:
 - Impacto no paciente
 - Ações imediatas tomadas
 - Dados do produto (HemoDoctor, registro ANVISA, versão)
-- Dados da empresa (IDOR-SP, CNPJ, RT)
+- Dados da empresa (HemoDoctor, CNPJ, RT)
 
 **Relatório de Investigação (Prazo: 30 ou 90 dias):**
 - Análise de causa raiz (ver PROC-002)
@@ -393,7 +393,7 @@ A notificação ao portal NOTIVISA deve incluir:
 
 - **URL**: https://www.gov.br/anvisa/pt-br/assuntos/fiscalizacao/notivisa
 - **Cadastro prévio necessário**:
-  - Empresa: IDOR-SP (CNPJ, endereço, contatos)
+  - Empresa: HemoDoctor (CNPJ, endereço, contatos)
   - Responsável Técnico: Nome, CPF, registro profissional, email, telefone
   - Produto: HemoDoctor (dados de registro ANVISA, classe de risco)
 
@@ -405,7 +405,7 @@ O portal NOTIVISA tem formulário online estruturado. Siga os passos:
 
 **Seção 1: Identificação da Empresa**
 - CNPJ: [preencher automaticamente se cadastrado]
-- Nome fantasia: IDOR-SP
+- Nome fantasia: HemoDoctor
 - Responsável Técnico: [selecionar da lista]
 
 **Seção 2: Identificação do Produto**
@@ -515,9 +515,9 @@ A ANVISA pode solicitar:
 ### 8.1. Notificação Imediata (0-2h para Incidentes GRAVES)
 
 **Destinatários obrigatórios:**
-- **Email**: qualidade@idor.org
-- **Email**: rt@idor.org
-- **Email**: ceo@idor.org (para incidentes GRAVES)
+- **Email**: qualidade@hemodoctor.com
+- **Email**: abel.costa@hemodoctor.com
+- **Email**: ceo@hemodoctor.com (para incidentes GRAVES)
 - **Telefone/WhatsApp**: RT (para incidentes GRAVES)
 
 **Conteúdo do email inicial** (usar **ANEXO B - Template de Email**):
@@ -927,7 +927,7 @@ Lista de CAPAs implementadas no ano, com foco em:
 
 ### 12.2. Treinamento para Equipe Clínica (Completo)
 
-**Público-alvo**: Equipe clínica IDOR-SP (médicos, enfermeiros, suporte técnico)
+**Público-alvo**: Equipe clínica HemoDoctor (médicos, enfermeiros, suporte técnico)
 
 **Duração**: 2 horas
 
@@ -1026,7 +1026,7 @@ Lista de CAPAs implementadas no ano, com foco em:
                  v
 ┌─────────────────────────────────────────────┐
 │  RELATO VIA CANAL DISPONÍVEL                │
-│  - Email: incidentes@idor.org (24/7)        │
+│  - Email: incidentes@hemodoctor.com (24/7)        │
 │  - Telefone: +55 11 3456-7890 (24/7)        │
 │  - Formulário Web (24/7)                    │
 │  - Presencial (horário comercial)           │
@@ -1138,7 +1138,7 @@ ou
 ---
 
 **De**: [Nome do relator ou Gerente de Qualidade]
-**Para**: qualidade@idor.org, rt@idor.org, ceo@idor.org (se GRAVE)
+**Para**: qualidade@hemodoctor.com, abel.costa@hemodoctor.com, ceo@hemodoctor.com (se GRAVE)
 **CC**: [Equipe relevante]
 **Data**: DD/MM/AAAA HH:MM
 
@@ -1279,7 +1279,7 @@ Use esta checklist ao relatar um incidente para garantir que todas as informaç�
 
 ---
 
-**Enviar para**: incidentes@idor.org
+**Enviar para**: incidentes@hemodoctor.com
 ou
 **Preencher formulário web**: https://idor.org/relatar-incidente
 
@@ -1309,10 +1309,10 @@ ou
 - **RDC 67/2009 (Tecnovigilância)**: https://www.gov.br/anvisa
 - **Legislação sobre Dispositivos Médicos**: https://www.gov.br/anvisa/pt-br/assuntos/regulamentacao/legislacao
 
-#### **CONTATO INTERNO IDOR-SP** (para questões sobre relato de incidentes)
-- **Gerente de Qualidade**: qualidade@idor.org / +55 11 XXXX-XXXX
-- **Responsável Técnico**: rt@idor.org / +55 11 XXXX-XXXX
-- **CEO**: ceo@idor.org / +55 11 XXXX-XXXX
+#### **CONTATO INTERNO HEMODOCTOR** (para questões sobre relato de incidentes)
+- **Gerente de Qualidade**: qualidade@hemodoctor.com / +55 11 XXXX-XXXX
+- **Responsável Técnico**: abel.costa@hemodoctor.com / +55 11 XXXX-XXXX
+- **CEO**: ceo@hemodoctor.com / +55 11 XXXX-XXXX
 - **Plantão 24/7** (incidentes GRAVES): +55 11 3456-7890
 
 ---

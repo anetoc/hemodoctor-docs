@@ -4,7 +4,7 @@
 
 **Status**: 🔥 URGENTE
 **Prazo**: 19 de Outubro de 2025
-**Responsável**: Dr. Abel Costa - IDOR-SP
+**Responsável**: Dr. Abel Costa - HemoDoctor-SP
 
 ---
 
@@ -45,7 +45,7 @@ Este workspace contém toda a documentação necessária para submissão do proj
 - [ ] **Orçamento**: Detalhamento de custos
 - [ ] **Cronograma**: Fases do estudo
 - [ ] **Currículo Lattes**: Pesquisador principal
-- [ ] **Declaração Infraestrutura**: IDOR
+- [ ] **Declaração Infraestrutura**: HemoDoctor
 - [ ] **Termo de Compromisso**: Pesquisador
 
 ---

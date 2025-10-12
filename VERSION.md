@@ -210,10 +210,10 @@ hemodoctor-docs/
 
 ## 📞 Contatos
 
-**Gestão de Documentação**: quality-hemodoctor@idor.org  
-**Questões Técnicas**: dev-hemodoctor@idor.org  
-**Regulatório**: regulatory-hemodoctor@idor.org  
-**Segurança**: security-hemodoctor@idor.org
+**Gestão de Documentação**: quality-hemodoctor@hemodoctor.com  
+**Questões Técnicas**: dev-hemodoctor@hemodoctor.com  
+**Regulatório**: regulatory-hemodoctor@hemodoctor.com  
+**Segurança**: security-hemodoctor@hemodoctor.com
 
 ---
 

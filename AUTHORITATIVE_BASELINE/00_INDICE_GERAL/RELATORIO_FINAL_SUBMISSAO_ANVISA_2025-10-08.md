@@ -407,7 +407,7 @@
 ## 📞 CONTATOS
 
 ### **Equipe Interna:**
-- **Responsável Técnico:** Abel Costa (abel@empresa.com)
+- **Responsável Técnico:** Abel Costa (abel.costa@hemodoctor.com)
 - **Medical Director:** [Nome] ([email])
 - **Regulatory Affairs Director:** [Nome] ([email])
 - **Quality Director:** [Nome] ([email])

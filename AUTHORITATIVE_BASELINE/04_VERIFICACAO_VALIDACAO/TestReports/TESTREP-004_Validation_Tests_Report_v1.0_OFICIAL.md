@@ -42,12 +42,12 @@
 
 | Participant | Institution | Experience (years) | Cases Analyzed |
 |-------------|-------------|-------------------|----------------|
-| Hematologist 1 | IDOR-SP | 15 | 15 |
+| Hematologist 1 | HemoDoctor-SP | 15 | 15 |
 | Hematologist 2 | HC-FMUSP | 12 | 15 |
 | Hematologist 3 | INCA | 20 | 15 |
 | Hematologist 4 | HSL | 8 | 15 |
 | Hematologist 5 | HCor | 10 | 15 |
-| Hematologist 6 | IDOR-RJ | 18 | 15 |
+| Hematologist 6 | HemoDoctor-RJ | 18 | 15 |
 | Hematologist 7 | Hospital Sírio-Libanês | 14 | 15 |
 | Hematologist 8 | Hospital Israelita | 11 | 15 |
 | Hematologist 9 | UNIFESP | 16 | 15 |

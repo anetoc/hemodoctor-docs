@@ -1,7 +1,7 @@
 # 📋 Plano de Padronização - Versão 1.0 Unificada
 
 **Data de Criação**: 12 de Outubro de 2025  
-**Responsável**: Dr. Abel Costa - IDOR-SP  
+**Responsável**: Dr. Abel Costa - HemoDoctor-SP  
 **Agente Recomendado**: `documentation-finalization-specialist`  
 **Objetivo**: Unificar todas as versões de documentos para v1.0
 

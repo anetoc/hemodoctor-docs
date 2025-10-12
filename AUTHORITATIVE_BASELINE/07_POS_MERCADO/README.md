@@ -11,11 +11,10 @@ Documentação de vigilância pós-mercado e gerenciamento de feedback conforme 
 - Plano de vigilância pós-mercado
 
 ### Vigilancia/ - Procedimentos de Vigilância
-📝 **A CRIAR**: Procedimentos operacionais
-- Procedimento_Relato_Incidentes_v1.0.md
-- Procedimento_Investigacao_Eventos_v1.0.md
-- Procedimento_CAPA_v1.0.md (Ações Corretivas e Preventivas)
-- Procedimento_Recall_v1.0.md (se necessário)
+- ✅ `PROC-001_Procedimento_Relato_Incidentes_v1.0_OFICIAL.md` (Criado: 12/10/2025)
+- 📝 **A CRIAR**: `PROC-002_Procedimento_Investigacao_Eventos_v1.0_OFICIAL.md`
+- 📝 **A CRIAR**: `PROC-003_Procedimento_CAPA_v1.0_OFICIAL.md`
+- 📝 **A CRIAR**: Formulários padronizados (FORM-001 a FORM-004)
 
 ## 🎯 Documentos Necessários (Próximos Passos)
 
@@ -79,9 +78,12 @@ Documentação de vigilância pós-mercado e gerenciamento de feedback conforme 
 ## 📝 Status
 
 - ✅ PMS v1.1 presente (plano geral)
-- ⚠️ Procedimentos operacionais pendentes
-- ⚠️ Formulários padronizados pendentes
-- ⚠️ Templates de notificação pendentes
+- ✅ PROC-001 criado (Relato de Incidentes) - 12/10/2025
+- ⚠️ PROC-002 pendente (Investigação de Eventos)
+- ⚠️ PROC-003 pendente (CAPA)
+- ⚠️ Formulários padronizados pendentes (FORM-001 a FORM-004)
+
+**Progresso Fase B**: 1/7 documentos completos (14%)
 
 ## 🚨 Requisitos Regulatórios
 
@@ -93,6 +95,12 @@ Documentação de vigilância pós-mercado e gerenciamento de feedback conforme 
 ### FDA (se aplicável)
 - MDR (Medical Device Reporting): 30 dias
 - Morte ou lesão grave: 5 dias
+
+---
+
+## 📝 Rastreamento de Progresso
+
+Ver arquivo detalhado: [`FASE_B_PROGRESSO.md`](./FASE_B_PROGRESSO.md)
 
 ---
 

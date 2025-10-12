@@ -202,7 +202,7 @@ Arquivamento autorizado por:
 ## 📞 Contato
 
 ### Dúvidas sobre Versões Históricas
-- **E-mail**: quality-hemodoctor@idor.org
+- **E-mail**: quality-hemodoctor@hemodoctor.com
 - **Responsável**: Sistema de Gestão da Qualidade
 
 ### Solicitação de Acesso a Versões Antigas

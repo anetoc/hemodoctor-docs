@@ -2,7 +2,7 @@
 
 **Data**: 12 de Outubro de 2025  
 **Executor**: AI Assistant (Claude Sonnet 4.5)  
-**Responsável**: Dr. Abel Costa - IDOR-SP
+**Responsável**: Dr. Abel Costa - HemoDoctor-SP
 
 ---
 

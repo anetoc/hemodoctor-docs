@@ -1,7 +1,7 @@
 # 🚀 Próximos Passos Pós-Padronização v1.0
 
 **Data**: 12 de Outubro de 2025  
-**Responsável**: Dr. Abel Costa - IDOR-SP  
+**Responsável**: Dr. Abel Costa - HemoDoctor-SP  
 **Pré-requisito**: Padronização v1.0 aprovada no checklist de validação
 
 ---
@@ -411,7 +411,7 @@ Preparar documentos para Plataforma Brasil:
 4. Orçamento detalhado
 5. Cronograma detalhado
 6. Currículo Lattes do pesquisador principal
-7. Declaração de infraestrutura IDOR
+7. Declaração de infraestrutura HemoDoctor
 8. Termo de compromisso do pesquisador
 ```
 
@@ -489,7 +489,7 @@ Submeter projeto à Plataforma Brasil e ao CEP local.
    - [ ] Preencher formulário online
    - [ ] Upload de todos os documentos
 
-2. **Submissão ao CEP IDOR**
+2. **Submissão ao CEP HemoDoctor**
    - [ ] Enviar documentação física (se necessário)
    - [ ] Protocolar entrada
    - [ ] Aguardar distribuição para relator
@@ -721,10 +721,10 @@ Siga o PROXIMOS_PASSOS_POS_V1.0.md - Fase A.
 
 ## 📞 Contatos e Suporte
 
-**Questões Regulatórias**: regulatory-hemodoctor@idor.org  
-**Questões CEP**: cep-hemodoctor@idor.org  
-**Questões Técnicas**: dev-hemodoctor@idor.org  
-**Qualidade**: quality-hemodoctor@idor.org
+**Questões Regulatórias**: regulatory-hemodoctor@hemodoctor.com  
+**Questões CEP**: cep-hemodoctor@hemodoctor.com  
+**Questões Técnicas**: dev-hemodoctor@hemodoctor.com  
+**Qualidade**: quality-hemodoctor@hemodoctor.com
 
 ---
 
@@ -748,5 +748,5 @@ Siga o PROXIMOS_PASSOS_POS_V1.0.md - Fase A.
 
 **Última Atualização**: 12 de Outubro de 2025  
 **Versão deste Documento**: 1.0  
-**Responsável**: Dr. Abel Costa - IDOR-SP
+**Responsável**: Dr. Abel Costa - HemoDoctor-SP
 

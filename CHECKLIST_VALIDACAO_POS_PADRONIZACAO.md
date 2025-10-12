@@ -1,7 +1,7 @@
 # ✅ Checklist de Validação Pós-Padronização v1.0
 
 **Data**: 12 de Outubro de 2025  
-**Responsável**: Dr. Abel Costa - IDOR-SP  
+**Responsável**: Dr. Abel Costa - HemoDoctor-SP  
 **Status**: Template para execução após Fases 1-4
 
 ---
@@ -119,7 +119,7 @@ version: "1.0"
 status: "OFICIAL"
 date: "2025-10-12"
 author: "Dr. Abel Costa"
-organization: "IDOR-SP"
+organization: "HemoDoctor-SP"
 classification: "Dispositivo Médico - Classe II"
 history:
   - version: "1.0"
@@ -425,8 +425,8 @@ Data: ___/___/2025
 
 ## 📞 Contato
 
-**Dúvidas sobre validação**: quality-hemodoctor@idor.org  
-**Issues técnicos**: dev-hemodoctor@idor.org
+**Dúvidas sobre validação**: quality-hemodoctor@hemodoctor.com  
+**Issues técnicos**: dev-hemodoctor@hemodoctor.com
 
 ---
 

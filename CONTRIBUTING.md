@@ -14,7 +14,7 @@ Este projeto contém documentação regulatória crítica para submissões à AN
 
 Devido à natureza regulatória crítica deste projeto, contribuições são limitadas a:
 
-1. **Membros da Equipe IDOR-SP**: Desenvolvedores e pesquisadores autorizados
+1. **Membros da Equipe HemoDoctor**: Desenvolvedores e pesquisadores autorizados
 2. **Especialistas Regulatórios**: Com credenciais verificadas
 3. **Consultores Aprovados**: Mediante acordo formal
 
@@ -150,7 +150,7 @@ Exemplos:
 
 Se encontrar uma vulnerabilidade de segurança:
 1. **NÃO** abra uma issue pública
-2. Envie um email para: [seguranca@idor.org]
+2. Envie um email para: [seguranca@hemodoctor.com]
 3. Aguarde resposta antes de divulgar
 
 ## 🤝 Código de Conduta
@@ -173,7 +173,7 @@ Se encontrar uma vulnerabilidade de segurança:
 
 Para questões sobre contribuições:
 - **Issues**: Use para discussões técnicas
-- **Email**: [hemodoctor@idor.org]
+- **Email**: [hemodoctor@hemodoctor.com]
 - **Equipe**: Veja AUTHORITATIVE_BASELINE/README_FINAL.md
 
 ## 📄 Licença

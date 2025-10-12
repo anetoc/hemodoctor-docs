@@ -28,7 +28,7 @@ Com base nas suas necessidades expressas:
    
    # No Cursor, iniciar:
    "Preciso elaborar o protocolo de pesquisa completo para 
-   submissão ao CEP IDOR.
+   submissão ao CEP HemoDoctor.
    
    O HemoDoctor é um dispositivo SaMD Classe III para 
    suporte à decisão clínica em neoplasias hematológicas.
@@ -275,7 +275,7 @@ para suporte à decisão clínica em neoplasias hematológicas.
 Usar a estrutura padrão de protocolo CEP com as seguintes seções:
 1. Título e identificação
 2. Equipe de pesquisa (PI: Dr. Abel Costa, Co-PI: Dr. Eduardo Rego)
-3. Instituição: IDOR-SP
+3. Instituição: HemoDoctor-SP
 4. Introdução e justificativa
 5. Objetivos (primário e secundários)
 6. Metodologia

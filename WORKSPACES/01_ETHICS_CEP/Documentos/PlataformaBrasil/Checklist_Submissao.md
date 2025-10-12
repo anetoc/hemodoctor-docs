@@ -47,7 +47,7 @@
   - Dr. Abel Costa atualizado
   - Link: {Preencher}
 
-- [ ] **Declaração de Infraestrutura IDOR**
+- [ ] **Declaração de Infraestrutura HemoDoctor**
   - Carta institucional em papel timbrado
   - Assinatura do Diretor Científico
   - Confirmação de disponibilidade de recursos
@@ -99,9 +99,9 @@
 - [x] Área temática (Dispositivos Terapêuticos)
 - [x] Classificação metodológica (Observacional, Acurácia)
 - [x] Número de participantes (1.500)
-- [x] Dados institucionais (IDOR)
+- [x] Dados institucionais (HemoDoctor)
 - [x] Dados do pesquisador (Dr. Abel Costa)
-- [x] Dados do CEP (IDOR)
+- [x] Dados do CEP (HemoDoctor)
 - [x] Orçamento estimado
 - [x] Critérios de inclusão/exclusão
 - [x] Justificativa para vulneráveis (pediátricos)
@@ -116,11 +116,11 @@
   - CPF + e-mail válido
   - Confirmação por e-mail
 
-- [ ] Vincular instituição (IDOR)
-  - CNPJ IDOR
+- [ ] Vincular instituição (HemoDoctor)
+  - CNPJ HemoDoctor
   - Declaração de vínculo (upload)
 
-- [ ] Selecionar CEP (CEP IDOR)
+- [ ] Selecionar CEP (CEP HemoDoctor)
   - Número de registro CONEP: {Preencher}
 
 **Passos de Cadastro:**
@@ -141,7 +141,7 @@
 | 12/10/2025 | Criação de PPC-001, TCLE-001, Folha Rosto | Dr. Abel Costa | ✅ COMPLETO |
 | 14/10/2025 | Criação de Orçamento e Cronograma | Dr. Abel Costa | ⏳ PENDENTE |
 | 15/10/2025 | Coleta de Currículo Lattes atualizado | Dr. Abel Costa | ⏳ PENDENTE |
-| 16/10/2025 | Solicitação de Declaração IDOR | Diretor Científico | ⏳ PENDENTE |
+| 16/10/2025 | Solicitação de Declaração HemoDoctor | Diretor Científico | ⏳ PENDENTE |
 | 17/10/2025 | Solicitação de Anuências (HC1, LC2) | Co-pesquisadores | ⏳ PENDENTE |
 | 18/10/2025 | Cadastro na Plataforma Brasil | Dr. Abel Costa | ⏳ PENDENTE |
 | 19/10/2025 | **SUBMISSÃO FINAL AO CEP** | Dr. Abel Costa | 🎯 **PRAZO** |
@@ -165,15 +165,15 @@
   - **Ação:** Analisar motivos, corrigir, resubmeter
 
 **Prazo Estimado de Análise:**
-- CEP Local (IDOR): 30-45 dias (média)
+- CEP Local (HemoDoctor): 30-45 dias (média)
 - CONEP (se área temática especial): +60 dias
 
 ---
 
 ### 📞 Contatos Importantes
 
-**CEP IDOR:**
-- E-mail: cep@idor.org
+**CEP HemoDoctor:**
+- E-mail: cep@hemodoctor.com
 - Telefone: {Preencher}
 - Horário: Segunda a Sexta, 9h às 17h
 

@@ -5,7 +5,7 @@ version: "1.0"
 status: "OFICIAL"
 date: "2025-10-12"
 author: "Risk Management Specialist"
-organization: "IDOR-SP"
+organization: "HemoDoctor"
 classification: "Dispositivo Médico - Classe II"
 compliance:
   - "ISO 13485:2016 (§8.5)"

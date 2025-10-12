@@ -18,12 +18,12 @@ Validação Clínica Prospectiva do Sistema HemoDoctor de Apoio à Decisão Clí
 **Pesquisador Responsável:**  
 Dr. Abel Costa - CRM {Número}  
 Instituto D'Or de Pesquisa e Ensino (IDOR) - São Paulo  
-E-mail: abel.costa@idor.org | Telefone: {Telefone}
+E-mail: abel.costa@hemodoctor.com | Telefone: {Telefone}
 
 **Instituição:**  
 Instituto D'Or de Pesquisa e Ensino - IDOR São Paulo  
 Endereço: {Endereço completo}  
-CEP: cep@idor.org | Telefone CEP: {Telefone}
+CEP: cep@hemodoctor.com | Telefone CEP: {Telefone}
 
 ---
 
@@ -199,7 +199,7 @@ Você tem direito a:
 - ✅ **Pedir exclusão dos seus dados** (quando possível)
 - ✅ **Receber cópia dos seus dados**
 
-Para exercer esses direitos, contate: abel.costa@idor.org
+Para exercer esses direitos, contate: abel.costa@hemodoctor.com
 
 ---
 
@@ -246,7 +246,7 @@ Se você tiver qualquer despesa comprovadamente relacionada à pesquisa (improv�
 - Transporte extra para consulta relacionada à pesquisa
 - Fotocópias de documentos solicitados
 
-**Você será reembolsado(a)** mediante apresentação de recibos. Contate: abel.costa@idor.org
+**Você será reembolsado(a)** mediante apresentação de recibos. Contate: abel.costa@hemodoctor.com
 
 ---
 
@@ -256,7 +256,7 @@ Se você tiver qualquer despesa comprovadamente relacionada à pesquisa (improv�
 
 **Pesquisador Responsável: Dr. Abel Costa**  
 - **Telefone:** {Telefone} (24 horas, WhatsApp disponível)  
-- **E-mail:** abel.costa@idor.org  
+- **E-mail:** abel.costa@hemodoctor.com  
 - **Endereço:** Instituto D'Or de Pesquisa e Ensino - IDOR São Paulo  
   {Endereço completo}
 
@@ -264,7 +264,7 @@ Se você tiver qualquer despesa comprovadamente relacionada à pesquisa (improv�
 
 **Comitê de Ética em Pesquisa (CEP) - IDOR**  
 - **Telefone:** {Telefone CEP}  
-- **E-mail:** cep@idor.org  
+- **E-mail:** cep@hemodoctor.com  
 - **Horário de atendimento:** Segunda a sexta, 9h às 17h  
 - **Endereço:** {Endereço CEP}
 
@@ -352,7 +352,7 @@ Temos um documento mais simples para você ler e assinar, explicando a pesquisa 
 
 **IMPORTANTE:** Você deve receber **UMA CÓPIA** deste Termo de Consentimento assinada por você e pelo pesquisador. Guarde em local seguro.
 
-Se precisar de outra cópia, contate: abel.costa@idor.org
+Se precisar de outra cópia, contate: abel.costa@hemodoctor.com
 
 ---
 

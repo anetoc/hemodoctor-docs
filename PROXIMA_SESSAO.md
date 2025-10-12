@@ -36,7 +36,7 @@
 **Documentos Pendentes (para completar Fase C):**
 - [ ] ORCAMENTO-001.xlsx (Orçamento detalhado R$ 170.500)
 - [ ] Currículo Lattes PDF (Dr. Abel Costa)
-- [ ] Declaração Infraestrutura IDOR (carta assinada)
+- [ ] Declaração Infraestrutura HemoDoctor (carta assinada)
 - [ ] Termo de Compromisso Pesquisador (template Plataforma Brasil)
 - [ ] Anuências HC1 e LC2 (cartas assinadas)
 - [ ] Instrumento Coleta REDCap (print PDF)
@@ -105,7 +105,7 @@
 
 2. **Coletar documentos assinados:**
    - Currículo Lattes atualizado (Dr. Abel Costa)
-   - Declaração Infraestrutura IDOR (diretor científico)
+   - Declaração Infraestrutura HemoDoctor (diretor científico)
    - Termo Compromisso Pesquisador (template padrão)
    - Anuências HC1 e LC2 (centros colaboradores)
    - Termo Confidencialidade Equipe (todos assinam)
@@ -362,7 +362,7 @@ cat VERSION.md | head -30
 
 **Repositório:** `/Users/abelcosta/Documents/HemoDoctor/docs/`  
 **Git Remote:** https://github.com/abelcosta/HemoDoctor (assumido)  
-**CEP IDOR:** cep@idor.org  
+**CEP HemoDoctor:** cep@hemodoctor.com  
 **Plataforma Brasil:** https://plataformabrasil.saude.gov.br
 
 ---

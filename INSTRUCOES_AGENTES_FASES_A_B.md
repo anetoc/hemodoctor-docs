@@ -1,7 +1,7 @@
 # 🤖 Instruções para Agentes - Fases A e B
 
 **Data**: 12 de Outubro de 2025  
-**Responsável**: Dr. Abel Costa - IDOR-SP  
+**Responsável**: Dr. Abel Costa - HemoDoctor-SP  
 **Status**: Pronto para execução
 
 ---
@@ -134,7 +134,7 @@ version: "1.0"
 status: "OFICIAL"
 date: "2025-10-XX"
 author: "Quality Systems Specialist"
-organization: "IDOR-SP"
+organization: "HemoDoctor-SP"
 classification: "Dispositivo Médico - Classe II"
 compliance:
   - "IEC 62304:2006"
@@ -541,7 +541,7 @@ ESTRUTURA OBRIGATÓRIA:
    - Assegurar resposta rápida e eficaz
 
 2. ESCOPO
-   - Aplica-se a: Todos os usuários, pacientes, equipe IDOR
+   - Aplica-se a: Todos os usuários, pacientes, equipe HemoDoctor
    - Tipos de incidentes cobertos
    - Exclusões (se houver)
 
@@ -1278,9 +1278,9 @@ RELATORIO_VALIDACAO_MODULOS_04_07_v1.0.md
 
 ## 📞 Suporte
 
-**Dúvidas técnicas**: dev-hemodoctor@idor.org  
-**Dúvidas regulatórias**: regulatory-hemodoctor@idor.org  
-**Dúvidas QA**: quality-hemodoctor@idor.org
+**Dúvidas técnicas**: dev-hemodoctor@hemodoctor.com  
+**Dúvidas regulatórias**: regulatory-hemodoctor@hemodoctor.com  
+**Dúvidas QA**: quality-hemodoctor@hemodoctor.com
 
 ---
 

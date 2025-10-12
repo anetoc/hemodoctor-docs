@@ -28,7 +28,7 @@ Registre aqui todas as atividades importantes:
 ```
 ### 2025-10-15 - Criação do Protocolo Inicial
 - **Tipo**: Protocolo
-- **Descrição**: Elaborado protocolo de pesquisa v1 para submissão ao CEP IDOR
+- **Descrição**: Elaborado protocolo de pesquisa v1 para submissão ao CEP HemoDoctor
 - **Arquivos**: 
   - PROTOCOLO_CEP/protocolo_pesquisa_v1.md (criado)
 - **Próximos Passos**: 

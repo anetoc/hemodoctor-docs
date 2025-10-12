@@ -307,5 +307,5 @@ Use este checklist para garantir que está usando os workspaces corretamente:
 **Status**: ✅ Guia Completo  
 **Versão**: 1.0  
 **Data**: 12 de Outubro de 2025  
-**Feedback**: hemodoctor@idor.org
+**Feedback**: hemodoctor@hemodoctor.com
 

@@ -1,7 +1,7 @@
 # 📊 Relatório de Progresso - Fase B (Módulo 07)
 
 **Data**: 12 de Outubro de 2025  
-**Responsável**: Dr. Abel Costa - IDOR-SP  
+**Responsável**: Dr. Abel Costa - HemoDoctor  
 **Status**: 🟡 Em Progresso (43% completo)
 
 ---

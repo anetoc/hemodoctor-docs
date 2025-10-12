@@ -3,7 +3,7 @@
 **Código:** PPC-001  
 **Versão:** v1.0  
 **Data:** 12 de Outubro de 2025  
-**Autor Principal:** Dr. Abel Costa - IDOR-SP  
+**Autor Principal:** Dr. Abel Costa - HemoDoctor  
 **Status:** DRAFT - Para Submissão CEP  
 **Confidencialidade:** Restrito (Comitê de Ética)
 
@@ -24,8 +24,8 @@
 
 **Número de Participantes:**
 - **Amostra Total Prevista:** 1.500 participantes
-- **Centro Coordenador (IDOR-SP):** 800 participantes
-- **Centro Colaborador 1:** 400 participantes
+- **Centro Coordenador (HemoDoctor):** 800 participantes
+- **Centro Colaborador 1 (UNIMED Vale do São Francisco):** 400 participantes - Responsável: Dr. Lucyo Diniz
 - **Centro Colaborador 2:** 300 participantes
 
 **Duração do Estudo:** 13 meses (1 mês preparação + 6 meses coleta + 2 meses análise + 4 meses relatório)
@@ -39,9 +39,9 @@
 **Cargo:** Pesquisador Principal  
 **Titulação:** {Titulação}  
 **CPF:** {CPF}  
-**Endereço Profissional:** {Endereço IDOR-SP}  
+**Endereço Profissional:** {Endereço HemoDoctor}  
 **Telefone:** {Telefone}  
-**E-mail:** abel.costa@idor.org  
+**E-mail:** abel.costa@hemodoctor.com  
 **CV Lattes:** {Link Lattes}
 
 ---
@@ -52,7 +52,7 @@
 **CNPJ:** {CNPJ IDOR}  
 **Endereço:** {Endereço completo}  
 **CEP Responsável:** CEP IDOR - {Número de Registro CONEP}  
-**Contato CEP:** cep@idor.org | {Telefone CEP}
+**Contato CEP:** cep@hemodoctor.com | {Telefone CEP}
 
 ---
 

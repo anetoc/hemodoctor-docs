@@ -57,9 +57,19 @@ Base autoritativa de documentação regulatória organizada em 10 módulos confo
 - **TRC**: Matriz de rastreabilidade completa (v1.0, v2.0, v2.1)
   - Requisitos → Design → Testes → Riscos
 
-#### **07_POS_MERCADO**
-- **PMS** (Post-Market Surveillance): Vigilância pós-mercado
-- **Vigilância**: Planos de vigilância
+#### **07_POS_MERCADO** ✅ **FASE B COMPLETA - 100%**
+- **PMS** (Post-Market Surveillance): Vigilância pós-mercado v1.1
+- **Vigilância**: Sistema completo de Tecnovigilância ANVISA RDC 67/2009
+  - **PROC-001**: Procedimento de Relato de Incidentes (54 KB, 12 seções)
+  - **PROC-002**: Procedimento de Investigação de Eventos (76 KB, 11 seções, metodologia RCA)
+  - **PROC-003**: Procedimento CAPA (74 KB, 10 seções, 8 etapas, 6 KPIs)
+  - **FORM-001**: Formulário de Relato de Incidente (13 KB, 8 seções)
+  - **FORM-002**: Formulário de Investigação (22 KB, 9 seções)
+  - **FORM-003**: Formulário CAPA (22 KB, 30 campos em 8 seções)
+  - **FORM-004**: Formulário Notificação ANVISA/NOTIVISA (24 KB, 12 seções)
+- **Total**: 285 KB de documentação técnica (7 documentos)
+- **Compliance**: ANVISA RDC 67/2009, ISO 13485:2016 (§8.2.2, §8.5), ISO 14971:2019, FDA 21 CFR 820.100
+- **Data de Conclusão**: 12/10/2025 (28 dias antes do prazo!)
 
 #### **08_ROTULAGEM**
 - **IFU** (Instructions For Use): 
@@ -125,6 +135,7 @@ Biomedical Automated Documentation Method - Framework para documentação automa
 
 ### ✅ Documentos Completos (Status: SUBMISSION READY)
 
+#### Documentação Regulatória Base
 - [x] DMR v2.0 - Device Master Record
 - [x] SRS v2.2 - Software Requirements Specification
 - [x] SDD v2.0 - Software Design Document
@@ -132,11 +143,22 @@ Biomedical Automated Documentation Method - Framework para documentação automa
 - [x] RMP v1.0 - Risk Management Plan
 - [x] CER v1.2 - Clinical Evaluation Report (validado)
 - [x] TST v1.0 - Test Specification
-- [x] PMS v1.1 - Post-Market Surveillance
 - [x] SOUP v1.0 - Software of Unknown Provenance Analysis
 - [x] SEC v1.0 - Cybersecurity Analysis
 - [x] SBOM v1.0 - Software Bill of Materials
 - [x] IFU v1.0 - Instructions For Use (PT-BR e EN-US)
+
+#### Vigilância Pós-Mercado (Módulo 07) ✅ **FASE B COMPLETA - 12/10/2025**
+- [x] PMS v1.1 - Post-Market Surveillance Plan
+- [x] PROC-001 v1.0 - Procedimento de Relato de Incidentes e Tecnovigilância (ANVISA RDC 67/2009)
+- [x] PROC-002 v1.0 - Procedimento de Investigação de Eventos Adversos (ISO 13485, ISO 14971)
+- [x] PROC-003 v1.0 - Procedimento CAPA - Corrective and Preventive Actions (ISO 13485, FDA 21 CFR 820.100)
+- [x] FORM-001 v1.0 - Formulário de Relato de Incidente
+- [x] FORM-002 v1.0 - Formulário de Investigação de Evento
+- [x] FORM-003 v1.0 - Formulário CAPA (30 campos, 8 seções)
+- [x] FORM-004 v1.0 - Formulário de Notificação ANVISA (Portal NOTIVISA)
+
+**Completude Geral**: 10/10 módulos (100%) 🎉
 
 ### 📝 Relatórios Disponíveis
 
@@ -224,7 +246,7 @@ Para informações detalhadas sobre versionamento, histórico de mudanças e roa
 
 ## 👥 Instituição
 
-**IDOR-SP** (Instituto D'Or de Pesquisa e Ensino)
+**HemoDoctor** (Instituto D'Or de Pesquisa e Ensino)
 - Desenvolvimento institucional
 - Validação clínica em ambiente real
 - Conformidade ética (CEP)
@@ -241,7 +263,7 @@ Este é um projeto de documentação técnica e regulatória de dispositivo méd
 
 ## 📞 Contato
 
-Para questões sobre o projeto ou submissões regulatórias, entre em contato através dos canais oficiais do IDOR-SP.
+Para questões sobre o projeto ou submissões regulatórias, entre em contato através dos canais oficiais do HemoDoctor.
 
 ---
 
