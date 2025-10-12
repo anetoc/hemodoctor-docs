@@ -1,8 +1,8 @@
 {
   "package": "HemoDoctor_ANVISA_Unified_Dossier",
-  "version": "v2.0-20251008",
-  "generated_at": "2025-10-08T10:30:00Z",
-  "generated_by": "@regulatory-documentation-specialist",
+  "version": "v1.0-20251012",
+  "generated_at": "2025-10-12T15:00:00Z",
+  "generated_by": "@documentation-finalization-specialist",
   "signing_method": "SHA-256 digests",
   "regulatory_status": "READY_FOR_SUBMISSION",
   "compliance": {
@@ -40,14 +40,14 @@
   },
   "files": [
     {
-      "file_name": "SRS-001_Software_Requirements_v1.1_OFICIAL.md",
-      "path": "02_CONTROLES_DESIGN/SRS/SRS-001_Software_Requirements_v1.1_OFICIAL.md",
-      "sha256": "a3e065634336fd78123a8e675f1689db3bf65d086d101a22a21de9cf5546ecdc",
-      "size_bytes": 39877,
+      "file_name": "SRS-001_Software_Requirements_v1.0_OFICIAL.md",
+      "path": "02_CONTROLES_DESIGN/SRS/SRS-001_Software_Requirements_v1.0_OFICIAL.md",
+      "sha256": "TO_BE_REGENERATED",
+      "size_bytes": 81920,
       "doc_id": "SRS-001",
-      "version": "v1.1",
-      "date": "2025-10-08",
-      "status": "UPDATED",
+      "version": "v1.0",
+      "date": "2025-10-12",
+      "status": "OFICIAL",
       "regulatory_class": "Class C",
       "category": "Core Technical",
       "traceability": [
