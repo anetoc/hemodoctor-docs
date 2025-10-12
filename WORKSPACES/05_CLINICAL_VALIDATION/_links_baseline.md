@@ -1,0 +1,7 @@
+# Links - Clinical Validation
+
+- [CER v1.2](../../AUTHORITATIVE_BASELINE/05_AVALIACAO_CLINICA/CER/CER-001_Clinical_Evaluation_Report_v1.2_OFICIAL.md)
+- [TST v1.0](../../AUTHORITATIVE_BASELINE/04_VERIFICACAO_VALIDACAO/TST/TST-001_Test_Specification_v1.0_OFICIAL.md)
+- [RMP v1.0](../../AUTHORITATIVE_BASELINE/03_GESTAO_RISCO/RMP/RMP-001_Risk_Management_Plan_v1.0_OFICIAL.md)
+
+**Atualização**: 12/10/2025
