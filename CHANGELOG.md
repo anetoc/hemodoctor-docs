@@ -8,9 +8,20 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Não Lançado]
 
 ### Em Desenvolvimento
+- Fase B: Completar Módulo 07 (Pós-Mercado) - Procedimentos e Formulários
 - Preparação final para submissão ANVISA
 - Regeneração de checksums SHA-256
-- Validação final de compliance
+
+### Adicionado Recentemente (12/10/2025)
+- ✅ **Fase C (CEP)**: Documentação para submissão CEP 50% completa
+  - PPC-001: Protocolo de Pesquisa Clínica v1.0 (n=1,500, 13 meses)
+  - TCLE-001: Termo de Consentimento v1.0 (CNS 466/2012 compliant)
+  - CRONOGRAMA-001: Cronograma Gantt v1.0
+  - Folha de Rosto + Checklist Plataforma Brasil
+- ✅ **Fase A (V&V)**: Módulo 04 100% completo (7 novos documentos)
+  - VVP-001: Verification & Validation Plan v1.0 (IEC 62304 §5.5-5.8)
+  - TESTREP-001 a 004: Relatórios de teste completos
+  - COV-001: Análise de cobertura (91.3% overall, 98.7% Class C)
 
 ---
 
