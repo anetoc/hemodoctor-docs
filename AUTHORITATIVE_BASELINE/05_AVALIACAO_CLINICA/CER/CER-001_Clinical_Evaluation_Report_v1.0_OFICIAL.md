@@ -1,8 +1,8 @@
 # CER-001 — Clinical Evaluation Report (Relatório de Avaliação Clínica)
 
 **Código:** CER-001
-**Versão:** v1.2 (OFICIAL)
-**Data:** 2025-10-08
+**Versão:** v1.0
+**Data:** 2025-10-12
 **Autor(es):** @clinical-evidence-specialist | Abel Costa
 **Revisores:** {Clinical Review Board}
 **Aprovadores:** {ANVISA Submission Team}
@@ -17,7 +17,7 @@
 
 **Changes from v1.1:**
 - ✅ **ANVISA RDC 657/2022 Article 6 Compliance Validation:** All 8 mandatory items verified
-- ✅ **Cross-references added:** SRS-001 v1.1, RMP-001 v1.0, PMS-001, IFU-001
+- ✅ **Cross-references added:** SRS-001 v1.0, RMP-001 v1.0, PMS-001 v1.0, IFU-001
 - ✅ **Performance claims aligned:** Sensitivity ≥90% (REQ-HD-001), Specificity ≥80% (target 85%)
 - ✅ **Risk-benefit analysis linked:** References RISK-HD-001 to RISK-HD-008 from RMP-001
 - ✅ **Post-market plan:** Explicit link to PMS-001 (tecnovigilância ANVISA)
@@ -94,7 +94,7 @@ This Clinical Evaluation Report (CER) complies with:
 The clinical evidence demonstrates that **HemoDoctor SaMD** has adequate clinical performance for its intended use, with an acceptable safety profile when used according to Instructions for Use (IFU-001). The benefit-risk analysis is **FAVORABLE** for ANVISA Class III approval.
 
 **Traceability:**
-- Performance claims → **SRS-001 v1.1** (REQ-HD-001: Sensitivity ≥90%)
+- Performance claims → **SRS-001 v1.0** (REQ-HD-001: Sensitivity ≥90%)
 - Safety profile → **RMP-001 v1.0** (RISK-HD-001 to RISK-HD-008)
 - Post-market monitoring → **PMS-001** (tecnovigilância ANVISA)
 - User instructions → **IFU-001** (Performance section, Limitations, Warnings)
@@ -133,7 +133,7 @@ Este Relatório de Avaliação Clínica (CER) está em conformidade com:
 A evidência clínica demonstra que o **HemoDoctor SaMD** apresenta desempenho clínico adequado para sua finalidade pretendida, com perfil de segurança aceitável quando utilizado conforme Instruções de Uso (IFU-001). A análise benefício-risco é **FAVORÁVEL** para aprovação ANVISA Classe III.
 
 **Rastreabilidade:**
-- Requisitos de desempenho → **SRS-001 v1.1** (REQ-HD-001: Sensibilidade ≥90%)
+- Requisitos de desempenho → **SRS-001 v1.0** (REQ-HD-001: Sensibilidade ≥90%)
 - Perfil de segurança → **RMP-001 v1.0** (RISK-HD-001 a RISK-HD-008)
 - Monitoramento pós-mercado → **PMS-001** (tecnovigilância ANVISA)
 - Instruções ao usuário → **IFU-001** (seção Desempenho, Limitações, Avisos)
@@ -214,7 +214,7 @@ Clinical evaluation performed in accordance with **ANVISA RDC 657/2022** and **M
 - ❌ Hemoglobinopathy diagnosis without CBC abnormalities
 - ❌ Treatment selection or dose calculation
 
-**Traceability:** → **SRS-001 v1.1 §1** (Scope) → **IFU-001** (Intended Use section)
+**Traceability:** → **SRS-001 v1.0 §1** (Scope) → **IFU-001** (Intended Use section)
 
 ### 4.2 Intended Patient Population
 
@@ -253,19 +253,19 @@ Clinical evaluation performed in accordance with **ANVISA RDC 657/2022** and **M
 > HemoDoctor achieves **sensitivity ≥90%** (target 91.2%) for detecting severe anemia requiring immediate clinical attention, reducing false negatives and missed diagnoses.
 
 **Evidence:** Retrospective study n=2,847, Sensitivity 91.2% (95% CI: 89.1%-93.3%)
-**Traceability:** → **SRS-001 v1.1 REQ-HD-001** → **TEST-HD-011** (ROC curves) → **RMP-001 RISK-HD-001** (False negative mitigation)
+**Traceability:** → **SRS-001 v1.0 REQ-HD-001** → **TEST-HD-011** (ROC curves) → **RMP-001 RISK-HD-001** (False negative mitigation)
 
 **CLAIM 2: Accurate Differential Diagnosis Suggestions**
 > HemoDoctor provides **differential diagnosis hypotheses** with specificity ≥80% (achieved 83.4%), minimizing false positive alerts and unnecessary investigations.
 
 **Evidence:** Retrospective study n=2,847, Specificity 83.4% (95% CI: 81.0%-85.8%)
-**Traceability:** → **SRS-001 v1.1 REQ-HD-001** → **RMP-001 RISK-HD-003** (False positive management)
+**Traceability:** → **SRS-001 v1.0 REQ-HD-001** → **RMP-001 RISK-HD-003** (False positive management)
 
 **CLAIM 3: Time-to-Diagnosis Reduction**
 > HemoDoctor reduces **Time-to-Diagnosis (TTD) by 35%** for iron deficiency anemia cases through automated pattern recognition and complementary test suggestions.
 
 **Evidence:** Prospective study n=1,523, Mean analysis time 2.3±0.8 min vs. 8.7±2.1 min manual (p<0.001)
-**Traceability:** → **SRS-001 v1.1 REQ-HD-001** → **PMS-001** (TTD monitoring KPI)
+**Traceability:** → **SRS-001 v1.0 REQ-HD-001** → **PMS-001** (TTD monitoring KPI)
 
 ### 5.2 Performance Metrics Summary
 
@@ -291,7 +291,7 @@ Clinical evaluation performed in accordance with **ANVISA RDC 657/2022** and **M
 | **Leukocytosis** | 345 | 87.8% (83.9-91.7%) | 85.7% (82.4-89.0%) |
 | **Neutropenia** | 178 | 86.5% (80.8-92.2%) | 87.1% (83.4-90.8%) |
 
-**Traceability:** → **SRS-001 v1.1** (Performance requirements) → **IFU-001** (Performance section - user information)
+**Traceability:** → **SRS-001 v1.0** (Performance requirements) → **IFU-001** (Performance section - user information)
 
 ### 5.3 Benchmarking Against Equivalent Devices
 
@@ -631,7 +631,7 @@ AND ("2018/01/01"[PDAT] : "2024/12/31"[PDAT])
 
 **Traceability:**
 - Safety data → **RMP-001 v1.0** (Risk analysis: RISK-HD-001 to RISK-HD-008)
-- User errors → **SRS-001 v1.1 REQ-HD-002** (Input validation), **REQ-HD-003** (Rationale transparency)
+- User errors → **SRS-001 v1.0 REQ-HD-002** (Input validation), **REQ-HD-003** (Rationale transparency)
 - Post-market → **PMS-001** (Tecnovigilância ANVISA, safety KPIs)
 - User information → **IFU-001** (Warnings, Contraindications, Limitations sections)
 
@@ -777,7 +777,7 @@ The clinical evidence demonstrates that:
 
 **Traceability:**
 - **RMP-001 v1.0:** Risk analysis (RISK-HD-001 to RISK-HD-008), residual risk evaluation
-- **SRS-001 v1.1:** Design controls (REQ-HD-001 to REQ-HD-015)
+- **SRS-001 v1.0:** Design controls (REQ-HD-001 to REQ-HD-015)
 - **PMS-001:** Post-market risk monitoring, safety KPIs
 - **IFU-001:** User warnings, contraindications, limitations
 
@@ -886,7 +886,7 @@ The clinical evidence demonstrates that:
 **Traceability:**
 - Warnings/Limitations → **IFU-001** (Sections 6-7)
 - Risk analysis → **RMP-001 v1.0** (RISK-HD-001 to RISK-HD-008)
-- Performance limitations → **SRS-001 v1.1** (Requirements specifications)
+- Performance limitations → **SRS-001 v1.0** (Requirements specifications)
 - Post-market monitoring → **PMS-001** (Track limitation-related issues)
 
 ---
@@ -1263,7 +1263,7 @@ The clinical evidence demonstrates that:
 
 ### 13.3 Internal Cross-References (HemoDoctor Dossier)
 
-44. **SRS-001 v1.1** - Software Requirements Specification. HemoDoctor SaMD. Version 1.1, 2025-10-08.
+44. **SRS-001 v1.0** - Software Requirements Specification. HemoDoctor SaMD. Version 1.1, 2025-10-08.
 
 45. **RMP-001 v1.0** - Risk Management Plan. HemoDoctor SaMD. Version 1.0, 2025-10-07.
 
@@ -1467,10 +1467,10 @@ Filters: Publication Year: 2018-2024; Content Type: Journals & Magazines
 ---
 
 **Cross-References Summary:**
-- **SRS-001 v1.1:** Requirements specifications (REQ-HD-001 to REQ-HD-015)
+- **SRS-001 v1.0:** Requirements specifications (REQ-HD-001 to REQ-HD-015)
 - **RMP-001 v1.0:** Risk analysis (RISK-HD-001 to RISK-HD-008)
 - **PMS-001:** Post-market surveillance (tecnovigilância, PMCF)
 - **IFU-001:** User instructions (Performance, Limitations, Warnings)
-- **TRC-001 v2.0:** Traceability matrix (Requirements ↔ Risks ↔ Tests ↔ Clinical Evidence)
+- **TRC-001 v1.0:** Traceability matrix (Requirements ↔ Risks ↔ Tests ↔ Clinical Evidence)
 
 **Document Integrity Hash (SHA-256):** [To be generated upon final approval]

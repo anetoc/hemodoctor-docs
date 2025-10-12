@@ -1,5 +1,6 @@
-# PMS-001 — Plano de Pós-Mercado & Tecnovigilância (v1.1)
-**Data:** 2025-09-18 00:19
+# PMS-001 — Plano de Pós-Mercado & Tecnovigilância (v1.0)
+**Data:** 2025-10-12
+**Status:** OFICIAL - Primeira Submissão ANVISA
 
 [ANCHOR:PMS_PLAN]
 ## 1. Plano e Objetivos
