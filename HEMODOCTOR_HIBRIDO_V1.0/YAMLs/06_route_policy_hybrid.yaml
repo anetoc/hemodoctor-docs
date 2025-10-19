@@ -1,0 +1,404 @@
+# 06_route_policy_hybrid.yaml
+# Política de Rota Única e Determinismo - Auditoria
+# Integração SADMH V2.3 + HemoDoctor Hybrid
+# Versão: v1.0.0
+# Data: 2025-10-19
+# Garantia de decisão determinística e rastreável
+
+version: route_policy_hybrid_v1.0.0
+module: route_determinism
+
+description: |
+  Módulo que garante rota única determinística para cada caso.
+  
+  **Princípios:**
+  - Mesmos inputs → sempre mesma decisão (route_id)
+  - Short-circuit para críticos (ordem rígida)
+  - Precedência para priorities (severity_weight + tie-break)
+  - Route_id = SHA256(evidences + syndromes + output_class + confidence)
+  - Alt_routes preservadas para auditoria (síndromes não selecionadas)
+  
+  **Auditoria:**
+  - Route_id garante reprodutibilidade
+  - Alt_routes mostram "caminho não trilhado"
+  - WORM log (módulo 08) registra tudo
+
+# =============================================================================
+# SEÇÃO 1: ENGINE CONFIGURATION
+# =============================================================================
+engine:
+  selection_mode: deterministic
+  short_circuit_enabled: true
+  
+  rationale: |
+    A seleção da rota é determinística, com curto-circuito para críticos e
+    desempate estável. A trilha de decisão (evidences→syndromes→output)
+    é serializada e hasheada em route_id (SHA256).
+    
+    **Garantias:**
+    - Reprodutibilidade: mesmo input → mesmo route_id
+    - Auditabilidade: route_id + WORM log = trilha completa
+    - Determinismo: sem randomização, sem probabilidades (V0)
+
+# =============================================================================
+# SEÇÃO 2: PRECEDENCE (ORDEM DE PRIORIDADE)
+# =============================================================================
+precedence:
+  
+  # ---------------------------------------------------------------------------
+  # CRÍTICOS: Short-Circuit (ordem rígida, primeiro verdadeiro vence)
+  # ---------------------------------------------------------------------------
+  critical_order:
+    description: |
+      Se qualquer síndrome crítica for verdadeira, sistema encerra análise
+      e retorna imediatamente (short-circuit). Ordem define precedência.
+    
+    order:
+      1: S-NEUTROPENIA-GRAVE     # ANC <0.5 (risco infeccioso extremo)
+      2: S-BLASTIC-SYNDROME      # Blastos presentes (leucemia aguda suspeita)
+      3: S-TMA                   # Esquistócitos + PLT <30 (emergência)
+      4: S-PLT-CRITICA           # PLT <20 (risco hemorrágico)
+      5: S-ANEMIA-GRAVE          # Hb <6.5 M ou <6.0 F (descompensação)
+      6: S-NEUTROFILIA-LEFTSHIFT-CRIT  # WBC >11 + left shift + CRP >10 (infecção grave)
+      7: S-THROMBOCITOSE-CRIT    # PLT ≥1000 (risco trombótico)
+      8: S-CIVD                  # ≥2 marcadores coagulopatia (consumo)
+      9: S-APL-SUSPEITA          # Promielócitos + coagulopatia (emergência hematológica)
+    
+    rationale: |
+      **Por que esta ordem?**
+      - Neutropenia grave primeiro: risco infeccioso imediato
+      - Blástica segundo: leucemia aguda requer confirmação urgente
+      - TMA terceiro: microangiopatia necessita esfregaço/plasmaferese
+      - PLT crítica: risco hemorrágico espontâneo
+      - Restantes por gravidade clínica
+    
+    short_circuit_logic: |
+      for syndrome_id in critical_order:
+          if syndrome_is_true(syndrome_id):
+              return {
+                  "output_class": "critical",
+                  "top_syndromes": [syndrome_id],
+                  "route_id": compute_route_id([syndrome_id]),
+                  "alt_routes": [other_true_syndromes]
+              }
+  
+  # ---------------------------------------------------------------------------
+  # PRIORITY: Ordenação por severity_weight + tie-break
+  # ---------------------------------------------------------------------------
+  priority:
+    description: |
+      Síndromes de prioridade são ordenadas por:
+      1. Severity_weight (manual, baseado em impacto clínico)
+      2. Tie-break lexicográfico (ID da síndrome, se empate)
+    
+    severity_weight:
+      # Score 0.0-1.0 (maior = mais grave)
+      S-CML: 0.95                    # BCR-ABL+ confirmado (neoplasia)
+      S-PNH: 0.95                    # Clone HPN (hemólise + trombose)
+      S-MM-MGUS: 0.90                # Gamopatia monoclonal (potencial mieloma)
+      S-MDS: 0.90                    # Displasia (risco leucemia)
+      S-HEMOLYSIS: 0.85              # Hemólise (anemia regenerativa)
+      S-EVANS: 0.85                  # AIHA + trombocitopenia (autoimune grave)
+      S-LYMPHOPROLIFERATIVE: 0.80    # Linfocitose clonal suspeita
+      S-MPN-POSSIBLE: 0.80           # JAK2/CALR/MPL+ (neoplasia)
+      S-PANCYTOPENIA: 0.80           # Tri-citopenias (aplasia/MDS/infiltração)
+      S-LEUCOERITROBLASTOSE: 0.75    # Reação leucoeritroblástica (infiltração/mielofibrose)
+      S-LEUCOEMOIDE: 0.75            # WBC >50 (reação vs LMC)
+      S-CMML-POSSIBLE: 0.75          # Monocitose persistente (neoplasia)
+      S-IDA: 0.80                    # IDA confirmada (tratável, mas prioridade)
+      S-ACD: 0.70                    # Anemia inflamatória (secundária)
+      S-IDA-INFLAM: 0.70             # Mista (ferro + inflamação)
+      S-BETA-THAL: 0.70              # Talassemia beta (diagnóstico genético)
+      S-ALFA-THAL: 0.65              # Talassemia alfa (trait comum)
+      S-MACRO-B12-FOLATE: 0.70       # Megaloblástica (tratável)
+      S-APLASIA-RETIC-LOW: 0.85      # Aplasia (crise aplástica grave)
+      S-HB-SICKLE: 0.75              # Anemia falciforme (vaso-oclusão)
+      S-EOSINOPHILIA: 0.60           # Eosinofilia (parasitas/alergia/clonal)
+      S-PTI: 0.70                    # Trombocitopenia imune (sangramento)
+      S-HIT-POSSIBLE: 0.80           # HIT (trombose paradoxal)
+      S-PSEUDO-THROMBO: 0.65         # Pseudo (artefato, mas precisa recoleta)
+      S-THROMBOCITOSE: 0.60          # Plaquetas altas (reativo vs clonal)
+      S-POLICITEMIA: 0.70            # Eritrocitose (PV vs secundária)
+      S-MONOCITOSE-CRONICA: 0.75     # CMML suspeita
+      S-BASOFILIA: 0.70              # Basofilia (LMC suspeita)
+    
+    tie_break:
+      method: lexicographic
+      description: "Se empate total de severity_weight, ordena pelo ID da síndrome (alfabético)"
+      example: "S-IDA (0.80) vs S-PANCYTOPENIA (0.80) → S-IDA primeiro (alfabético)"
+    
+    logic: |
+      def order_priorities(syndromes_true):
+          return sorted(
+              syndromes_true,
+              key=lambda s: (-severity_weight[s.id], s.id)
+          )
+  
+  # ---------------------------------------------------------------------------
+  # REVIEW_SAMPLE: Sempre prioridade máxima (mesmo acima de priority)
+  # ---------------------------------------------------------------------------
+  review_sample:
+    description: |
+      Erros pré-analíticos bloqueiam liberação de resultado.
+      Sempre retornam card "REVER AMOSTRA", independente de outras síndromes.
+    
+    syndromes: [S-REVIEW-SAMPLE]
+    
+    precedence_logic: |
+      if S-REVIEW-SAMPLE is true:
+          return {
+              "output_class": "review_sample",
+              "top_syndromes": ["S-REVIEW-SAMPLE"],
+              "route_id": compute_route_id(["S-REVIEW-SAMPLE"]),
+              "alt_routes": [all_other_true_syndromes],
+              "block_result_release": true
+          }
+  
+  # ---------------------------------------------------------------------------
+  # ROUTINE/BORDERLINE: Sem síndromes, gera orientação
+  # ---------------------------------------------------------------------------
+  routine:
+    description: "Hemograma normal ou valores borderline sem síndrome ativa"
+    output_class: ["routine_normal", "routine_borderline"]
+    precedence: "lowest (após critical, review_sample, priority)"
+
+# =============================================================================
+# SEÇÃO 3: ROUTE_ID (SHA256 HASH)
+# =============================================================================
+unique_route:
+  
+  algorithm: sha256
+  
+  description: |
+    Route_id é um hash SHA256 da trilha de decisão completa.
+    Garante: mesmos inputs → mesmo route_id (reprodutibilidade).
+  
+  path_fields:
+    - field: fired_evidences_sorted
+      description: "Lista ordenada de IDs de evidências disparadas (E-XXX)"
+      example: ["E-ANC-CRIT", "E-WBC-HIGH-11", "E-CRP-HIGH"]
+      sort: "alfabético (determinismo)"
+    
+    - field: accepted_syndromes_sorted
+      description: "Lista ordenada de IDs de síndromes aceitas (S-XXX)"
+      example: ["S-NEUTROPENIA-GRAVE"]
+      sort: "alfabético"
+    
+    - field: output_class
+      description: "Classe de card final"
+      example: "critical"
+      values: [critical, priority, review_sample, routine_normal, routine_borderline, c0_guidance]
+    
+    - field: confidence_bucket
+      description: "Nível de confiança (V0: sempre C2 se síndrome confirmada)"
+      example: "C1"
+      values: [C0, C1, C2]
+  
+  computation_logic: |
+    def compute_route_id(case):
+        # 1. Coletar evidências disparadas
+        fired_evidences = [e.id for e in case.evidences if e.present]
+        fired_evidences_sorted = sorted(fired_evidences)
+        
+        # 2. Coletar síndromes aceitas (após precedence)
+        accepted_syndromes = [s.id for s in case.syndromes if s.true]
+        accepted_syndromes_sorted = sorted(accepted_syndromes)
+        
+        # 3. Output class (do módulo 12)
+        output_class = case.output_class
+        
+        # 4. Confidence bucket (do módulo 05)
+        confidence_bucket = case.confidence
+        
+        # 5. Serializar
+        path_string = "|".join([
+            ",".join(fired_evidences_sorted),
+            ",".join(accepted_syndromes_sorted),
+            output_class,
+            confidence_bucket
+        ])
+        
+        # 6. Hash SHA256
+        import hashlib
+        route_id = hashlib.sha256(path_string.encode('utf-8')).hexdigest()
+        
+        return route_id
+    
+    # Exemplo:
+    # fired_evidences_sorted = ["E-ANC-CRIT", "E-WBC-HIGH-11"]
+    # accepted_syndromes_sorted = ["S-NEUTROPENIA-GRAVE"]
+    # output_class = "critical"
+    # confidence_bucket = "C2"
+    # 
+    # path_string = "E-ANC-CRIT,E-WBC-HIGH-11|S-NEUTROPENIA-GRAVE|critical|C2"
+    # route_id = sha256(path_string) = "abc123def456..."
+  
+  alt_routes_policy:
+    description: |
+      Outras síndromes verdadeiras (não selecionadas por precedence) são registradas
+      como alt_routes no WORM log (módulo 08).
+      
+      **Utilidade:**
+      - Auditoria: mostra "caminho não trilhado"
+      - Análise retrospectiva: quais síndromes co-ocorrem
+      - Debugging: por que síndrome X não foi escolhida?
+    
+    example: |
+      # Caso: anemia grave + IDA confirmada
+      syndromes_true = [S-ANEMIA-GRAVE (critical), S-IDA (priority)]
+      
+      # Precedence: S-ANEMIA-GRAVE vence (critical > priority)
+      top_syndromes = [S-ANEMIA-GRAVE]
+      alt_routes = [S-IDA]
+      
+      # Card mostra: "CRÍTICO: S-ANEMIA-GRAVE"
+      # WORM log registra: alt_routes = ["S-IDA"]
+      # Auditoria: "IDA estava presente mas não foi mostrada (critical teve precedência)"
+
+# =============================================================================
+# SEÇÃO 4: IDs CONVENTION (NOMENCLATURA)
+# =============================================================================
+ids_convention:
+  
+  rule_prefix:
+    symbol: "E-"
+    description: "Evidências (regras atômicas)"
+    examples: ["E-ANC-CRIT", "E-HB-LOW", "E-PLT-URGENT-LOW-30"]
+  
+  syndrome_prefix:
+    symbol: "S-"
+    description: "Síndromes (fusão de evidências)"
+    examples: ["S-IDA", "S-TMA", "S-NEUTROPENIA-GRAVE"]
+  
+  flow_prefix:
+    symbol: "F-"
+    description: "Flows (séries hematológicas)"
+    examples: ["F-RED", "F-WHITE", "F-PLT", "F-GLOBAL"]
+  
+  naming_rules:
+    - "IDs devem ser UPPERCASE"
+    - "Palavras separadas por hífen (-)"
+    - "Prefixo obrigatório (E-/S-/F-)"
+    - "Sem espaços, sem acentos, sem símbolos especiais"
+    - "Máximo 50 caracteres"
+
+# =============================================================================
+# SEÇÃO 5: FLOWS (SÉRIES HEMATOLÓGICAS)
+# =============================================================================
+flows:
+  
+  - id: F-RED
+    name: Série Vermelha
+    description: "Eritrócitos, hemoglobina, índices eritrocitários"
+    evidences: [E-HB-CRIT-LOW, E-ANEMIA, E-MICROCYTOSIS, E-MACROCYTOSIS, E-RDW-HIGH, ...]
+    syndromes: [S-ANEMIA-GRAVE, S-IDA, S-IDA-INFLAM, S-BETA-THAL, S-ALFA-THAL, S-MACRO-B12-FOLATE, S-HEMOLYSIS, ...]
+  
+  - id: F-WHITE
+    name: Série Branca
+    description: "Leucócitos, neutrófilos, linfócitos, morfologia"
+    evidences: [E-ANC-CRIT, E-ANC-SEVERE, E-WBC-HIGH-11, E-BLASTS-PRESENT, E-LEFT-SHIFT-MORPH, ...]
+    syndromes: [S-NEUTROPENIA-GRAVE, S-BLASTIC-SYNDROME, S-NEUTROFILIA-LEFTSHIFT-CRIT, S-LYMPHOPROLIFERATIVE, S-CML, ...]
+  
+  - id: F-PLT
+    name: Série Plaquetária
+    description: "Plaquetas, MPV, morfologia plaquetária"
+    evidences: [E-PLT-CRIT-LOW-20, E-PLT-URGENT-LOW-30, E-THROMBOCYTOSIS, E-PSEUDO-THROMBO, E-SCHISTOCYTES-PRESENT, ...]
+    syndromes: [S-PLT-CRITICA, S-TMA, S-THROMBOCITOSE, S-THROMBOCITOSE-CRIT, S-PTI, S-HIT-POSSIBLE, S-PSEUDO-THROMBO, ...]
+  
+  - id: F-GLOBAL
+    name: Fusão/DAG Cross-Séries
+    description: "Síndromes que envolvem múltiplas séries"
+    syndromes: [S-TMA (PLT + hemólise), S-CIVD (PLT + coagulação), S-PANCYTOPENIA (todas 3 séries), S-LEUCOERITROBLASTOSE, ...]
+
+# =============================================================================
+# SEÇÃO 6: VALIDATION E TESTING
+# =============================================================================
+validation:
+  
+  reproducibility_tests:
+    - name: "Mesmos inputs → mesmo route_id"
+      description: "Executar 100x com inputs idênticos, verificar route_id único"
+      expected: "route_id sempre igual"
+    
+    - name: "Short-circuit ordem rígida"
+      description: "Se múltiplos críticos verdadeiros, primeiro da lista vence"
+      test_cases:
+        - input: {S-NEUTROPENIA-GRAVE: true, S-TMA: true}
+          expected_top: "S-NEUTROPENIA-GRAVE"
+          expected_alt_routes: ["S-TMA"]
+        
+        - input: {S-BLASTIC-SYNDROME: true, S-NEUTROPENIA-GRAVE: true}
+          expected_top: "S-NEUTROPENIA-GRAVE"
+          expected_alt_routes: ["S-BLASTIC-SYNDROME"]
+    
+    - name: "Priority ordenação por severity_weight"
+      description: "Sem críticos, ordena por severity_weight"
+      test_cases:
+        - input: {S-IDA: true, S-EOSINOPHILIA: true}
+          expected_top: "S-IDA"  # 0.80 > 0.60
+        
+        - input: {S-CML: true, S-IDA: true, S-THROMBOCITOSE: true}
+          expected_top: "S-CML"  # 0.95 > 0.80 > 0.60
+    
+    - name: "Review_sample sempre prioridade"
+      description: "S-REVIEW-SAMPLE bloqueia tudo"
+      test_cases:
+        - input: {S-REVIEW-SAMPLE: true, S-NEUTROPENIA-GRAVE: true}
+          expected_output_class: "review_sample"
+          expected_top: "S-REVIEW-SAMPLE"
+          expected_alt_routes: ["S-NEUTROPENIA-GRAVE"]
+  
+  audit_trail_tests:
+    - name: "Alt_routes preservadas"
+      description: "Síndromes não selecionadas aparecem em alt_routes"
+      test_cases:
+        - input: {S-IDA: true, S-HEMOLYSIS: true}
+          expected_top: "S-HEMOLYSIS"  # 0.85 > 0.80
+          expected_alt_routes: ["S-IDA"]
+    
+    - name: "Route_id único por decisão"
+      description: "Decisões diferentes → route_id diferentes"
+      test_cases:
+        - input_1: {S-IDA: true}
+          route_id_1: "abc123..."
+        - input_2: {S-HEMOLYSIS: true}
+          route_id_2: "def456..."
+        - assertion: route_id_1 != route_id_2
+
+# =============================================================================
+# SEÇÃO 7: METADATA
+# =============================================================================
+metadata:
+  version: "v1.0.0"
+  module: "route_policy"
+  dependencies:
+    - "03_syndromes_hybrid.yaml (síndromes)"
+    - "02_evidence_hybrid.yaml (evidências)"
+    - "08_wormlog_hybrid.yaml (auditoria)"
+  
+  critical_syndromes_count: 9
+  priority_syndromes_count: 25
+  flows_count: 4
+  
+  determinism_guarantee:
+    description: "Rota única garantida para cada caso"
+    mechanisms:
+      - "Short-circuit para críticos (ordem rígida)"
+      - "Severity_weight + tie-break lexicográfico"
+      - "Route_id = SHA256(evidences + syndromes + output_class + confidence)"
+      - "Alt_routes preservadas para auditoria"
+
+notes: |
+  - Route policy garante determinismo (mesmos inputs → mesma decisão)
+  - Short-circuit para críticos (primeiro verdadeiro vence)
+  - Priority ordenada por severity_weight (impacto clínico)
+  - Route_id = SHA256 para reprodutibilidade e auditoria
+  - Alt_routes preservadas no WORM log (transparência)
+  - IDs seguem convenção rígida (E-/S-/F- + UPPERCASE)
+  - Flows agrupam evidências/síndromes por série hematológica
+  - Review_sample sempre tem precedência (bloqueia resultado)
+
+# =============================================================================
+# FIM DO ARQUIVO
+# =============================================================================
+
