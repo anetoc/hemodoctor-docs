@@ -1,0 +1,389 @@
+# 07_conflict_matrix_hybrid.yaml
+# Matriz de Conflitos Entre Síndromes - Auditoria
+# Integração SADMH V2.3 + HemoDoctor Hybrid
+# Versão: v1.0.0
+# Data: 2025-10-19
+# Gestão de síndromes mutuamente exclusivas ou conflitantes
+
+version: conflict_matrix_hybrid_v1.0.0
+module: conflict_resolution
+
+description: |
+  Módulo que define conflitos entre síndromes e estratégias de resolução.
+  
+  **Tipos de Conflito:**
+  - **Negative (forte):** Síndromes mutuamente exclusivas (ex: TMA × PTI)
+  - **Soft (brando):** Síndromes que co-ocorrem mas reduzem confiança (ex: Reativa × Clonal)
+  
+  **Resolução:**
+  - V0 (determinístico): Precedence (módulo 06) resolve por ordem rígida
+  - V1 (probabilístico): Penalties nos scores antes do threshold
+  
+  **Auditoria:**
+  - Conflitos detectados são registrados no WORM log
+  - Sistema sempre explica por que síndrome X foi escolhida vs síndrome Y
+
+# =============================================================================
+# SEÇÃO 1: NEGATIVE PAIRS (CONFLITOS FORTES)
+# =============================================================================
+negative_pairs:
+  description: |
+    Síndromes mutuamente exclusivas ou que enfraquecem significativamente
+    uma à outra. Sistema deve escolher UMA das duas (nunca ambas).
+  
+  rules:
+    
+    # -------------------------------------------------------------------------
+    # SÉRIE PLAQUETÁRIA
+    # -------------------------------------------------------------------------
+    
+    - pair: [S-TMA, S-PTI]
+      rationale: |
+        TMA: microangiopatia (PLT baixa + esquistócitos + hemólise)
+        PTI: trombocitopenia imune (PLT baixa ISOLADA, sem hemólise)
+        
+        **Conflito:** Se esquistócitos presentes → TMA (não PTI)
+      resolution:
+        v0: "Precedence: S-TMA (critical) > S-PTI (priority)"
+        v1: "S-PTI score -= 0.30 se S-TMA score alto"
+      
+      exception: |
+        Se PTI tratada evoluiu para TMA (raro), ambas podem ser verdadeiras.
+        Neste caso, S-TMA tem precedência.
+    
+    - pair: [S-TMA, S-THROMBOCITOSE]
+      rationale: |
+        TMA: consumo plaquetário (PLT baixa)
+        Trombocitose: excesso plaquetário (PLT alta)
+        
+        **Conflito:** Fisiopatologias opostas, impossível co-ocorrer.
+      resolution:
+        v0: "Precedence: S-TMA (critical) > S-THROMBOCITOSE (priority)"
+        v1: "N/A (nunca co-ocorrem)"
+    
+    - pair: [S-PSEUDO-THROMBO, S-PLT-CRITICA]
+      rationale: |
+        Pseudo: artefato (clumps/EDTA)
+        PLT crítica: trombocitopenia verdadeira
+        
+        **Conflito:** Se pseudo confirmada → PLT real é normal (não crítica)
+      resolution:
+        v0: "S-PSEUDO-THROMBO sempre tem precedência (bloqueia liberação)"
+        v1: "N/A (rever amostra antes de classificar)"
+    
+    - pair: [S-THROMBOCITOSE, S-THROMBOCITOSE-CRIT]
+      rationale: |
+        Trombocitose moderada: PLT 450-1000
+        Trombocitose crítica: PLT ≥1000
+        
+        **Conflito:** Apenas uma pode ser verdadeira (limiar diferente)
+      resolution:
+        v0: "Precedence: S-THROMBOCITOSE-CRIT (critical) > S-THROMBOCITOSE (priority)"
+        v1: "N/A (threshold resolve)"
+    
+    # -------------------------------------------------------------------------
+    # SÉRIE VERMELHA
+    # -------------------------------------------------------------------------
+    
+    - pair: [S-IDA, S-ALFA-THAL]
+      rationale: |
+        IDA: microcitose por deficiência de ferro (ferritina <30)
+        Alfa-tal: microcitose genética (ferritina normal, RBC elevado)
+        
+        **Conflito:** Se ferritina normal E RBC elevado → alfa-tal (não IDA)
+      resolution:
+        v0: "Ferritina baixa → S-IDA; Ferritina normal + RBC alto → S-ALFA-THAL"
+        v1: "Penalizar síndrome menos provável"
+      
+      exception: |
+        IDA + talassemia trait podem co-ocorrer (comum em mulheres).
+        Neste caso, tratar IDA primeiro e reavaliar.
+    
+    - pair: [S-IDA, S-ACD]
+      rationale: |
+        IDA: ferropenia pura (ferritina <30, CRP normal)
+        ACD: anemia inflamatória (ferritina 30-100, CRP >10)
+        
+        **Conflito:** Padrões opostos de ferritina/CRP
+      resolution:
+        v0: |
+          Se ferritina <30 E CRP ≤10 → S-IDA
+          Se ferritina 30-100 E CRP >10 → S-ACD
+          Se ferritina 30-100 E CRP ≤10 → ambíguo (S-IDA-INFLAM)
+        v1: "Penalizar síndrome menos consistente com ferritina/CRP"
+      
+      exception: |
+        IDA + inflamação crônica = anemia mista (S-IDA-INFLAM).
+        Ambas podem contribuir.
+    
+    - pair: [S-BETA-THAL, S-ALFA-THAL]
+      rationale: |
+        Beta-tal: HbA2 >3.5%
+        Alfa-tal: HbA2 normal (<3.5%)
+        
+        **Conflito:** HbA2 diferencia as duas (diagnóstico genético)
+      resolution:
+        v0: "HbA2 decide diretamente (threshold)"
+        v1: "N/A (diagnóstico definitivo)"
+      
+      exception: |
+        Duplo heterozigoto (beta-tal trait + alfa-tal trait) é possível
+        mas raro. HbA2 pode estar falsamente normal. Consultar hematologista.
+    
+    # -------------------------------------------------------------------------
+    # SÉRIE BRANCA
+    # -------------------------------------------------------------------------
+    
+    - pair: [S-LEUCOEMOIDE, S-CML]
+      rationale: |
+        Leucemoide: reação (WBC >50, BCR-ABL negativo)
+        CML: neoplasia (WBC >50, BCR-ABL positivo)
+        
+        **Conflito:** BCR-ABL diferencia (definitivo)
+      resolution:
+        v0: "BCR-ABL+ → S-CML; BCR-ABL- → S-LEUCOEMOIDE"
+        v1: "N/A (diagnóstico molecular definitivo)"
+    
+    - pair: [S-NEUTROFILIA-REACTIVE, S-LEUCOEMOIDE]
+      rationale: |
+        Neutrofilia reativa: WBC 11-50
+        Leucemoide: WBC ≥50
+        
+        **Conflito:** Apenas threshold (não verdadeiro conflito)
+      resolution:
+        v0: "Threshold resolve (WBC <50 vs ≥50)"
+        v1: "Soft penalty se ambos verdadeiros (zona cinzenta)"
+      
+      soft_conflict: true
+    
+    - pair: [S-LYMPHOCYTOSIS-REACTIVE, S-LYMPHOPROLIFERATIVE]
+      rationale: |
+        Reativa: viral (EBV/CMV), morfologia atípica, transitória
+        Clonal: LLC (flow+), morfologia típica, persistente
+        
+        **Conflito:** Tempo (reativa resolve <8 sem; clonal persiste)
+      resolution:
+        v0: "Se persistência <8 sem → reativa; Se ≥8 sem → suspeitar clonal (flow)"
+        v1: "Penalizar clonal se clínica aguda; penalizar reativa se persistente"
+      
+      soft_conflict: true
+    
+    # -------------------------------------------------------------------------
+    # MÚLTIPLAS SÉRIES
+    # -------------------------------------------------------------------------
+    
+    - pair: [S-THROMBOCITOSE, S-MPN-POSSIBLE]
+      rationale: |
+        Trombocitose reativa: PLT >450, ferritina baixa OU CRP >10
+        MPN: PLT >450, JAK2/CALR/MPL+, sem reatividade
+        
+        **Conflito:** Reativa vs clonal (contexto diferencia)
+      resolution:
+        v0: |
+          Se PLT >450 E (ferritina <30 OU CRP >10) → S-THROMBOCITOSE (reativa)
+          Se PLT >450 E JAK2/CALR/MPL+ → S-MPN-POSSIBLE
+          Se ambos ausentes → solicitar ambos (persistência decide)
+        v1: "Penalizar MPN se marcadores reativos presentes"
+      
+      soft_conflict: true
+    
+    - pair: [S-ANEMIA-GRAVE, S-APLASIA-RETIC-LOW]
+      rationale: |
+        Anemia grave: Hb <6.5 (qualquer causa)
+        Aplasia: Hb baixo + reticulócitos <50
+        
+        **Conflito:** Aplasia é CAUSA de anemia grave (não exclusão)
+      resolution:
+        v0: "Ambas verdadeiras (aplasia é subtipar anemia)"
+        v1: "N/A (não conflitam)"
+      
+      no_conflict: true
+      note: "Incluído por completude; não conflitam de fato"
+
+# =============================================================================
+# SEÇÃO 2: SOFT CONFLICTS (CONFLITOS BRANDOS)
+# =============================================================================
+soft_conflicts:
+  description: |
+    Síndromes que podem co-ocorrer mas reduzem confiança uma da outra.
+    Sistema mantém ambas mas penaliza scores (V1).
+  
+  rules:
+    
+    - pair: [S-NEUTROFILIA-REACTIVE, S-LEUCOEMOIDE]
+      reason: "Zona cinzenta (WBC 40-60) - ambas plausíveis"
+      v0_action: "Escolher por threshold (>50 = leucemoide)"
+      v1_penalty: -0.15
+    
+    - pair: [S-LYMPHOCYTOSIS-REACTIVE, S-LYMPHOPROLIFERATIVE]
+      reason: "Tempo e morfologia resolvem (transitória vs persistente)"
+      v0_action: "Se <8 sem → reativa; se ≥8 sem → suspeitar clonal"
+      v1_penalty: -0.15
+    
+    - pair: [S-IDA, S-ALFA-THAL]
+      reason: "IDA + talassemia trait co-ocorrem (comum em mulheres)"
+      v0_action: "Tratar IDA primeiro, reavaliar MCV após 3 meses"
+      v1_penalty: -0.10
+    
+    - pair: [S-THROMBOCITOSE, S-MPN-POSSIBLE]
+      reason: "Reativa vs clonal (marcadores moleculares decidem)"
+      v0_action: "Se reativo presente → trombocitose; se JAK2+ → MPN"
+      v1_penalty: -0.20
+
+# =============================================================================
+# SEÇÃO 3: RESOLUTION POLICY
+# =============================================================================
+resolution:
+  
+  policy: precedence_then_penalty
+  
+  description: |
+    **V0 (determinístico):**
+    - Precedence (módulo 06) resolve conflitos por ordem rígida
+    - Negative pairs: escolhe síndrome de maior precedência
+    - Soft conflicts: mantém ambas, mas precedência define qual mostrar
+    
+    **V1 (probabilístico com calibração):**
+    - Penalties aplicadas aos scores antes do threshold
+    - Negative: -0.30 (forte)
+    - Soft: -0.15 (brando)
+    - Síndrome com score abaixo do threshold é suprimida
+  
+  penalties:
+    negative: -0.30
+    soft: -0.15
+  
+  notes: |
+    V0 (atual) usa apenas precedence (módulo 06).
+    V1 (futuro) aplicará penalties + Platt calibration.
+  
+  example_v0:
+    case: "PLT <30 + esquistócitos + haptoglobina <40"
+    syndromes_true: [S-TMA (critical), S-PTI (priority)]
+    conflict_detected: [S-TMA, S-PTI]
+    resolution: "Precedence: S-TMA (critical) > S-PTI (priority)"
+    output: "CRÍTICO: S-TMA"
+    alt_routes: ["S-PTI"]
+  
+  example_v1:
+    case: "PLT >450 + ferritina 25 + JAK2+ (dados conflitantes)"
+    syndromes_true: [S-THROMBOCITOSE (score 0.80), S-MPN-POSSIBLE (score 0.75)]
+    conflict_detected: [S-THROMBOCITOSE, S-MPN-POSSIBLE]
+    penalties_applied:
+      S-MPN-POSSIBLE: "-0.20 (soft conflict due to ferritina baixa)"
+    scores_after_penalty:
+      S-THROMBOCITOSE: 0.80
+      S-MPN-POSSIBLE: 0.55
+    threshold: 0.60
+    resolution: "S-THROMBOCITOSE passa threshold; S-MPN-POSSIBLE suprimida"
+    output: "PRIORIDADE: S-THROMBOCITOSE"
+    alt_routes: ["S-MPN-POSSIBLE (suppressed by soft conflict)"]
+
+# =============================================================================
+# SEÇÃO 4: VALIDATION
+# =============================================================================
+validation:
+  
+  test_cases:
+    
+    - name: "TMA vs PTI (negative pair)"
+      input: {plt: 25, esquistocitos: true, ldh: 980}
+      syndromes_detected: [S-TMA, S-PTI]
+      conflict: [S-TMA, S-PTI]
+      expected_resolution: "S-TMA (precedence critical > priority)"
+      expected_output: "CRÍTICO: S-TMA"
+      expected_alt_routes: ["S-PTI"]
+    
+    - name: "IDA vs Alfa-tal (negative pair)"
+      input: {mcv: 72, rdw: 12, ferritin: 35, rbc: 5.8}
+      syndromes_detected: [S-IDA, S-ALFA-THAL]
+      conflict: [S-IDA, S-ALFA-THAL]
+      expected_resolution: "S-ALFA-THAL (ferritina normal + RBC elevado)"
+      expected_output: "PRIORIDADE: S-ALFA-THAL"
+    
+    - name: "Reativa vs Clonal (soft conflict)"
+      input: {lymphocytes_abs: 6.0, linfocitos_atipicos: true}
+      syndromes_detected: [S-LYMPHOCYTOSIS-REACTIVE, S-LYMPHOPROLIFERATIVE]
+      conflict: [S-LYMPHOCYTOSIS-REACTIVE, S-LYMPHOPROLIFERATIVE]
+      expected_resolution: "S-LYMPHOCYTOSIS-REACTIVE (morfologia atípica sugere viral)"
+      expected_output: "PRIORIDADE: S-LYMPHOCYTOSIS-REACTIVE"
+      expected_next_steps: ["Repetir CBC 4-8 sem", "Flow se persistir"]
+    
+    - name: "Pseudo vs PLT crítica (negative pair, blocker)"
+      input: {plt: 85, mpv: 13.5, aglomerados_plaquetarios: true}
+      syndromes_detected: [S-PSEUDO-THROMBO, S-PLT-CRITICA]
+      conflict: [S-PSEUDO-THROMBO, S-PLT-CRITICA]
+      expected_resolution: "S-PSEUDO-THROMBO (sempre precedência)"
+      expected_output: "REVER AMOSTRA"
+      expected_block_result: true
+
+# =============================================================================
+# SEÇÃO 5: AUDIT TRAIL
+# =============================================================================
+audit_trail:
+  
+  description: |
+    Conflitos detectados e resolvidos são registrados no WORM log (módulo 08).
+    Auditoria completa permite rastreabilidade de decisões.
+  
+  wormlog_fields:
+    conflicts_detected:
+      description: "Lista de pares em conflito detectados"
+      example: [["S-TMA", "S-PTI"], ["S-IDA", "S-ALFA-THAL"]]
+    
+    conflicts_resolved:
+      description: "Como cada conflito foi resolvido"
+      example:
+        - conflict: ["S-TMA", "S-PTI"]
+          resolution: "Precedence: S-TMA (critical) > S-PTI (priority)"
+          chosen: "S-TMA"
+          suppressed: "S-PTI"
+    
+    penalties_applied:
+      description: "Penalties aplicadas (V1 apenas)"
+      example:
+        - syndrome: "S-MPN-POSSIBLE"
+          penalty: -0.20
+          reason: "Soft conflict with S-THROMBOCITOSE (ferritina baixa presente)"
+  
+  transparency:
+    requirement: |
+      Sistema DEVE sempre explicar por que síndrome X foi escolhida vs síndrome Y.
+      Usuário pode consultar WORM log para detalhes completos.
+    
+    example_card_footer: |
+      **Conflitos detectados:** S-TMA × S-PTI  
+      **Resolução:** S-TMA selecionada (precedência: critical > priority)  
+      **Síndrome suprimida:** S-PTI (registrada em alt_routes)
+
+# =============================================================================
+# SEÇÃO 6: METADATA
+# =============================================================================
+metadata:
+  version: "v1.0.0"
+  module: "conflict_matrix"
+  dependencies:
+    - "06_route_policy_hybrid.yaml (precedence)"
+    - "08_wormlog_hybrid.yaml (auditoria)"
+  
+  negative_pairs_count: 12
+  soft_conflicts_count: 4
+  
+  resolution_strategy:
+    v0: "precedence (determinístico)"
+    v1: "penalties + Platt calibration"
+
+notes: |
+  - Conflict matrix define pares de síndromes mutuamente exclusivas (negative) ou que reduzem confiança (soft)
+  - V0 (atual) usa precedence (módulo 06) para resolver
+  - V1 (futuro) aplicará penalties nos scores antes do threshold
+  - Conflitos detectados e resolvidos são registrados no WORM log
+  - Sistema SEMPRE explica decisão (transparência)
+  - Negative pairs: -0.30 penalty (V1)
+  - Soft conflicts: -0.15 penalty (V1)
+  - Casos especiais (ex: IDA + talassemia) têm exceções documentadas
+
+# =============================================================================
+# FIM DO ARQUIVO
+# =============================================================================
+

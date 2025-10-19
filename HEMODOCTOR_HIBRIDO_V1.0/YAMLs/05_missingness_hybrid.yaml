@@ -1,0 +1,551 @@
+# 05_missingness_hybrid.yaml
+# Políticas de Missingness e Abstenção Híbridas
+# Versão: v1.0.0
+# Data: 2025-10-19
+# Total: 26 policies (1 global + 25 específicas)
+
+version: missingness_hybrid_v1.0.0
+
+# =============================================================================
+# POLÍTICA GLOBAL DE ABSTENÇÃO (>30% missing → C0)
+# =============================================================================
+global_policy:
+  threshold: 0.30
+  action: "abstain"
+  confidence: "C0"
+  message_template: |
+    Dados insuficientes para conclusão definitiva.
+    
+    Taxa de campos-chave ausentes: {missing_pct}%
+    Threshold configurado: 30%
+    
+    Campos críticos faltantes: {missing_fields_list}
+    
+    **Recomendação:** Solicitar os exames listados acima antes de prosseguir com decisão clínica.
+  
+  exceptions:
+    - "Síndromes com short_circuit=true sempre retornam decisão (C2) mesmo com missing >30%"
+    - "S-PRE-ANALITICO não aplica regra global (erro de amostra)"
+    - "S-INCONCLUSIVO é fallback quando nenhuma síndrome ativa"
+  
+  calculation_method: |
+    missing_rate = (count_missing_required_fields) / (count_total_required_fields)
+    
+    Onde:
+    - missing_required_fields: campos marcados como "required: true" em 02_evidence_hybrid.yaml
+      E listados como "missing_fields_warn" na síndrome específica em 03_syndromes_hybrid.yaml
+    - total_required_fields: todos os campos "missing_fields_warn" da síndrome
+
+# =============================================================================
+# POLÍTICAS ESPECÍFICAS POR SÍNDROME (25 policies)
+# =============================================================================
+policies:
+  # =============================
+  # CRÍTICAS
+  # =============================
+  
+  # 1. S-BLASTIC-SYNDROME
+  - target: "S-BLASTIC-SYNDROME"
+    missing: "morphology.blastos unknown"
+    severity: "critical"
+    fallback:
+      confidence: "C1"
+      action: |
+        WBC muito elevado ({wbc} ×10⁹/L) + citopenias presentes → suspeita blástica mantida.
+        
+        **Ação urgente obrigatória:**
+        - Esfregaço manual urgente para identificar blastos
+        - Imunofenotipagem por citometria de fluxo (STAT)
+        - BCR-ABL se left shift (descartar crise blástica LMC)
+      required_fields: ["wbc", "plt", "anc", "morphology.blastos"]
+      degradation_logic: "Se WBC>100 OU (PLT<10 E ANC<0.5): manter C1; Caso contrário: C0"
+  
+  # 2. S-TMA
+  - target: "S-TMA"
+    missing: "morphology.esquistocitos unknown"
+    severity: "critical"
+    fallback:
+      confidence: "C1"
+      action: |
+        Plaquetopenia crítica (PLT {plt} ×10⁹/L) + padrão de hemólise presente.
+        
+        **Ação urgente obrigatória:**
+        - Esfregaço manual urgente (quantificar esquistócitos ≥1%)
+        - Se esquistócitos confirmados: PLASMIC score + ADAMTS13
+        - LDH, bilirrubina indireta, haptoglobina, creatinina
+      required_fields: ["plt", "ldh", "bt_indireta", "haptoglobin", "morphology.esquistocitos"]
+      degradation_logic: "Se PLT<10 E (LDH>500 OU hapto<40): manter C1; Caso contrário: C0"
+  
+  # 3. S-CIVD
+  - target: "S-CIVD"
+    missing: "d_dimer absent OR fibrinogenio absent"
+    severity: "critical"
+    fallback:
+      confidence: "C0"
+      action: |
+        **Abstenção obrigatória:** Apenas D-dímero isolado não confirma CIVD.
+        
+        **Exames obrigatórios para conclusão:**
+        - D-dímero
+        - Fibrinogênio
+        - PT (Tempo de Protrombina)
+        - APTT (Tempo de Tromboplastina Parcial Ativada)
+        
+        **Critério CIVD:** Requer ≥2 marcadores alterados
+      required_fields: ["d_dimer", "fibrinogenio", "pt", "aptt"]
+      degradation_logic: "Sempre C0 se <2 marcadores disponíveis"
+  
+  # 4. S-NEUTROFILIA-LEFTSHIFT-CRIT
+  - target: "S-NEUTROFILIA-LEFTSHIFT-CRIT"
+    missing: "crp unknown AND morphology.bastoes unknown"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Leucocitose presente (WBC {wbc} ×10⁹/L) mas sem CRP ou morfologia confirmatória.
+        
+        **Ação recomendada:**
+        - CRP urgente
+        - Esfregaço manual (confirmar left shift: bastões/mielócitos)
+        - Hemoculturas se febre
+      required_fields: ["crp", "morphology.bastoes", "wbc", "anc"]
+      degradation_logic: "De critical para priority se CRP ausente"
+  
+  # =============================
+  # PRIORITY
+  # =============================
+  
+  # 5. S-PSEUDO-THROMBO
+  - target: "S-PSEUDO-THROMBO"
+    missing: "morphology.aglomerados_plaquetarios unknown"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        PLT baixa ({plt} ×10⁹/L) + MPV elevado ({mpv} fL) → suspeita pseudo-trombocitopenia.
+        
+        **Ação obrigatória:**
+        - Recoleta em citrato de sódio ou PLT-F (EDTA-free)
+        - Esfregaço manual para confirmar aglomerados plaquetários
+        - NÃO liberar resultado até confirmação
+      required_fields: ["plt", "mpv", "morphology.aglomerados_plaquetarios"]
+      degradation_logic: "Se PLT<100 E MPV>12: manter C1; Caso contrário: C0"
+  
+  # 6. S-IDA
+  - target: "S-IDA"
+    missing: "ferritin absent AND tsat absent"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Anemia microcítica (MCV {mcv} fL) com RDW elevado ({rdw}%) → padrão sugestivo de IDA.
+        
+        **Exames recomendados para confirmação:**
+        - Ferritina sérica (diagnóstico se <30 ng/mL)
+        - Saturação de transferrina (TSat <20%)
+        - CRP (diferenciar IDA pura de anemia inflamatória)
+      required_fields: ["ferritin", "tsat", "crp"]
+      degradation_logic: "Microcitose + RDW alto suficiente para C1; C2 se ferritina confirmada"
+  
+  # 7. S-IDA-INFLAM
+  - target: "S-IDA-INFLAM"
+    missing: "tsat absent OR crp absent"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Anemia microcítica (MCV {mcv} fL) com ferritina intermediária ({ferritin} ng/mL, 30-100).
+        
+        **Exames críticos faltantes:**
+        - TSat <20%: confirma componente ferropênico
+        - CRP >10 mg/L: confirma componente inflamatório
+        
+        **Sem estes exames:** Impossível diferenciar IDA pura de anemia inflamatória.
+      required_fields: ["tsat", "crp", "ferritin"]
+      degradation_logic: "Ferritina 30-100 ambígua; C0 sem TSat E CRP"
+  
+  # 8. S-HEMOLYSIS
+  - target: "S-HEMOLYSIS"
+    missing: "reticulocytes absent"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Marcadores indiretos de hemólise presentes (LDH {ldh} U/L, BTi {bt_indireta} mg/dL, Hapto {haptoglobin} mg/dL).
+        
+        **Exame crítico faltante:**
+        - Reticulócitos: Confirma resposta medular à hemólise
+        
+        **Pode prosseguir com C1 usando:**
+        - LDH elevado (>500 U/L)
+        - Bilirrubina indireta elevada (>1.0 mg/dL)
+        - Haptoglobina baixa (<40 mg/dL)
+      required_fields: ["reticulocytes", "ldh", "bt_indireta", "haptoglobin"]
+      degradation_logic: "≥2 marcadores indiretos: C1; <2 marcadores: C0"
+  
+  # 9. S-BETA-THAL
+  - target: "S-BETA-THAL"
+    missing: "hba2 absent"
+    severity: "critical"
+    fallback:
+      confidence: "C0"
+      action: |
+        **Abstenção obrigatória:** HbA2 é critério diagnóstico para beta-talassemia.
+        
+        Padrão sugestivo presente: microcitose (MCV {mcv} fL) + RDW normal + ferritina normal.
+        
+        **Exame obrigatório:**
+        - Eletroforese de Hb ou HPLC com dosagem quantitativa HbA2
+        - Diagnóstico se HbA2 ≥3.5%
+      required_fields: ["hba2", "mcv", "rdw", "ferritin"]
+      degradation_logic: "Sempre C0 sem HbA2 (diagnóstico impossível)"
+  
+  # 10. S-ALFA-THAL
+  - target: "S-ALFA-THAL"
+    missing: "hba2 absent OR ferritin absent"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Microcitose (MCV {mcv} fL) + RDW normal ({rdw}%) → padrão talassêmico.
+        
+        **Exames para diferenciar alfa de beta-talassemia:**
+        - HbA2: Normal (<3.5%) em alfa-tal; Elevado (≥3.5%) em beta-tal
+        - Ferritina: Afasta IDA se >30 ng/mL
+        - Painel molecular alfa-globina: Confirmatório (se disponível)
+      required_fields: ["hba2", "ferritin", "mcv", "rdw"]
+      degradation_logic: "Padrão clínico suficiente para C1; C2 se molecular confirmado"
+  
+  # 11. S-MACRO-B12-FOLATE
+  - target: "S-MACRO-B12-FOLATE"
+    missing: "b12 absent AND folate absent"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Macrocitose isolada (MCV {mcv} fL >100).
+        
+        **Exames recomendados:**
+        - Vitamina B12 (<300 pg/mL diagnóstico)
+        - Ácido fólico (<3.1 ng/mL diagnóstico)
+        - Considerar: TSH, etilismo crônico, fármacos (metotrexato, AZT)
+      required_fields: ["b12", "folate", "mcv"]
+      degradation_logic: "Macrocitose isolada: C1; C0 se outras causas não excluídas"
+  
+  # 12. S-APLASIA-RETIC-LOW
+  - target: "S-APLASIA-RETIC-LOW"
+    missing: "reticulocytes absent"
+    severity: "critical"
+    fallback:
+      confidence: "C0"
+      action: |
+        **Abstenção obrigatória:** Reticulócitos são critério diagnóstico para aplasia.
+        
+        Anemia grave presente (Hb {hb} g/dL).
+        
+        **Exame obrigatório:**
+        - Reticulócitos absolutos: <50×10⁹/L confirma aplasia/crise aplástica
+        - Se confirmado: Parvovírus B19, fármacos, medula óssea
+      required_fields: ["reticulocytes", "hb"]
+      degradation_logic: "Sempre C0 sem reticulócitos (diagnóstico impossível)"
+  
+  # 13. S-LEUCOERITROBLASTOSE
+  - target: "S-LEUCOERITROBLASTOSE"
+    missing: "morphology.mielocitos unknown OR morphology.policromasia unknown OR morphology.dacriocitos unknown"
+    severity: "moderate"
+    fallback:
+      confidence: "C1"
+      action: |
+        Suspeita de leucoeritroblastose com base em dados disponíveis.
+        
+        **Morfologia crítica faltante:**
+        - Mielócitos/metamielócitos (imaturos granulocíticos)
+        - Policromasia (eritroblastos)
+        - Dacrócitos (sugestivo de mielofibrose)
+        
+        **Próximos passos:**
+        - Esfregaço manual urgente
+        - Mielograma/biópsia medular
+        - Imagem (TC tórax/abdome/pelve)
+      required_fields: ["morphology.mielocitos", "morphology.policromasia", "morphology.dacriocitos"]
+      degradation_logic: "≥1 morfologia presente: C1; nenhuma: C0"
+  
+  # 14. S-HB-SICKLE
+  - target: "S-HB-SICKLE"
+    missing: "hba2 absent OR reticulocytes absent"
+    severity: "moderate"
+    fallback:
+      confidence: "C1"
+      action: |
+        Drepanócitos confirmados em morfologia.
+        
+        **Exames confirmatórios recomendados:**
+        - Eletroforese de Hb: HbS quantitativa (SS vs AS vs SC)
+        - Reticulócitos: Avaliar grau de hemólise
+        - Teste de falcização (confirmação rápida)
+      required_fields: ["hba2", "reticulocytes", "morphology.drepanocitos"]
+      degradation_logic: "Drepanócitos confirmados suficiente para C1; C2 se eletroforese"
+  
+  # 15. S-PTI
+  - target: "S-PTI"
+    missing: "pt absent OR aptt absent OR coombs_pos unknown"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Trombocitopenia isolada (PLT {plt} ×10⁹/L) sem citopenias associadas.
+        
+        **Exames para exclusão de diagnósticos diferenciais:**
+        - PT/APTT: Excluir CIVD
+        - Coombs Direto: Excluir Síndrome de Evans
+        - HIV/HCV/H. pylori: Excluir causas infecciosas
+      required_fields: ["pt", "aptt", "coombs_pos", "plt"]
+      degradation_logic: "Trombocitopenia isolada: C1; C2 se exclusões completas"
+  
+  # 16. S-THROMBOCITOSE
+  - target: "S-THROMBOCITOSE"
+    missing: "ferritin absent OR crp absent OR jak2_pos unknown"
+    severity: "moderate"
+    fallback:
+      confidence: "C1"
+      action: |
+        Trombocitose moderada (PLT {plt} ×10⁹/L, 450-649).
+        
+        **Exames para diferenciar reativa de clonal:**
+        - Ferritina/TSat: Ferropenia é causa reativa comum
+        - CRP: Inflamação é causa reativa comum
+        - JAK2/CALR/MPL: Se persistente (repetir CBC 2-6 sem) + perfil não reativo
+      required_fields: ["ferritin", "crp", "jak2_pos"]
+      degradation_logic: "PLT 450-649 + perfil reativo: routine; PLT 450-649 + perfil não reativo: C1"
+  
+  # 17. S-LYMPHOPROLIFERATIVE
+  - target: "S-LYMPHOPROLIFERATIVE"
+    missing: "morphology.linfocitos_atipicos unknown OR flow_cytometry absent"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Linfocitose presente (Linfócitos {lymphocytes_abs} ×10⁹/L >5).
+        
+        **Exames para diferenciar clonal (LLC) de reativa (viral):**
+        - Morfologia: Linfócitos atípicos sugerem reativa
+        - Imunofenotipagem por citometria de fluxo: Diagnóstico definitivo
+        - Repetir CBC em 2-6 semanas (avaliar persistência)
+      required_fields: ["morphology.linfocitos_atipicos", "flow_cytometry", "lymphocytes_abs"]
+      degradation_logic: "Linfocitose >5: C1; Linfocitose >10: C2 (flow obrigatória)"
+  
+  # 18. S-EOSINOFILIA
+  - target: "S-EOSINOFILIA"
+    missing: "ige absent OR parasitology absent"
+    severity: "moderate"
+    fallback:
+      confidence: "C1"
+      action: |
+        Eosinofilia presente (Eosinófilos {eosinophils_abs} ×10⁹/L ≥1.5).
+        
+        **Investigação recomendada:**
+        - IgE total (alergia)
+        - Parasitológico de fezes (3 amostras) - Strongyloides, helmintos
+        - Se persistente >6 meses: painel clonal (FGFR1, PDGFRA, PDGFRB)
+      required_fields: ["ige", "parasitology", "eosinophils_abs"]
+      degradation_logic: "Eosinofilia leve (1.5-3): C1; Eosinofilia grave (>3): C2 (investigação urgente)"
+  
+  # 19. S-MONOCITOSE-CRONICA
+  - target: "S-MONOCITOSE-CRONICA"
+    missing: "flow_cytometry absent OR ngs_panel absent"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Monocitose presente (Monócitos {monocytes_abs} ×10⁹/L >1.0).
+        
+        **Exames para descartar LMMC (Leucemia Mielomonocítica Crônica):**
+        - CBC seriado (confirmar persistência >3 meses)
+        - Citometria de fluxo monocitária
+        - NGS/medula óssea se >1.0×10⁹/L persistente (critérios WHO)
+      required_fields: ["flow_cytometry", "ngs_panel", "monocytes_abs"]
+      degradation_logic: "Monocitose 1.0-2.0: C1; Monocitose >2.0: C2 (LMMC suspeita)"
+  
+  # 20. S-BASOFILIA
+  - target: "S-BASOFILIA"
+    missing: "bcr_abl_pos unknown OR jak2_pos unknown"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Basofilia presente (Basófilos {basophils_abs} ×10⁹/L ≥0.2).
+        
+        **Exames críticos:**
+        - BCR-ABL: Basofilia é marcador precoce de LMC
+        - JAK2/CALR/MPL: Se trombocitose/eritrocitose associada (NMP)
+        - Repetir CBC em 2-6 semanas
+      required_fields: ["bcr_abl_pos", "jak2_pos", "basophils_abs"]
+      degradation_logic: "Basofilia isolada: C1; Basofilia + PLT/WBC alto: C2 (BCR-ABL urgente)"
+  
+  # 21. S-CML
+  - target: "S-CML"
+    missing: "bcr_abl_quantitative absent OR morphology.mielocitos unknown"
+    severity: "moderate"
+    fallback:
+      confidence: "C1"
+      action: |
+        BCR-ABL positivo confirmado → LMC diagnosticada.
+        
+        **Exames complementares recomendados:**
+        - BCR-ABL quantitativo (baseline IS - Escala Internacional)
+        - Morfologia: Mielócitos/metamielócitos (confirmar fase crônica)
+        - Imunofenotipagem: Excluir crise blástica
+      required_fields: ["bcr_abl_quantitative", "morphology.mielocitos", "bcr_abl_pos"]
+      degradation_logic: "BCR-ABL+ suficiente para C1; C2 se baseline IS disponível"
+  
+  # 22. S-MPN-POSSIBLE
+  - target: "S-MPN-POSSIBLE"
+    missing: "jak2_pos unknown AND calr_pos unknown AND mpl_pos unknown"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Trombocitose/eritrocitose persistente com perfil não reativo.
+        
+        **Exames obrigatórios para diagnóstico NMP:**
+        - JAK2 V617F: Positivo em 95% PV, 60% TE, 50% MFP
+        - CALR: Positivo em 25% TE, 35% MFP (se JAK2 negativo)
+        - MPL: Positivo em 5% TE, 10% MFP (se JAK2/CALR negativos)
+        
+        **Se todos negativos:** Medula óssea obrigatória (critérios WHO clonalidade)
+      required_fields: ["jak2_pos", "calr_pos", "mpl_pos", "ferritin", "crp"]
+      degradation_logic: "Persistência + perfil não reativo: C1; C0 se sem persistência"
+  
+  # 23. S-PV
+  - target: "S-PV"
+    missing: "jak2_pos unknown OR epo absent OR spo2 absent"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Eritrocitose presente (Hb {hb} g/dL elevado).
+        
+        **Exames para diferenciar PV (primária) de secundária:**
+        - JAK2 V617F: Positivo em 95% dos PV
+        - EPO sérica: Baixo em PV; Alto em secundária
+        - SpO2/gasometria: Descartar hipóxia
+      required_fields: ["jak2_pos", "epo", "spo2"]
+      degradation_logic: "Eritrocitose + JAK2+: C2 (PV confirmada); Eritrocitose sem JAK2: C1"
+  
+  # 24. S-EVANS
+  - target: "S-EVANS"
+    missing: "coombs_pos unknown OR reticulocytes absent OR ldh absent"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Anemia (Hb {hb} g/dL) + trombocitopenia (PLT {plt} ×10⁹/L) presentes.
+        
+        **Exames para confirmar Síndrome de Evans:**
+        - Coombs Direto (DAT): Confirma hemólise autoimune
+        - Reticulócitos: Confirma resposta à hemólise
+        - LDH/haptoglobina: Marcadores de hemólise
+        - FAN, C3/C4, anti-DNA: Descartar LES
+      required_fields: ["coombs_pos", "reticulocytes", "ldh", "haptoglobin"]
+      degradation_logic: "Anemia + PLT baixa + Coombs+: C2; Sem Coombs: C1"
+  
+  # 25. S-PANCYTOPENIA
+  - target: "S-PANCYTOPENIA"
+    missing: "reticulocytes absent OR bone_marrow absent OR b12 absent OR hpn_pos unknown"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Pancitopenia presente (Hb {hb} g/dL, WBC {wbc} ×10⁹/L, PLT {plt} ×10⁹/L).
+        
+        **Exames obrigatórios para diagnóstico diferencial:**
+        - Reticulócitos: Avaliar resposta medular
+        - Medula óssea: Celularidade, displasia, infiltração
+        - B12/folato: Causas carenciais
+        - Vírus: HIV, EBV, CMV, Parvovírus
+        - CD55/CD59: Descartar PNH
+      required_fields: ["reticulocytes", "bone_marrow", "b12", "hpn_pos"]
+      degradation_logic: "Pancitopenia grave: C2 (medular obrigatória); Leve: C1"
+  
+  # 26. S-MM-MGUS
+  - target: "S-MM-MGUS"
+    missing: "flc_ratio_abnormal unknown OR protein_electrophoresis absent OR creatinine absent OR calcium absent"
+    severity: "high"
+    fallback:
+      confidence: "C1"
+      action: |
+        Rouleaux presente + anemia → suspeita mieloma.
+        
+        **Exames obrigatórios:**
+        - Eletroforese de proteínas + imunofixação: M-spike
+        - Free Light Chains (FLC) sérico: Ratio κ/λ
+        - Creatinina, cálcio: CRAB (insuficiência renal, hipercalcemia)
+        
+        **Critérios CRAB:** Hipercalcemia, insuficiência Renal, Anemia, lesões ósseas (Bone)
+      required_fields: ["flc_ratio_abnormal", "protein_electrophoresis", "creatinine", "calcium"]
+      degradation_logic: "Rouleaux + anemia: C1; Rouleaux + anemia + CRAB: C2"
+
+# =============================================================================
+# HIERARQUIA DE IMPORTÂNCIA DOS CAMPOS
+# =============================================================================
+field_importance_hierarchy:
+  critical:
+    description: "Campos sem os quais a síndrome não pode ser diagnosticada"
+    examples:
+      - "hba2 para S-BETA-THAL"
+      - "reticulocytes para S-APLASIA-RETIC-LOW"
+      - "d_dimer + fibrinogenio + pt/aptt para S-CIVD (≥2 requeridos)"
+      - "esquistocitos para S-TMA"
+      - "bcr_abl_pos para S-CML"
+  
+  high:
+    description: "Campos que reduzem significativamente a confiança se ausentes"
+    examples:
+      - "ferritin/tsat para S-IDA"
+      - "crp para S-NEUTROFILIA-LEFTSHIFT-CRIT (critical→priority)"
+      - "jak2_pos para S-PV"
+      - "coombs_pos para S-EVANS"
+  
+  moderate:
+    description: "Campos que refinam diagnóstico mas não impedem conclusão"
+    examples:
+      - "ldh/haptoglobin para S-HEMOLYSIS (se reticulócitos presentes)"
+      - "morphology.dacriocitos para S-LEUCOERITROBLASTOSE"
+      - "ige/parasitology para S-EOSINOFILIA"
+  
+  low:
+    description: "Campos complementares que não afetam decisão principal"
+    examples:
+      - "epo para S-PV (se JAK2+ já confirmado)"
+      - "flow_cytometry para S-LYMPHOPROLIFERATIVE (se morfologia clara)"
+
+# =============================================================================
+# METADADOS
+# =============================================================================
+metadata:
+  total_policies: 26
+  global_policy_count: 1
+  specific_policy_count: 25
+  
+  severity_distribution:
+    critical: 5
+    high: 15
+    moderate: 5
+  
+  degradation_strategies:
+    - "Critical → Priority (se campo complementar ausente)"
+    - "Priority → C0 (se campo diagnóstico ausente)"
+    - "Manter confidence se ≥2 marcadores indiretos presentes"
+
+notes: |
+  - Global policy (>30% missing → C0) aplica para todas as síndromes exceto short-circuit críticas
+  - Policies específicas definem fallback inteligente para cada síndrome
+  - Degradation logic permite transições suaves (Critical→Priority→C0)
+  - S-CIVD tem regra rígida: ≥2 marcadores obrigatórios
+  - Missing fields exibidos nos cartões com níveis de importância (04_output_templates_hybrid.yaml)
+  - Políticas integradas com 03_syndromes_hybrid.yaml (missing_fields_warn)
+
+# =============================================================================
+# FIM DO ARQUIVO
+# =============================================================================
+
