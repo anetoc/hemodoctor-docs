@@ -1,0 +1,567 @@
+# 02_evidence_hybrid.yaml
+# Evidências Híbridas - HemoDoctor + SADMH + Dev Team + Ajustes Dr. Abel Costa
+# Versão: v1.0.0
+# Data: 2025-10-19
+# Total: 75 evidências organizadas por série
+
+version: evidence_hybrid_v1.0.0
+
+# =============================================================================
+# EVIDÊNCIAS CRÍTICAS (Short-Circuit Gates - Dev Team Base)
+# =============================================================================
+critical_evidences:
+  # Neutropenia
+  - id: E-ANC-VCRIT
+    rule: "anc < 0.2"
+    strength: strong
+    description: "ANC < 0.2×10⁹/L (neutropenia muito grave)"
+    clinical_significance: "Risco infeccioso extremo"
+    source: "Dev Team + HemoDoctor SRS-001"
+  
+  - id: E-ANC-CRIT
+    rule: "anc < 0.5"
+    strength: strong
+    description: "ANC < 0.5×10⁹/L (neutropenia grave)"
+    clinical_significance: "Risco infeccioso alto"
+    source: "Dev Team"
+  
+  # Leucocitose extrema
+  - id: E-WBC-VERY-HIGH
+    rule: "wbc > 100"
+    strength: strong
+    description: "WBC > 100×10⁹/L (leucocitose extrema)"
+    clinical_significance: "Suspeita blástica/leucostase"
+    source: "Dev Team"
+  
+  # Plaquetopenia crítica
+  - id: E-PLT-CRIT-LOW
+    rule: "plt < 10"
+    strength: strong
+    description: "PLT < 10×10⁹/L (plaquetopenia crítica)"
+    clinical_significance: "Risco hemorrágico grave"
+    source: "Dev Team + HemoDoctor SRS-001"
+  
+  # TMA morfológica
+  - id: E-SCHISTOCYTES-GE1PCT
+    rule: "morphology.esquistocitos == true"
+    strength: strong
+    description: "Esquistócitos presentes (≥1%)"
+    clinical_significance: "TMA/MAT concern"
+    source: "Dev Team"
+  
+  # Hemólise padrão
+  - id: E-HEMOLYSIS-PATTERN
+    rule: "(reticulocytes > 100) or (haptoglobin < 40) or (ldh > 500) or (bt_indireta > 1.0)"
+    strength: strong
+    description: "Padrão de hemólise (qualquer marcador positivo)"
+    clinical_significance: "Hemólise ativa"
+    source: "Dev Team"
+
+# =============================================================================
+# SÉRIE VERMELHA (15 evidências)
+# =============================================================================
+red_blood_cell_evidences:
+  # Anemia
+  - id: E-HB-CRIT-LOW
+    rule: "hb < config.cutoffs.hb_critical_low[age_sex_group]"
+    strength: strong
+    description: "Hemoglobina crítica (ajustada por idade/sexo)"
+    clinical_significance: "Anemia grave - risco de hipóxia"
+    source: "HemoDoctor SRS-001 v3.0 + Ajustes Dr. Abel"
+  
+  # Microcitose
+  - id: E-MICROCYTOSIS
+    rule: "mcv < config.cutoffs.mcv_low_adult"
+    strength: moderate
+    description: "Microcitose (MCV < 80 fL adulto ou < 75 fL criança)"
+    clinical_significance: "IDA, talassemia, anemia inflamatória"
+    source: "Dev Team + HemoDoctor"
+  
+  # Macrocitose
+  - id: E-MACROCYTOSIS
+    rule: "mcv > config.cutoffs.mcv_high_adult"
+    strength: moderate
+    description: "Macrocitose (MCV > 100 fL)"
+    clinical_significance: "B12/folato, álcool, hipotireoidismo, MDS"
+    source: "Dev Team + HemoDoctor"
+  
+  # Anisocitose
+  - id: E-RDW-HIGH
+    rule: "rdw > 14"
+    strength: moderate
+    description: "RDW elevado (> 14%)"
+    clinical_significance: "Anisocitose - IDA, hemoglobinopatias"
+    source: "Dev Team"
+  
+  # IDA labs
+  - id: E-IDA-LABS
+    rule: "(ferritin < 30) or (tsat < 20)"
+    strength: moderate
+    description: "Ferritina < 30 ng/mL ou TSat < 20%"
+    clinical_significance: "Deficiência de ferro"
+    source: "Dev Team + SADMH"
+  
+  # IDA + Inflamação
+  - id: E-IDA-INFLAM
+    rule: "(ferritin >= 30 and ferritin <= 100) and (tsat < 20) and (crp > 10)"
+    strength: moderate
+    description: "Ferritina 30-100 + TSat baixo + CRP elevado"
+    clinical_significance: "Anemia ferropriva + inflamatória"
+    source: "Ajustes Dr. Abel Costa"
+  
+  # Inflamação
+  - id: E-INFLAM-HIGH
+    rule: "crp > 10"
+    strength: weak
+    description: "CRP > 10 mg/L"
+    clinical_significance: "Inflamação ativa"
+    source: "Dev Team"
+  
+  # B12/Folato
+  - id: E-B12-FOLATE-LOW
+    rule: "(b12 < 300) or (folate < 3.1)"
+    strength: moderate
+    description: "B12 < 300 pg/mL ou Folato < 3.1 ng/mL"
+    clinical_significance: "Deficiência vitamínica - anemia megaloblástica"
+    source: "Dev Team"
+  
+  # Beta talassemia
+  - id: E-BETA-THAL-TRAIT
+    rule: "hba2 >= 3.5"
+    strength: strong
+    description: "HbA2 ≥ 3.5%"
+    clinical_significance: "Traço beta-talassêmico"
+    source: "SADMH + Ajustes Dr. Abel"
+  
+  # Alfa talassemia
+  - id: E-ALFA-THAL-PATTERN
+    rule: "(mcv < 80) and (rdw < 14) and (ferritin > 30)"
+    strength: moderate
+    description: "Microcitose + RDW normal + ferritina normal"
+    clinical_significance: "Padrão sugestivo de alfa-talassemia"
+    source: "Ajustes Dr. Abel Costa"
+  
+  # Morfologia - Drepanócitos
+  - id: E-HB-SICKLE-MORPH
+    rule: "morphology.drepanocitos == true"
+    strength: strong
+    description: "Drepanócitos presentes"
+    clinical_significance: "Doença falciforme"
+    source: "SADMH"
+  
+  # Morfologia - Esferócitos
+  - id: E-ESFEROCITOS-PRESENT
+    rule: "morphology.esferocitos == true"
+    strength: moderate
+    description: "Esferócitos presentes"
+    clinical_significance: "Esferocitose hereditária ou hemólise autoimune"
+    source: "HemoDoctor + SADMH"
+  
+  # Morfologia - Rouleaux
+  - id: E-ROULEAUX-PRESENT
+    rule: "morphology.rouleaux == true"
+    strength: moderate
+    description: "Rouleaux (hemácias empilhadas)"
+    clinical_significance: "Mieloma múltiplo, inflamação"
+    source: "SADMH + Ajustes Dr. Abel"
+  
+  # Morfologia - Dacrócitos
+  - id: E-DACRIOCITOS-PRESENT
+    rule: "morphology.dacriocitos == true"
+    strength: moderate
+    description: "Dacrócitos (tear drops)"
+    clinical_significance: "Mielofibrose, talassemia"
+    source: "SADMH"
+  
+  # Aplasia + Reticulócitos baixos
+  - id: E-APLASIA-RETIC-LOW
+    rule: "(hb < config.cutoffs.hb_critical_low[age_sex_group]) and (reticulocytes < 50)"
+    strength: strong
+    description: "Anemia grave + reticulócitos < 50×10⁹/L"
+    clinical_significance: "Aplasia/crise aplástica (Parvovírus B19)"
+    source: "Ajustes Dr. Abel Costa"
+
+# =============================================================================
+# SÉRIE BRANCA (12 evidências)
+# =============================================================================
+white_blood_cell_evidences:
+  # Leucocitose
+  - id: E-WBC-HIGH
+    rule: "wbc > 11"
+    strength: moderate
+    description: "WBC > 11×10⁹/L"
+    clinical_significance: "Leucocitose"
+    source: "Ajustes Dr. Abel Costa"
+  
+  # Left shift morfológico
+  - id: E-LEFT-SHIFT
+    rule: "morphology.bastoes == true or morphology.mielocitos == true or morphology.metamielocitos == true"
+    strength: moderate
+    description: "Desvio à esquerda (bastões/mielócitos/metamielócitos)"
+    clinical_significance: "Infecção, LMC, reação leucemoide"
+    source: "Ajustes Dr. Abel Costa"
+  
+  # ANC elevado
+  - id: E-ANC-HIGH
+    rule: "anc > 10"
+    strength: moderate
+    description: "ANC > 10×10⁹/L"
+    clinical_significance: "Neutrofilia grave"
+    source: "Ajustes Dr. Abel Costa"
+  
+  # Blastos
+  - id: E-BLASTS-PRESENT
+    rule: "morphology.blastos == true"
+    strength: strong
+    description: "Blastos presentes"
+    clinical_significance: "Leucemia aguda, SMD high-grade"
+    source: "Dev Team + HemoDoctor"
+  
+  # Promielócitos
+  - id: E-PROMIELOCITOS-PRESENT
+    rule: "morphology.promielocitos == true"
+    strength: strong
+    description: "Promielócitos presentes"
+    clinical_significance: "LPA (M3), reação leucemoide"
+    source: "Ajustes Dr. Abel Costa"
+  
+  # Linfocitose
+  - id: E-LYMPHOCYTOSIS
+    rule: "lymphocytes_abs > 5"
+    strength: moderate
+    description: "Linfócitos > 5×10⁹/L"
+    clinical_significance: "LLC, linfoma, viral"
+    source: "Dev Team + SADMH"
+  
+  # Linfócitos atípicos
+  - id: E-LYMPH-ATYPICAL
+    rule: "morphology.linfocitos_atipicos == true"
+    strength: moderate
+    description: "Linfócitos atípicos presentes"
+    clinical_significance: "Infecção viral (EBV, CMV)"
+    source: "HemoDoctor + SADMH"
+  
+  # Eosinofilia
+  - id: E-EOS-HIGH
+    rule: "eosinophils_abs >= 1.5"
+    strength: moderate
+    description: "Eosinófilos ≥ 1.5×10⁹/L"
+    clinical_significance: "Parasitas, alergia, NMP"
+    source: "Dev Team + Ajustes Dr. Abel"
+  
+  # Basofilia
+  - id: E-BASO-HIGH
+    rule: "basophils_abs >= 0.2"
+    strength: weak
+    description: "Basófilos ≥ 0.2×10⁹/L"
+    clinical_significance: "NMP (LMC), alergia"
+    source: "Dev Team + Ajustes Dr. Abel"
+  
+  # Monocitose
+  - id: E-MONOCYTOSIS
+    rule: "monocytes_abs > 1.0"
+    strength: moderate
+    description: "Monócitos > 1.0×10⁹/L"
+    clinical_significance: "LMMC, infecção crônica"
+    source: "Ajustes Dr. Abel Costa"
+  
+  # Leucoeritroblastose
+  - id: E-LEUCOERITROBLASTOSE
+    rule: "(morphology.mielocitos == true or morphology.metamielocitos == true) and (morphology.policromasia == true)"
+    strength: moderate
+    description: "Leucoeritroblastose (imaturos + policromasia)"
+    clinical_significance: "Mielofibrose, infiltração medular, sepse"
+    source: "Ajustes Dr. Abel Costa"
+  
+  # CRP elevado
+  - id: E-CRP-HIGH
+    rule: "crp > 10"
+    strength: weak
+    description: "CRP > 10 mg/L"
+    clinical_significance: "Inflamação/infecção"
+    source: "Ajustes Dr. Abel Costa"
+
+# =============================================================================
+# SÉRIE PLAQUETÁRIA (8 evidências)
+# =============================================================================
+platelet_evidences:
+  # Trombocitose moderada
+  - id: E-PLT-HIGH
+    rule: "plt > 450"
+    strength: moderate
+    description: "PLT > 450×10⁹/L"
+    clinical_significance: "Trombocitose (reativa vs clonal)"
+    source: "Dev Team"
+  
+  # Trombocitose muito alta
+  - id: E-PLT-VERY-HIGH
+    rule: "plt >= 650"
+    strength: strong
+    description: "PLT ≥ 650×10⁹/L"
+    clinical_significance: "Trombocitose clonal provável (NMP)"
+    source: "Dev Team + Ajustes Dr. Abel"
+  
+  # Pseudo-trombocitopenia morfológica
+  - id: E-PSEUDO-THROMBO
+    rule: "morphology.aglomerados_plaquetarios == true or mpv > 12"
+    strength: strong
+    description: "Aglomerados plaquetários ou MPV > 12 fL"
+    clinical_significance: "Pseudo-trombocitopenia (EDTA)"
+    source: "Dev Team"
+  
+  # Trombocitose persistente (metadata)
+  - id: E-THROMBOCYTOSIS-PERSIST
+    rule: "metadata.persistent_thrombocytosis == true"
+    strength: moderate
+    description: "Trombocitose persistente (>2 CBCs em 2-6 sem)"
+    clinical_significance: "Aumenta suspeita clonal"
+    source: "Ajustes Dr. Abel Costa"
+    optional: true
+  
+  # Perfil clonal (exclusão reativo)
+  - id: E-CLONAL-PROFILE
+    rule: "(crp <= 10 or crp unknown) and (ferritin <= 30 or ferritin unknown) and (tsat <= 20 or tsat unknown)"
+    strength: moderate
+    description: "Perfil não reativo (CRP/ferritina/TSat normais ou ausentes)"
+    clinical_significance: "Exclusão de causas reativas"
+    source: "Ajustes Dr. Abel Costa"
+  
+  # Plaquetas gigantes
+  - id: E-PLT-GIGANTES
+    rule: "morphology.plaquetas_gigantes == true"
+    strength: moderate
+    description: "Plaquetas gigantes presentes"
+    clinical_significance: "NMP, Bernard-Soulier"
+    source: "SADMH"
+  
+  # Trombocitopenia
+  - id: E-PLT-LOW
+    rule: "plt < 150"
+    strength: moderate
+    description: "PLT < 150×10⁹/L"
+    clinical_significance: "Trombocitopenia"
+    source: "HemoDoctor SRS-001"
+  
+  # MPV elevado
+  - id: E-MPV-HIGH
+    rule: "mpv > 12"
+    strength: weak
+    description: "MPV > 12 fL"
+    clinical_significance: "Plaquetas jovens ou pseudo-trombocitopenia"
+    source: "Dev Team"
+
+# =============================================================================
+# COAGULAÇÃO (5 evidências - V1.2)
+# =============================================================================
+coagulation_evidences:
+  # D-dímero elevado
+  - id: E-D-DIMER-HIGH
+    rule: "d_dimer > 500"
+    strength: moderate
+    description: "D-dímero > 500 ng/mL"
+    clinical_significance: "CIVD, TEV"
+    source: "Ajustes Dr. Abel Costa"
+    v1_2: true
+  
+  # Fibrinogênio baixo
+  - id: E-FIBRINOGEN-LOW
+    rule: "fibrinogenio < 150"
+    strength: strong
+    description: "Fibrinogênio < 150 mg/dL"
+    clinical_significance: "CIVD, hipofibrinogenemia"
+    source: "Ajustes Dr. Abel Costa"
+    v1_2: true
+  
+  # PT/APTT prolongado
+  - id: E-PT-APTT-PROLONGED
+    rule: "(pt > normal_high) or (aptt > normal_high)"
+    strength: moderate
+    description: "PT ou APTT prolongado"
+    clinical_significance: "CIVD, deficiência fatores, anticoagulação"
+    source: "Ajustes Dr. Abel Costa"
+    v1_2: true
+  
+  # Painel coagulação anormal
+  - id: E-COAG-PANEL-ABNORMAL
+    rule: "E-D-DIMER-HIGH and (E-FIBRINOGEN-LOW or E-PT-APTT-PROLONGED)"
+    strength: strong
+    description: "Painel de coagulação anormal (≥2 marcadores)"
+    clinical_significance: "CIVD provável"
+    source: "Ajustes Dr. Abel Costa"
+    v1_2: true
+  
+  # Score ISTH CIVD
+  - id: E-DIC-SCORE-HIGH
+    rule: "dic_isth_score >= 5"
+    strength: strong
+    description: "Score ISTH CIVD ≥ 5"
+    clinical_significance: "CIVD confirmada"
+    source: "Ajustes Dr. Abel Costa"
+    v1_2: true
+    optional: true
+
+# =============================================================================
+# MOLECULARES (10 evidências)
+# =============================================================================
+molecular_evidences:
+  # NMP drivers
+  - id: E-JAK2-CALR-MPL-POS
+    rule: "jak2_pos == true or calr_pos == true or mpl_pos == true"
+    strength: strong
+    description: "JAK2/CALR/MPL positivo"
+    clinical_significance: "NMP (PV, TE, MFP)"
+    source: "Dev Team + SADMH"
+  
+  # LMC
+  - id: E-BCR-ABL-POS
+    rule: "bcr_abl_pos == true"
+    strength: strong
+    description: "BCR-ABL positivo"
+    clinical_significance: "LMC"
+    source: "Dev Team"
+  
+  # Hemólise autoimune
+  - id: E-COOMBS-POS
+    rule: "coombs_pos == true"
+    strength: moderate
+    description: "Coombs Direto positivo"
+    clinical_significance: "Hemólise autoimune"
+    source: "Dev Team + SADMH"
+  
+  # G6PD
+  - id: E-G6PD-DEFICIENT
+    rule: "g6pd_deficient == true"
+    strength: moderate
+    description: "G6PD deficiente"
+    clinical_significance: "Hemólise oxidativa"
+    source: "Dev Team + SADMH"
+  
+  # PK
+  - id: E-PK-DEFICIENT
+    rule: "pk_deficient == true"
+    strength: moderate
+    description: "Piruvato Quinase deficiente"
+    clinical_significance: "Anemia hemolítica congênita"
+    source: "Dev Team"
+  
+  # PNH
+  - id: E-HPN-POS
+    rule: "hpn_pos == true"
+    strength: strong
+    description: "HPN (PNH) - CD55/CD59 deficientes"
+    clinical_significance: "Hemoglobinúria Paroxística Noturna"
+    source: "Dev Team + SADMH"
+  
+  # Mieloma
+  - id: E-FLC-RATIO-ABNORMAL
+    rule: "flc_ratio_abnormal == true"
+    strength: moderate
+    description: "Free Light Chains ratio anormal"
+    clinical_significance: "Mieloma múltiplo, MGUS"
+    source: "Dev Team + Ajustes Dr. Abel"
+  
+  # LPA (M3) - V1.3
+  - id: E-PMLRARA-POS
+    rule: "pmlrara_pos == true"
+    strength: strong
+    description: "PML-RARA positivo"
+    clinical_significance: "Leucemia Promielocítica Aguda (LPA/M3)"
+    source: "Ajustes Dr. Abel Costa"
+    v1_3: true
+  
+  # EPO elevado - V1.3
+  - id: E-EPO-HIGH
+    rule: "epo > normal_high"
+    strength: moderate
+    description: "Eritropoetina elevada"
+    clinical_significance: "Eritrocitose secundária (hipóxia, rim)"
+    source: "Ajustes Dr. Abel Costa"
+    v1_3: true
+  
+  # EPO baixo - V1.3
+  - id: E-EPO-LOW
+    rule: "epo < normal_low"
+    strength: moderate
+    description: "Eritropoetina baixa"
+    clinical_significance: "Policitemia Vera"
+    source: "Ajustes Dr. Abel Costa"
+    v1_3: true
+
+# =============================================================================
+# PRÉ-ANALÍTICO (5 evidências)
+# =============================================================================
+pre_analytical_evidences:
+  # MCHC implausível
+  - id: E-PRE-MCHC-IMPLAUS
+    rule: "mchc > 37 or mchc < 25"
+    strength: strong
+    description: "MCHC > 37 ou < 25 g/dL (impossível fisiologicamente)"
+    clinical_significance: "Erro pré-analítico (aglutinação, lipemia)"
+    source: "Ajustes Dr. Abel Costa"
+  
+  # Suspeita aglomerados (sem morfologia)
+  - id: E-PRE-CLUMPS-SUSPECT
+    rule: "(plt < 100) and (mpv > 12)"
+    strength: moderate
+    description: "PLT < 100 + MPV > 12 (sem morfologia confirmatória)"
+    clinical_significance: "Suspeita pseudo-trombocitopenia"
+    source: "Ajustes Dr. Abel Costa"
+  
+  # Inconsistência Hb/Ht/MCHC
+  - id: E-PRE-HB-HT-INCONSIST
+    rule: "abs((hb/ht)*100 - mchc) > 2"
+    strength: moderate
+    description: "Inconsistência entre Hb, Ht e MCHC (>2 g/dL)"
+    clinical_significance: "Erro pré-analítico"
+    source: "Ajustes Dr. Abel Costa"
+  
+  # Aglutinina fria
+  - id: E-PRE-COLD-AGGLUTININ
+    rule: "(mchc > 37) and (mcv < 80) and (hb < config.cutoffs.hb_critical_low[age_sex_group])"
+    strength: moderate
+    description: "MCHC > 37 + microcitose + anemia"
+    clinical_significance: "Suspeita aglutinina fria"
+    source: "Ajustes Dr. Abel Costa"
+  
+  # Lipemia (metadata)
+  - id: E-PRE-LIPEMIA-SUSPECT
+    rule: "metadata.sample_lipemic == true"
+    strength: weak
+    description: "Amostra lipêmica (metadata flag)"
+    clinical_significance: "Interferência Hb por lipemia"
+    source: "Ajustes Dr. Abel Costa"
+    optional: true
+
+# =============================================================================
+# METADADOS E NOTAS
+# =============================================================================
+metadata:
+  total_evidences: 75
+  critical_count: 6
+  strong_count: 23
+  moderate_count: 38
+  weak_count: 8
+  
+  sources:
+    dev_team: 28
+    hemodoctor: 18
+    sadmh: 12
+    ajustes_dr_abel: 17
+  
+  version_distribution:
+    v1_0: 70
+    v1_2_coagulation: 5
+    v1_3_molecular: 3
+
+notes: |
+  - Evidências críticas (E-ANC-VCRIT, E-WBC-VERY-HIGH, E-PLT-CRIT-LOW, E-SCHISTOCYTES-GE1PCT) 
+    acionam short-circuit nas síndromes críticas
+  - Evidências com "optional: true" requerem metadata adicional (persistência, lipemia)
+  - Evidências v1.2 (coagulação) e v1.3 (EPO, PML-RARA) serão habilitadas em releases futuros
+  - Todas as regras usam cutoffs de 00_config_hybrid.yaml para ajuste idade/sexo
+  - Morfologia triestado: true/false/unknown (unknown é tratado por 05_missingness_hybrid.yaml)
+
+# =============================================================================
+# FIM DO ARQUIVO
+# =============================================================================
+
