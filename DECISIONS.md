@@ -10,9 +10,9 @@
 
 | # | Decisão | Data | Status |
 |---|---------|------|--------|
-| ADR-001 | Timeline ANVISA: 26 Out → 30 Nov | 19 Out 2025 | ⏳ Pendente aprovação |
+| ADR-001 | Timeline ANVISA: 26 Out → 30 Nov | 19 Out 2025 | ✅ Approved |
 | ADR-002 | Multi-Agent Analysis Strategy | 19 Out 2025 | ✅ Approved |
-| ADR-003 | Sprints 0-4 Implementation Plan | 19 Out 2025 | ⏳ Pendente ADR-001 |
+| ADR-003 | Sprints 0-4 Implementation Plan | 19 Out 2025 | ✅ Approved (desbloqueado) |
 | ADR-004 | Contexto Management Protocol | 19 Out 2025 | ✅ Approved |
 | ADR-005 | Documentation Tracking System | 19 Out 2025 | ✅ Approved |
 | **ADR-006** | **YAMLs como Fonte de Verdade** | **19 Out 2025** | **✅ Approved** ⭐ |
@@ -23,11 +23,11 @@
 
 ## ADR-001: Timeline ANVISA Adjustment (26 Out → 30 Nov 2025)
 
-### Status: ⏳ PENDENTE APROVAÇÃO
+### Status: ✅ APPROVED
 
 **Data:** 19 de Outubro de 2025
 **Decisor:** @hemodoctor-orchestrator (recomendação)
-**Aprovador:** Dr. Abel Costa (pendente)
+**Aprovador:** Dr. Abel Costa (aprovado 19 Out 22:35)
 **Contexto:** Análise de alinhamento multi-agent
 
 ### Contexto
@@ -105,15 +105,19 @@ Análise multi-agent revelou que submissão ANVISA em 26 Out 2025 (7 dias) é **
 
 ### Aprovação
 
-**Status:** ⏳ AGUARDANDO Dr. Abel Costa
+**Status:** ✅ APROVADO por Dr. Abel Costa (19 Out 22:35)
+
+**Decisão Final:** Timeline 30 Nov 2025 (Opção B)
 
 **Próximos Passos:**
-- Se APROVADO: Comunicar stakeholders + Iniciar Sprint 0
-- Se REJEITADO: Submeter parcial em 26 Out (alto risco)
+- ✅ Comunicar stakeholders sobre novo timeline
+- ✅ Iniciar Sprint 0 (20-26 Out): YAMLs testing
+- ⏳ Planejar Sprints 1-4 conforme cronograma
 
 ### Revisões
 
 - 19 Out 23:00: ADR criado, aguardando aprovação
+- 19 Out 22:35: ✅ APROVADO por Dr. Abel Costa - Timeline 30 Nov confirmada
 
 ---
 
@@ -191,11 +195,11 @@ Dr. Abel solicitou análise de alinhamento completa ANTES de testes, aproveitand
 
 ## ADR-003: Sprints 0-4 Implementation Plan
 
-### Status: ⏳ PENDENTE ADR-001
+### Status: ✅ APPROVED (desbloqueado por ADR-001)
 
 **Data:** 19 de Outubro de 2025
 **Decisor:** @hemodoctor-orchestrator + @qa-lead-agent
-**Aprovador:** Dr. Abel Costa (pendente)
+**Aprovador:** Dr. Abel Costa (aprovado 19 Out 22:35)
 **Contexto:** Análise V&V revelou gaps críticos
 
 ### Contexto

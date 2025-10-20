@@ -6,12 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**HemoDoctor Hybrid V1.0** is a clinical decision support system (SaMD Class III) for complete blood count (CBC) analysis. The system classifies cases into 34 hematological syndromes using a deterministic YAML-based rule engine with regulatory compliance for ANVISA/FDA/ISO 13485.
+**HemoDoctor Hybrid V1.0** is a clinical decision support system (SaMD Class III) for complete blood count (CBC) analysis. The system classifies cases into 35 hematological syndromes using a deterministic YAML-based rule engine with regulatory compliance for ANVISA/FDA/ISO 13485.
 
 **Key Facts:**
-- 15 modular YAML files (~7,350 lines) define the clinical logic
-- 34 syndromes (8 critical, 23 priority, 1 review_sample, 2 routine)
-- 75 atomic evidence rules (E-XXX)
+- 16 modular YAML files (~9,063 lines) define the clinical logic
+- 35 syndromes (9 critical, 24 priority, 1 review_sample, 1 routine)
+- 79 atomic evidence rules (E-XXX)
 - Always-output design (6-level fallback chain)
 - WORM log with HMAC-SHA256 for audit compliance
 
@@ -21,11 +21,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```
 HEMODOCTOR_HIBRIDO_V1.0/
-├── YAMLs/                          # 15 YAML modules (CORE LOGIC)
+├── YAMLs/                          # 16 YAML modules (CORE LOGIC)
 │   ├── 00_config_hybrid.yaml       # Units, cutoffs, normalization
 │   ├── 01_schema_hybrid.yaml       # Canonical schema
-│   ├── 02_evidence_hybrid.yaml     # 75 evidence rules
-│   ├── 03_syndromes_hybrid.yaml    # 34 syndromes (DAG fusion)
+│   ├── 02_evidence_hybrid.yaml     # 79 evidence rules (v2.4.0)
+│   ├── 03_syndromes_hybrid.yaml    # 35 syndromes (DAG fusion)
 │   ├── 04_output_templates_hybrid.yaml
 │   ├── 05_missingness_hybrid_v2.3.yaml  # Proxy logic + guaranteed output
 │   ├── 06_route_policy_hybrid.yaml      # Deterministic routing
@@ -60,9 +60,9 @@ CBC Input (CSV/HL7/JSON)
   ↓
 [01_schema] Validation (canonical schema)
   ↓
-[02_evidence] Evidence evaluation (75 rules → E-XXX)
+[02_evidence] Evidence evaluation (79 rules → E-XXX)
   ↓
-[03_syndromes] DAG fusion (34 syndromes → S-XXX)
+[03_syndromes] DAG fusion (35 syndromes → S-XXX)
   ↓
 [05_missingness] Proxy logic + guaranteed output
   ↓
