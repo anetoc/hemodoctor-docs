@@ -1,11 +1,11 @@
 # 10_runbook_hybrid.yaml
 # Roadmap Técnico e Operacional - V0 → V1 → V2
-# Integração SADMH V2.3 + HemoDoctor Hybrid + Validação Externa
-# Versão: v2.3.1
+# Integração SADMH V2.3 + HemoDoctor Hybrid
+# Versão: v1.0.0
 # Data: 2025-10-19
 # Plano de implementação para dev team
 
-version: runbook_hybrid_v2.3.1
+version: runbook_hybrid_v1.0.0
 module: roadmap_operacional
 
 description: |
@@ -548,54 +548,6 @@ operational_readiness:
         **RTO/RPO:**
         - RTO: <4h (Recovery Time Objective)
         - RPO: <1h (Recovery Point Objective)
-
-# =============================================================================
-# SEÇÃO 4B: CALIBRATION, RED LIST, CI ACCEPTANCE (v2.3.1)
-# =============================================================================
-
-calibration:
-  method: "isotonic_or_platt"
-  
-  # NOVO v2.3.1 — Toolchain sem scikit-learn
-  toolchain:
-    logistic_platt: "torch.nn (sigmoid) com validação hold-out"
-    isotonic: "piecewise monotônica implementada em numpy; fallback: sympy para ajustes"
-  
-  targets:
-    ece_max: 0.05    # Expected Calibration Error máximo
-    bins: 10          # Bins para calibração
-  
-  guardrails:
-    - "Não reduzir sensibilidade crítica vs baseline em nenhum sprint"
-
-red_list:
-  description: "Casos críticos obrigatórios (FN=0)"
-  
-  # NOVO v2.3.1 — Expandido
-  expand:
-    - "TMA (PLT<10 + esquistócitos ≥1%)"
-    - "Neutropenia grave (ANC<0.5)"
-    - "Blastic syndrome (WBC>100 + blastos)"
-    - "PLT crítica (<10)"
-    - "Anemia grave (Hb<6.5)"
-    - "Neutrofilia/left-shift crítico (WBC>11 + ANC>10)"
-    - "Thrombocitose crítica (PLT>1000)"
-    - "CIVD (D-dímero >500 + fibrinogênio <150)"
-    - "APL suspeita (promielócitos + coagulopatia)"
-    - "pseudo-trombocitopenia (citratado)"  # NOVO
-
-ci_acceptance:
-  description: "Critérios de aceitação para merge de PRs"
-  
-  # NOVO v2.3.1 — Expandido
-  criteria:
-    - "Zero FN em casos críticos de validação"
-    - "Sensibilidade crítica ≥95%"
-    - "Especificidade ≥80%"
-    - "Alert burden <50/1000 casos"
-    - "Sem regressão de FN críticos após merges"  # NOVO
-    - "ECE <0.05 (se calibração ativa)"
-    - "Todos os testes unitários passando"
 
 # =============================================================================
 # SEÇÃO 5: DEPENDENCIES E PRE-REQUISITOS

@@ -1,10 +1,10 @@
 # 02_evidence_hybrid.yaml
-# Evidências Híbridas - HemoDoctor + SADMH + Dev Team + Ajustes Dr. Abel Costa + Validação Externa
-# Versão: v2.3.1
+# Evidências Híbridas - HemoDoctor + SADMH + Dev Team + Ajustes Dr. Abel Costa
+# Versão: v1.0.0
 # Data: 2025-10-19
-# Total: 79 evidências organizadas por série (4 novas em v2.3.1)
+# Total: 75 evidências organizadas por série
 
-version: evidence_hybrid_v2.3.1
+version: evidence_hybrid_v1.0.0
 
 # =============================================================================
 # EVIDÊNCIAS CRÍTICAS (Short-Circuit Gates - Dev Team Base)
@@ -68,21 +68,6 @@ red_blood_cell_evidences:
     description: "Hemoglobina crítica (ajustada por idade/sexo)"
     clinical_significance: "Anemia grave - risco de hipóxia"
     source: "HemoDoctor SRS-001 v3.0 + Ajustes Dr. Abel"
-  
-  # NOVO v2.3.1 — Hemoglobina/Hematócrito altos (PV/Eritrocitose)
-  - id: E-HB-HIGH
-    rule: "hb > config.cutoffs.hb_high[age_sex_group]"
-    strength: strong
-    description: "Hemoglobina alta por idade/sexo"
-    clinical_significance: "Policitemia vera ou eritrocitose secundária"
-    source: "Validação Externa v2.3.1 + WHO 2016 PV criteria"
-  
-  - id: E-HCT-HIGH
-    rule: "ht > config.cutoffs.hct_high[age_sex_group]"
-    strength: strong
-    description: "Hematócrito alto por idade/sexo"
-    clinical_significance: "Policitemia vera ou eritrocitose secundária"
-    source: "Validação Externa v2.3.1"
   
   # Microcitose
   - id: E-MICROCYTOSIS
@@ -197,7 +182,7 @@ red_blood_cell_evidences:
     source: "Ajustes Dr. Abel Costa"
 
 # =============================================================================
-# SÉRIE BRANCA (13 evidências - +1 em v2.3.1)
+# SÉRIE BRANCA (12 evidências)
 # =============================================================================
 white_blood_cell_evidences:
   # Leucocitose
@@ -207,14 +192,6 @@ white_blood_cell_evidences:
     description: "WBC > 11×10⁹/L"
     clinical_significance: "Leucocitose"
     source: "Ajustes Dr. Abel Costa"
-  
-  # NOVO v2.3.1 — Leucopenia (para pancitopenia)
-  - id: E-WBC-LOW
-    rule: "wbc < config.cutoffs.wbc_low[age_group]"
-    strength: strong
-    description: "Leucopenia por faixa etária"
-    clinical_significance: "Pancitopenia, aplasia, MDS, quimioterapia"
-    source: "Validação Externa v2.3.1"
   
   # Left shift morfológico
   - id: E-LEFT-SHIFT

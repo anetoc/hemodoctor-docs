@@ -1,10 +1,10 @@
 # 00_config_hybrid.yaml
 # YAML de Configuração Híbrido - HemoDoctor + SADMH + Dev Team
-# Versão: v2.3.1
+# Versão: v1.0.0
 # Data: 2025-10-19
-# Autores: Dr. Abel Costa (IDOR-SP) + AI Medical Device Specialist + Validação Externa
+# Autores: Dr. Abel Costa (IDOR-SP) + AI Medical Device Specialist
 
-version: config_hybrid_v2.3.1
+version: config_hybrid_v1.0.0
 
 # =============================================================================
 # UNIDADES (Dev Team base + SADMH expansão + HemoDoctor LOINC)
@@ -71,21 +71,6 @@ cutoffs:
   anc_very_critical: 0.2       # Dev Team <0.2 very critical
   anc_critical: 0.5            # Dev Team <0.5 critical
   wbc_very_high: 100e9         # Dev Team blastic concern
-  
-  # NOVO v2.3.1 — Hb/Ht altos para PV/eritrocitose (parametrizável por site)
-  hb_high:
-    adult_m: 18.5              # g/dL (WHO: >16.5, usamos >18.5 para especificidade)
-    adult_f: 16.5              # g/dL (WHO: >16.0 hematócrito, Hb >16.5)
-    pediatric: 18.0            # g/dL (ajustar por faixa etária local)
-  
-  hct_high:
-    adult_m: 52                # %
-    adult_f: 48                # %
-  
-  # NOVO v2.3.1 — Leucopenia (para pancitopenia/leucopenia)
-  wbc_low:
-    adult: 4.0                 # ×10⁹/L
-    pediatric: 4.5             # ×10⁹/L
 
   # SÉRIE VERMELHA (pragmático)
   mcv_low_adult: 80            # HemoDoctor/Dev Team microcytic
@@ -301,28 +286,6 @@ metadata_config:
     - pregnancy                  # boolean (SADMH)
     - altitude_m                 # meters (SADMH)
     # race_ethnicity: REMOVED (fairness by architecture)
-
-# =============================================================================
-# ESCALATION (v2.3.1 - incluir leucostase/APL sob alerta crítico)
-# =============================================================================
-escalation:
-  sms_escalation_if:
-    anc_very_critical: 0.2       # ×10⁹/L
-    plt_very_critical: 10         # ×10⁹/L  
-    wbc_very_high: 100            # ×10⁹/L (leucostase)
-    apl_suspect: true             # Se promielócitos/blasts + coagulopatia
-
-# =============================================================================
-# RENDER (v2.3.1 - faixas pediátricas borderline)
-# =============================================================================
-render:
-  borderline:
-    # Faixas pediátricas (exemplo genérico; ajustar conforme referência local)
-    pediatric_overrides:
-      hb_low: 11.0               # g/dL (>=1 ano)
-      mcv_low: 75                # fL (>=1 ano)
-      wbc_low: 4.5               # ×10⁹/L
-      plt_low: 150               # ×10⁹/L
 
 # =============================================================================
 # FIM DO ARQUIVO

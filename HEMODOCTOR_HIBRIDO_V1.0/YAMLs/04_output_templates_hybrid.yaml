@@ -1,409 +1,234 @@
-# 04_output_templates_hybrid.yaml
-# Templates de Saída Híbridos - Cartões de Decisão Clínica
-# Versão: v1.0.0
-# Data: 2025-10-19
+# 04_output_templates_hybrid.v2.3.1-cdss.yaml
 
-version: output_templates_hybrid_v1.0.0
+# Propósito: microcopy segura para CDSS (não diagnóstico), voltada a médicos não-hematologistas.
 
-# =============================================================================
-# TEMPLATES POR CRITICALITY
-# =============================================================================
-templates:
-  critical: |
-    ┌─────────────────────────────────────────────────────────────────┐
-    │ ⚠️  CRÍTICO: {syndrome_id}                                      │
-    └─────────────────────────────────────────────────────────────────┘
-    
-    **Justificativa:**
-    Regras disparadas: [{rule_ids}]
-    Valores-chave: {key_values}
-    Lacunas identificadas: {missing_fields}
-    
-    **Próximos passos urgentes:**
-    {actions}
-    
-    **Observações adicionais:**
-    {next_steps}
-    
-    **Confiança:** C2 (short-circuit crítico - ação imediata obrigatória)
-    **Timestamp:** {timestamp_utc}
-    **Versões:** Config {config_ver} | Evidence {evidence_ver} | Syndromes {syndromes_ver}
-  
-  priority: |
-    ┌─────────────────────────────────────────────────────────────────┐
-    │ 🔔 PRIORIDADE: {syndrome_id} (C{confidence})                    │
-    └─────────────────────────────────────────────────────────────────┘
-    
-    **Justificativa:**
-    Regras disparadas: [{rule_ids}]
-    Valores-chave: {key_values}
-    Lacunas identificadas: {missing_fields}
-    
-    **Próximos passos recomendados:**
-    {actions}
-    
-    **Observações clínicas:**
-    {next_steps}
-    
-    **Confiança:** C{confidence} ({confidence_explanation})
-    **Timestamp:** {timestamp_utc}
-    **Versões:** Config {config_ver} | Evidence {evidence_ver} | Syndromes {syndromes_ver}
-  
-  routine: |
-    ┌─────────────────────────────────────────────────────────────────┐
-    │ ✓ ROTINA: Sem alertas relevantes                                │
-    └─────────────────────────────────────────────────────────────────┘
-    
-    **Justificativa:**
-    {evidence_trail}
-    
-    **Parâmetros avaliados:**
-    {parameters_summary}
-    
-    **Lacunas identificadas (não críticas):**
-    {missing_fields}
-    (Solicitar se clinicamente relevante para contexto do paciente)
-    
-    **Recomendação:** Acompanhamento clínico conforme indicação médica
-    **Timestamp:** {timestamp_utc}
-    **Versões:** Config {config_ver} | Evidence {evidence_ver} | Syndromes {syndromes_ver}
-  
-  review_sample: |
-    ┌─────────────────────────────────────────────────────────────────┐
-    │ 🔄 REVER AMOSTRA: {reason}                                       │
-    └─────────────────────────────────────────────────────────────────┘
-    
-    **Justificativa técnica:**
-    {evidence_trail}
-    
-    **Valores suspeitos detectados:**
-    {key_values}
-    
-    **Ação obrigatória:**
-    {actions}
-    
-    **Observação:** Resultado atual não deve ser liberado até confirmação
-    **Timestamp:** {timestamp_utc}
-    **Versões:** Config {config_ver} | Evidence {evidence_ver} | Syndromes {syndromes_ver}
-  
-  abstain_c0: |
-    ┌─────────────────────────────────────────────────────────────────┐
-    │ ⓘ INCONCLUSIVO (C0): Dados insuficientes                        │
-    └─────────────────────────────────────────────────────────────────┘
-    
-    **Motivo da abstenção:**
-    {missing_pct}% dos campos-chave para síndrome "{syndrome_id}" estão ausentes.
-    
-    **Campos críticos ausentes:**
-    {missing_fields_list}
-    
-    **Recomendação:**
-    Solicitar os exames listados acima para permitir conclusão definitiva.
-    
-    **Justificativa parcial (dados disponíveis):**
-    {evidence_trail}
-    
-    **Confiança:** C0 (abstenção consciente - conforme política >30% missing)
-    **Timestamp:** {timestamp_utc}
-    **Versões:** Config {config_ver} | Evidence {evidence_ver} | Syndromes {syndromes_ver}
+# Observação: placeholders entre {chaves} devem ser preenchidos pelo orquestrador.
 
-# =============================================================================
-# EVIDENCE TRAIL FORMAT
-# =============================================================================
-evidence_trail_format:
-  standard: |
-    Regras disparadas: {rule_ids_list}
-    Valores-chave: {parameters_dict}
-    Campos ausentes (taxa: {missing_rate}%): {missing_critical_list}
-    Morfologia identificada: {morphology_tokens_present}
-  
-  detailed: |
-    ═══════════════════════════════════════════════════════════════════
-    TRILHA DE EVIDÊNCIAS COMPLETA
-    ═══════════════════════════════════════════════════════════════════
-    
-    ** Regras Disparadas ({rule_count} total) **
-    {rule_ids_with_strength}
-    
-    ** Valores Laboratoriais **
-    {parameters_formatted}
-    
-    ** Morfologia (Triestado: True/False/Unknown) **
-    {morphology_formatted}
-    
-    ** Campos Ausentes ({missing_count} total, {missing_rate}%) **
-    {missing_fields_with_importance}
-    
-    ** Score Agregado **
-    Score determinístico: {deterministic_score}
-    Probabilidade calibrada (V1): {platt_probability} (se habilitado)
-    
-    ═══════════════════════════════════════════════════════════════════
+# Compatível com camadas existentes (00–03, 05–09, 11).
 
-# =============================================================================
-# CONFIDENCE RULES V1
-# =============================================================================
-confidence_rules_v1:
-  c2_criteria:
-    description: "Alta confiança - Dados completos e padrão forte"
-    conditions:
-      - "short_circuit == true (síndromes críticas sempre C2)"
-      - "prob >= 0.80 (calibração Platt V1)"
-      - "missing_rate < 0.10 (≥90% campos presentes)"
-    explanation: "Recomendação com alta certeza - implementar ação imediata"
-  
-  c1_criteria:
-    description: "Confiança moderada - Dados parciais ou padrão moderado"
-    conditions:
-      - "prob >= 0.60 and prob < 0.80 (calibração Platt V1)"
-      - "missing_rate >= 0.10 and missing_rate < 0.30 (70-90% campos presentes)"
-      - "evidências moderadas sem short-circuit"
-    explanation: "Recomendação com certeza moderada - investigação adicional recomendada"
-  
-  c0_criteria:
-    description: "Abstenção consciente - Dados insuficientes ou conflitantes"
-    conditions:
-      - "prob < 0.60 (calibração Platt V1)"
-      - "missing_rate >= 0.30 (>30% campos ausentes)"
-      - "conflicting_evidences == true (evidências contraditórias)"
-    explanation: "Abstenção - solicitar exames complementares antes de conclusão"
-
-# =============================================================================
-# MISSING FIELDS DISPLAY
-# =============================================================================
-missing_fields_display:
-  format: "Lacunas: {field_name_1} (importância: {importance_1}), {field_name_2} (importância: {importance_2}), ..."
-  
-  format_list: |
-    Campos ausentes identificados:
-    {missing_list}
-  
-  format_detailed: |
-    ┌─────────────────────────────────────────────────────────────────┐
-    │ LACUNAS IDENTIFICADAS                                            │
-    └─────────────────────────────────────────────────────────────────┘
-    
-    {missing_table}
-    
-    **Impacto na conclusão:**
-    {impact_explanation}
-  
-  importance_levels:
-    critical:
-      label: "CRÍTICA"
-      symbol: "🔴"
-      description: "Impede conclusão definitiva - campo obrigatório para síndrome"
-      impact: "Sem este campo, a confiança cai para C0 (abstenção)"
-    
-    high:
-      label: "ALTA"
-      symbol: "🟠"
-      description: "Reduz confiança significativamente - campo muito importante"
-      impact: "Sem este campo, a confiança cai de C2 para C1"
-    
-    moderate:
-      label: "MODERADA"
-      symbol: "🟡"
-      description: "Pode refinar diagnóstico - campo complementar relevante"
-      impact: "Sem este campo, mantém confiança mas perde especificidade"
-    
-    low:
-      label: "BAIXA"
-      symbol: "⚪"
-      description: "Complementar opcional - não afeta decisão principal"
-      impact: "Sem este campo, decisão permanece inalterada"
-
-# =============================================================================
-# KEY VALUES FORMATTING
-# =============================================================================
-key_values_formatting:
-  standard: "{field_name}: {value} {unit} (ref: {reference_range})"
-  
-  flagged: "{field_name}: {value} {unit} ⚠️ {flag} (ref: {reference_range})"
-  
-  flags:
-    critical_low: "CRÍTICO BAIXO"
-    critical_high: "CRÍTICO ALTO"
-    low: "BAIXO"
-    high: "ALTO"
-    abnormal: "ANORMAL"
-  
-  color_coding:
-    critical: "🔴"
-    high_priority: "🟠"
-    moderate: "🟡"
-    normal: "🟢"
-    unknown: "⚪"
-
-# =============================================================================
-# ACTIONS FORMATTING
-# =============================================================================
-actions_formatting:
-  list_format: |
-    1. {action_1}
-    2. {action_2}
-    3. {action_3}
-    ...
-  
-  urgent_prefix: "⚠️ URGENTE: "
-  recommended_prefix: "🔔 Recomendado: "
-  optional_prefix: "ℹ️ Opcional: "
-
-# =============================================================================
-# SYNDROME-SPECIFIC CUSTOMIZATIONS
-# =============================================================================
-syndrome_specific_templates:
-  S-TMA:
-    additional_info: |
-      **Critérios PLASMIC (se adulto):**
-      - PLT < 30: 1 ponto
-      - Hemólise: 1 ponto (se presente)
-      - Sem CA ativo: 1 ponto (se aplicável)
-      - Sem TMO: 1 ponto (se aplicável)
-      - MCV < 90: 1 ponto (se {mcv} < 90)
-      - INR < 1.5: 1 ponto (se disponível)
-      - Creatinina < 2.0: 1 ponto (se {creatinine} < 2.0)
-      
-      Score 0-4: Baixo risco PTT (<5%)
-      Score 5-7: Alto risco PTT (>70%) → ADAMTS13 urgente
-  
-  S-CIVD:
-    additional_info: |
-      **Score ISTH CIVD (se disponível):**
-      - PLT: {plt_score} pontos
-      - D-dímero: {d_dimer_score} pontos
-      - PT prolongado: {pt_score} pontos
-      - Fibrinogênio: {fibrinogen_score} pontos
-      
-      Total: {isth_total} pontos
-      (≥5 = CIVD confirmada)
-  
-  S-THROMBOCITOSE:
-    additional_info: |
-      **Critérios WHO para Trombocitemia Essencial:**
-      1. PLT ≥450×10⁹/L sustentada: {plt_sustained}
-      2. Medula: proliferação megacariocítica: {bone_marrow}
-      3. Não preenche PV/MFP/LMC: {exclusion}
-      4. JAK2/CALR/MPL positivo: {driver_mutation}
-      (Ou: clonalidade se driver negativo)
-      
-      Critérios preenchidos: {who_criteria_met}/4
-
-# =============================================================================
-# OUTPUT STRUCTURE
-# =============================================================================
-output_structure:
-  json_format:
-    schema: |
-      {
-        "case_id": "string (SHA256 hash)",
-        "timestamp_utc": "ISO8601 datetime",
-        "decision": {
-          "priority": "critical|priority|routine|review_sample",
-          "syndromes": [
-            {
-              "id": "string (S-XXX)",
-              "criticality": "string",
-              "confidence": "string (C0|C1|C2)",
-              "threshold_met": "float",
-              "short_circuit": "boolean"
-            }
-          ],
-          "top_syndrome": "string (S-XXX)",
-          "card_text": "string (formatted card)",
-          "actions": ["array of strings"],
-          "next_steps": ["array of strings"]
-        },
-        "evidence_trail": {
-          "rules_fired": ["E-XXX", "E-YYY"],
-          "key_values": {
-            "hb": {"value": 6.1, "unit": "g/dL", "flag": "critical_low"},
-            "plt": {"value": 12, "unit": "1e9/L", "flag": "critical_low"}
-          },
-          "morphology": {
-            "esquistocitos": "true",
-            "blastos": "false",
-            "aglomerados_plaquetarios": "unknown"
-          },
-          "missing_fields": {
-            "ldh": "high",
-            "reticulocytes": "high",
-            "haptoglobin": "moderate"
-          },
-          "missing_rate": 0.25
-        },
-        "versions": {
-          "schema": "schema_hybrid_v1.0.0",
-          "config": "config_hybrid_v1.0.0",
-          "evidence": "evidence_hybrid_v1.0.0",
-          "syndromes": "syndromes_hybrid_v1.0.0"
-        },
-        "audit": {
-          "case_hash": "SHA256 of canonical data",
-          "computation_time_ms": 127,
-          "flags": ["short_circuit_triggered", "pre_analytical_warning"]
-        }
-      }
-
-# =============================================================================
-# LOCALIZATION (PT-BR)
-# =============================================================================
-localization:
-  pt_br:
-    syndrome_names:
-      S-NEUTROPENIA-GRAVE: "Neutropenia Grave"
-      S-BLASTIC-SYNDROME: "Síndrome Blástica"
-      S-TMA: "Microangiopatia Trombótica (TMA)"
-      S-PLT-CRITICA: "Plaquetopenia Crítica"
-      S-ANEMIA-GRAVE: "Anemia Grave"
-      S-NEUTROFILIA-LEFTSHIFT-CRIT: "Neutrofilia com Desvio à Esquerda"
-      S-THROMBOCITOSE-CRIT: "Trombocitose Crítica (Clonal Provável)"
-      S-CIVD: "Coagulação Intravascular Disseminada (CIVD)"
-      S-APL-SUSPEITA: "Leucemia Promielocítica Aguda (LPA/M3) - Suspeita"
-      S-IDA: "Anemia Ferropriva (IDA)"
-      S-IDA-INFLAM: "Anemia Ferropriva + Inflamatória"
-      S-BETA-THAL: "Traço Beta-Talassêmico"
-      S-ALFA-THAL: "Traço Alfa-Talassêmico (Suspeita)"
-      S-MACRO-B12-FOLATE: "Anemia Macrocítica (B12/Folato)"
-      S-HEMOLYSIS: "Hemólise"
-      S-APLASIA-RETIC-LOW: "Aplasia / Crise Aplástica"
-      S-LEUCOERITROBLASTOSE: "Leucoeritroblastose"
-      S-HB-SICKLE: "Doença Falciforme (Suspeita)"
-      S-PSEUDO-THROMBO: "Pseudo-Trombocitopenia"
-      S-PTI: "Púrpura Trombocitopênica Imune (PTI)"
-      S-THROMBOCITOSE: "Trombocitose (Reativa vs Clonal)"
-      S-LYMPHOPROLIFERATIVE: "Síndrome Linfoproliferativa"
-      S-EOSINOFILIA: "Eosinofilia"
-      S-MONOCITOSE-CRONICA: "Monocitose Crônica"
-      S-BASOFILIA: "Basofilia"
-      S-CML: "Leucemia Mieloide Crônica (LMC)"
-      S-MPN-POSSIBLE: "Neoplasia Mieloproliferativa (NMP) - Possível"
-      S-PV: "Policitemia Vera (Suspeita)"
-      S-ERITROCITOSE-SECUNDARIA: "Eritrocitose Secundária"
-      S-EVANS: "Síndrome de Evans"
-      S-PANCYTOPENIA: "Pancitopenia"
-      S-MM-MGUS: "Mieloma Múltiplo / MGUS"
-      S-PRE-ANALITICO: "Erro Pré-Analítico"
-      S-INCONCLUSIVO: "Inconclusivo"
-
-# =============================================================================
-# METADADOS
-# =============================================================================
 metadata:
-  total_templates: 5
-  localization_support: ["pt_br"]
-  json_schema_version: "1.0.0"
-  output_modes: ["text_card", "json", "detailed_json"]
+  version: 2.3.1-cdss
+  locale: pt-BR
+  audience: "profissionais de saúde (médicos generalistas / não hematologistas)"
+  disclaimer: "CDSS de apoio à decisão. Não substitui julgamento clínico. Resultado não é diagnóstico."
+  style:
+    max_syndromes: 3
+    show_missingness_top_k: 2
+    show_values_decimals:
+      hb: 1
+      mcv: 0
+      rdw: 1
+      wbc: 1
+      plt: 0
+      anc: 2
+      mchc: 1
+    bullets:
+      next_steps_max: 4
+      values_per_line_max: 6
 
-notes: |
-  - Templates seguem padrão ANVISA/CFM de laudos médicos
-  - Cartões incluem versões de YAMLs para rastreabilidade IEC 62304
-  - Missing fields exibidos com níveis de importância (critical/high/moderate/low)
-  - Confidence C0/C1/C2 mapeado de Platt calibration (V1) ou missing rate (V0)
-  - Syndrome-specific templates para TMA (PLASMIC), CIVD (ISTH), Trombocitose (WHO)
-  - JSON schema permite integração com sistemas externos (LIS, EMR)
+lexicon:
+  allowed_verbs:
+    - "padrão compatível com"
+    - "sugere"
+    - "pode representar"
+    - "considerar"
+    - "recomenda-se"
+    - "priorizar"
+    - "classificar risco como"
+    - "solicitar"
+    - "repetir em"
+  avoid:
+    - "diagnóstico de"
+    - "tem (doença)"
+    - "confirma"
+    - "é (doença)"
+    - "câncer/leucemia"  # usar "suspeita" quando aplicável
 
-# =============================================================================
-# FIM DO ARQUIVO
-# =============================================================================
+placeholders_doc: |
+  # Campos esperados do orquestrador
+  * case_id
+  * route_id
+  * engine_versions
+  * syndromes: [ { id, name, confidence: C0|C1|C2, criticality, evidence_trail, key_values } ]
+  * next_steps: [ { level: critical|priority|routine, text } ]
+  * missingness: [ strings ]
+  * warnings: [ strings ]
 
+# ======================
+# TEMPLATES DE CARDS
+# ======================
+
+templates:
+  critical:
+    header: "CRÍTICO — {headline}"
+    body: |
+      Hipótese: **{syndrome_name} (C{confidence})** — {compat_phrase}.
+      **Por quê:** {evidence_short}. {values_line}
+      **Ação tempo-sensível:** {next_step_1}; {next_step_2}; {next_step_3}.
+      {missing_line}
+      *{disclaimer}*
+    compat_phrases:
+      default: "alta suspeita com base em achados laboratoriais críticos"
+    fields:
+      values_line: "Valores: {key_values_compact}."
+      missing_line: "Lacunas: {missingness_top_k}."
+
+  priority:
+    header: "PRIORIDADE — {headline}"
+    body: |
+      Hipótese: **{syndrome_name} (C{confidence})** — {compat_phrase}.
+      **Por quê:** {evidence_short}. {values_line}
+      **Próximos passos:** 1) {next_step_1}; 2) {next_step_2}; 3) {next_step_3}; 4) {next_step_4}.
+      {missing_line}
+      *{disclaimer}*
+    compat_phrases:
+      C1: "padrão compatível"
+      C2: "padrão sugestivo"
+      default: "padrão compatível"
+    fields:
+      values_line: "Valores: {key_values_compact}."
+      missing_line: "Lacunas: {missingness_top_k}."
+
+  routine:
+    header: "ROTINA — {headline}"
+    body: |
+      **Sem achados críticos/prioritários.** {borderline_note}
+      **Orientação:** {routine_tip}.
+      *{disclaimer}*
+    defaults:
+      routine_tip: "Repetir hemograma em 2–6 semanas ou conforme protocolo local"
+
+  review_sample:
+    header: "REVER AMOSTRA — Pré-analítico suspeito"
+    body: |
+      **Motivo:** {preanalytical_reason}.
+      **Ação recomendada:** {recollect_actions}.
+      *{disclaimer}*
+
+  # opcional (quando houver um borderline renderer separado)
+  borderline:
+    header: "BORDERLINE — {headline}"
+    body: |
+      Parâmetros próximos aos limites de referência. {values_line}
+      **Orientação:** {routine_tip}.
+      *{disclaimer}*
+
+helpers:
+  values_compaction:
+    joiner: ", "
+    key_order: [hb, mcv, rdw, wbc, anc, plt, mchc]
+  missingness_render:
+    prefix: "Lacunas: "
+    joiner: "; "
+    max_items: 2
+  headlines:
+    by_criticality:
+      critical: "Risco imediato"
+      priority: "Investigar direcionado"
+      routine: "Sem alertas relevantes"
+      review_sample: "Validação pré-analítica necessária"
+
+# ======================
+# MAPEAMENTO DE SÍNDROMES → TEXTOS CURTOS
+# ======================
+
+syndrome_microcopy:
+  S-TMA:
+    headline: "Suspeita de microangiopatia trombótica (MAT)"
+    compat: "alta suspeita (PLT crítica + esquistócitos)"
+    next_steps:
+      - "Esfregaço imediato"
+      - "ADAMTS13/Complemento"
+      - "Creatinina e coagulograma"
+  
+  S-NEUTROPENIA-GRAVE:
+    headline: "Risco infeccioso por neutropenia"
+    compat: "achado crítico (ANC muito baixa)"
+    next_steps:
+      - "Precauções/antibioticoterapia conforme protocolo"
+      - "Avaliar foco infeccioso"
+  
+  S-LEUCOSE_VERY_HIGH:
+    headline: "Risco de leucostase"
+    compat: "WBC muito elevado"
+    next_steps:
+      - "Contato urgente com hematologia"
+      - "Exames dirigidos conforme protocolo"
+  
+  S-APL-SUSPEITA:
+    headline: "Leucemia promielocítica aguda — suspeita"
+    compat: "padrão compatível (promielócitos + coagulopatia)"
+    next_steps:
+      - "Seguir protocolo local; considerar ATRA"
+  
+  S-IDA:
+    headline: "Anemia ferropriva — investigação"
+    compat: "padrão compatível (microcitose + RDW alto)"
+    next_steps:
+      - "Ferritina e TSat"
+      - "CRP (diferenciar inflamação)"
+  
+  S-MACRO-B12-FOLATE:
+    headline: "Macrocitose por deficiência — investigação"
+    compat: "padrão compatível"
+    next_steps:
+      - "B12 e folato"
+      - "Se B12 200–300, considerar testes confirmatórios"
+  
+  S-HEMOLYSIS:
+    headline: "Hemólise — investigação"
+    compat: "padrão compatível"
+    next_steps:
+      - "Reticulócitos, haptoglobina, bilirrubina indireta, DAT"
+      - "G6PD/PK se DAT negativo"
+  
+  S-MPN-PLAQUETARIA:
+    headline: "Trombocitose — clonal possível"
+    compat: "padrão compatível (persistente)"
+    next_steps:
+      - "Ferritina/CRP (reativo)"
+      - "Se >650 ×10^9/L, JAK2/CALR/MPL"
+  
+  S-PV:
+    headline: "Eritrocitose — PV a considerar"
+    compat: "padrão compatível (Hb/Ht altos)"
+    next_steps:
+      - "Repetir CBC; confirmar persistência"
+      - "JAK2/CALR/MPL"
+      - "EPO sérica (quando disponível)"
+  
+  S-ERITROCITOSE-SECUNDARIA:
+    headline: "Eritrocitose — secundária a considerar"
+    compat: "padrão compatível (Hb/Ht altos, sem marcadores clonais)"
+    next_steps:
+      - "Repetir CBC"
+      - "EPO sérica (alta sugere secundária)"
+  
+  S-PTI:
+    headline: "Trombocitopenia imune — possível"
+    compat: "padrão compatível"
+    next_steps:
+      - "**Antes** excluir pseudo (esfregaço/MPV)"
+      - "Revisar medicamentos/infecção"
+  
+  S-PSEUDO-THROMBO:
+    headline: "Pseudotrombocitopenia — provável"
+    compat: "clumps/MPV compatíveis"
+    next_steps:
+      - "Recoleta citrato/PLT-F"
+      - "Esfregaço"
+  
+  S-ACD:
+    headline: "Anemia da doença crônica/inflamatória — investigação"
+    compat: "padrão compatível (anemia + ferritina alta/CRP alto)"
+    next_steps:
+      - "Confirmar CRP/ferritina/TSat"
+      - "Tratar condição inflamatória de base"
+  
+  S-PANCYTOPENIA:
+    headline: "Pancitopenia — investigação dirigida"
+    compat: "padrão compatível (3 séries baixas)"
+    next_steps:
+      - "Reticulócitos"
+      - "Esfregaço (displasia, blastos)"
+      - "Avaliar medula óssea se persistente"

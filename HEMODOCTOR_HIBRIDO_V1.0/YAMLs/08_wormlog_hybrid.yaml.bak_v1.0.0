@@ -1,11 +1,11 @@
 # 08_wormlog_hybrid.yaml
 # WORM Log (Write-Once, Read-Many) - Auditoria Regulatória
-# Integração SADMH V2.3 + HemoDoctor Hybrid + Validação Externa
-# Versão: v2.3.1
+# Integração SADMH V2.3 + HemoDoctor Hybrid
+# Versão: v1.0.0
 # Data: 2025-10-19
 # Registro imutável para ANVISA/FDA/ISO 13485
 
-version: wormlog_hybrid_v2.3.1
+version: wormlog_hybrid_v1.0.0
 module: immutable_audit_log
 
 description: |
@@ -110,17 +110,6 @@ immutability:
         secret_key = fetch_from_kms("HEMODOCTOR_WORMLOG_KEY")
         hmac_signature = hmac_sha256(event_payload, secret_key)
         # Hex string: "a3f7d9e2b1c8..."
-      
-      # NOVO v2.3.1 — Campos incluídos no HMAC (auditoria avançada)
-      include_fields_in_hmac:
-        - route_id
-        - event_id                  # Novo: idempotência
-        - engine_versions           # Novo: rastreabilidade de versão
-        - config_hash
-        - code_hash
-        - previous_segment_hash
-        - top_syndromes
-        - fired_evidences
 
 # =============================================================================
 # SEÇÃO 3: RETENTION E PURGE
@@ -174,13 +163,6 @@ entry_schema:
       description: "sha256(site_id|collection_datetime|age_days|sex|salt_site)"
       purpose: "Pseudonimização LGPD"
       example: "sha256:a1b2c3d4e5f6..."
-    
-    # NOVO v2.3.1 — Idempotência e deduplicação de eventos
-    - field: event_id
-      type: "UUID v4 string"
-      description: "ID único do evento (deduplica reprocessamentos/retries)"
-      purpose: "Idempotência (evita evento duplicado por retry)"
-      example: "uuid:550e8400-e29b-41d4-a716-446655440000"
     
     - field: route_id
       type: "SHA256 hex string"

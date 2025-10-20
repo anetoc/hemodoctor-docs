@@ -1,10 +1,10 @@
 # 03_syndromes_hybrid.yaml
-# Síndromes Híbridas - 35 Síndromes Completas Dr. Abel Costa + Validação Externa
-# Versão: v2.3.1
+# Síndromes Híbridas - 34 Síndromes Completas Dr. Abel Costa
+# Versão: v1.0.0
 # Data: 2025-10-19
-# Distribuição: 9 Critical | 24 Priority (+1 S-ACD) | 1 Review Sample | 1 Routine
+# Distribuição: 9 Critical | 23 Priority | 1 Review Sample | 1 Routine
 
-version: syndromes_hybrid_v2.3.1
+version: syndromes_hybrid_v1.0.0
 
 # =============================================================================
 # SÍNDROMES CRÍTICAS (9 - Short-Circuit Enabled)
@@ -54,27 +54,26 @@ critical_syndromes:
     missing_fields_warn: ["morphology.blastos", "ldh", "bcr_abl_pos"]
     source: "Dev Team + Ajustes Dr. Abel"
 
-  # 3. REFORÇADO v2.3.1 — TMA/MAT (Microangiopatia Trombótica)
-  #    ⚠️ SHORT-CIRCUIT CRÍTICO: Exige PLT <10 + Esquistócitos ≥1% (GATE RÍGIDO)
+  # 3. TMA (Microangiopatia Trombótica)
   - id: S-TMA
     criticality: critical
     combine:
-      all: [E-PLT-CRIT-LOW, E-SCHISTOCYTES-GE1PCT]  # Ordem explícita: ambos obrigatórios
-      any: [E-LDH-HIGH, E-BT-IND-HIGH, E-CREATININA-HIGH]  # Reforça, mas não gate
+      all: [E-SCHISTOCYTES-GE1PCT, E-PLT-CRIT-LOW]
+      any: [E-HEMOLYSIS-PATTERN]
     threshold: 1.0
     short_circuit: true
     actions:
-      - "⚠️ GATE CRÍTICO: Esfregaço IMEDIATO (confirmar esquistócitos ≥1%)"
-      - "Se esquistócitos ausentes ou <1% → NÃO é TMA, reavaliar diagnóstico"
-      - "LDH, bilirrubina indireta, haptoglobina, creatinina urgentes"
-      - "ADAMTS13 atividade/Complemento por idade (PTT vs SHU)"
+      - "Esfregaço urgente (confirmar esquistócitos ≥1%)"
+      - "LDH, bilirrubina indireta, haptoglobina, creatinina"
+      - "PLASMIC score (se adulto)"
+      - "ADAMTS13 atividade (se PTT suspeita)"
     next_steps:
-      - "Suporte imediato (hidratação, transfusão se PLT <10 com sangramento)"
+      - "Complemento C3/C4 (se SHU atípica suspeita)"
+      - "Coagulograma completo (descartar CIVD)"
       - "Referência urgente nefrologia/hematologia"
-      - "Coagulograma (descartar CIVD sobreposta)"
-    evidence_trail_template: "PLT {plt} ×10⁹/L; Esquistócitos ≥1% CONFIRMADO; LDH {ldh} U/L; Creatinina {creatinine}"
+    evidence_trail_template: "PLT {plt} ×10⁹/L; Esquistócitos {schistocytes}; LDH {ldh} U/L; Hapto {haptoglobin} mg/dL"
     missing_fields_warn: ["ldh", "haptoglobin", "bt_indireta", "creatinine"]
-    source: "Validação Externa v2.3.1 - gate rígido esquistócitos ≥1%"
+    source: "Dev Team + Ajustes Dr. Abel"
 
   # 4. Plaquetopenia Crítica
   - id: S-PLT-CRITICA
@@ -246,25 +245,6 @@ priority_syndromes:
     missing_fields_warn: ["tsat", "crp"]
     source: "Ajustes Dr. Abel Costa"
 
-  # NOVA v2.3.1 — Anemia da Doença Crônica/Inflamatória (ACD)
-  - id: S-ACD
-    criticality: priority
-    combine:
-      all: [E-ANEMIA]
-      any: [E-FERRITIN-HIGH-100, E-CRP-HIGH]
-    negative: [E-HBA2-HIGH, E-HEMOLYSIS-PATTERN]
-    threshold: 0.7
-    actions:
-      - "Confirmar CRP/ferritina/TSat"
-      - "Tratar condição inflamatória de base"
-    next_steps:
-      - "Avaliar doença inflamatória crônica (DII, AR, infecção crônica, neoplasia)"
-      - "Se TSat <20% + ferritina ≥100 → déficit funcional de ferro (considerar ferro IV conforme protocolo)"
-      - "Repetir CBC após controle da inflamação"
-    evidence_trail_template: "Hb {hb} g/dL; Ferritina {ferritin} ng/mL (≥100); CRP {crp} mg/L (alto); TSat {tsat}%"
-    missing_fields_warn: ["ferritin", "crp", "tsat"]
-    source: "Validação Externa v2.3.1 + TSAT <20% consensus"
-
   # 12. Beta-Talassemia Trait
   - id: S-BETA-THAL
     criticality: priority
@@ -408,24 +388,24 @@ priority_syndromes:
     missing_fields_warn: ["morphology.aglomerados_plaquetarios", "plt_citrate"]
     source: "Dev Team + Ajustes Dr. Abel"
 
-  # 20. AJUSTADO v2.3.1 — PTI (Púrpura Trombocitopênica Imune)
+  # 20. PTI (Púrpura Trombocitopênica Imune)
   - id: S-PTI
     criticality: priority
     combine:
       all: [E-PLT-LOW]
       negative: [E-PSEUDO-THROMBO, E-COAG-PANEL-ABNORMAL, E-HEMOLYSIS-PATTERN]
-    threshold: 0.75  # Elevado para C2 apenas após exclusões
+    threshold: 0.6
     actions:
-      - "PRIMEIRO: Esfregaço/citrato para excluir pseudo-trombocitopenia"
-      - "Revisão medicamentosa (heparina, quinidina, antibióticos, quinino)"
-      - "Excluir infecções (HIV, HCV, H. pylori, EBV)"
-      - "Se confirmado PTI provável: considerar anticorpo antiplaquetário (GP IIb/IIIa)"
+      - "Anticorpo antiplaquetário (GP IIb/IIIa, Ib/IX)"
+      - "Excluir infecções (HIV, HCV, H. pylori)"
+      - "Excluir fármacos (heparina, quinidina, antibióticos)"
+      - "Repetir CBC em 1 semana"
     next_steps:
-      - "Corticoterapia se PLT <30 ou sangramento ativo (conforme protocolo local)"
-      - "Referência hematologia se refratário ou PLT <10"
-    evidence_trail_template: "PLT {plt} ×10⁹/L; MPV {mpv}; WBC {wbc}; Hb {hb}; Pseudo excluída por esfregaço"
-    missing_fields_warn: ["mpv", "pt", "aptt", "morphology.aglomerados_plaquetarios"]
-    source: "Validação Externa v2.3.1 - priorizar exclusão pseudo antes C2"
+      - "Corticoterapia se PLT <30 ou sangramento"
+      - "Referência hematologia se refratário"
+    evidence_trail_template: "PLT {plt} ×10⁹/L; WBC {wbc}; Hb {hb}; Coagulograma normal"
+    missing_fields_warn: ["pt", "aptt", "coombs_pos"]
+    source: "Ajustes Dr. Abel Costa"
 
   # 21. Trombocitose Moderada (Reativa vs Clonal)
   - id: S-THROMBOCITOSE
@@ -565,44 +545,45 @@ priority_syndromes:
     source: "Dev Team + Ajustes Dr. Abel"
 
   # 28. Policitemia Vera (Suspeita)
-  # CORRIGIDO v2.3.1 — Policitemia Vera (PV)
   - id: S-PV
     criticality: priority
     combine:
-      any: [E-HB-HIGH, E-HCT-HIGH]  # CORRIGIDO: era E-HB-CRIT-LOW (erro!)
-    negative: [E-CRP-HIGH]  # Opcional: evitar confundir com desidratação reativa
+      all: [E-HB-CRIT-LOW]  # Actually HIGH (inverted logic - needs fix)
+      any: [E-JAK2-CALR-MPL-POS]
     threshold: 0.7
     actions:
-      - "Repetir CBC e confirmar persistência"
-      - "JAK2/CALR/MPL (driver mutations)"
-      - "EPO sérica (se disponível - baixa sugere PV)"
+      - "JAK2 V617F (se ausente)"
+      - "EPO sérica (baixo em PV)"
+      - "Avaliar hipóxia (SpO2, gasometria arterial)"
+      - "Repetir CBC + medular se JAK2+"
     next_steps:
-      - "Se JAK2+ + eritrocitose persistente → PV provável (WHO 2016)"
-      - "Se JAK2- → exon 12, CALR, MPL"
-      - "Investigar causas secundárias: hipóxia (SpO2, tabagismo, DPOC), tumor renal"
-      - "(Futuro V1.2) EPO sérica: baixa confirma PV; alta sugere secundária"
-    evidence_trail_template: "Hb {hb} g/dL; Hct {ht}%; JAK2 {jak2_pos}; EPO {epo}"
-    missing_fields_warn: ["jak2_pos", "epo"]
-    source: "Validação Externa v2.3.1 + WHO 2016 PV criteria"
+      - "Descartar eritrocitose secundária (DPOC, altitude, tabagismo, tumor renal)"
+      - "Se JAK2+ + EPO baixo: PV confirmada"
+      - "Flebotomia + AAS se PV"
+    evidence_trail_template: "Hb {hb} g/dL (elevado); JAK2 {jak2_pos}; EPO {epo}; SpO2 {spo2}%"
+    missing_fields_warn: ["jak2_pos", "epo", "spo2"]
+    source: "Ajustes Dr. Abel Costa"
+    note: "Lógica Hb HIGH precisa ser adicionada em 02_evidence_hybrid.yaml"
 
-  # 29. CORRIGIDO v2.3.1 — Eritrocitose Secundária (separar de PV)
+  # 29. Eritrocitose Secundária
   - id: S-ERITROCITOSE-SECUNDARIA
     criticality: priority
     combine:
-      any: [E-HB-HIGH, E-HCT-HIGH]  # CORRIGIDO: era E-HB-CRIT-LOW (erro!)
-    negative: [E-JAK2-CALR-MPL-POS]  # Sem drivers → não PV
+      all: [E-HB-CRIT-LOW]  # Actually HIGH (inverted logic - needs fix)
+      negative: [E-JAK2-CALR-MPL-POS]
     threshold: 0.6
     actions:
-      - "Repetir CBC (confirmar persistência)"
-      - "EPO sérica (alta sugere secundária)"
-      - "(Futuro) Avaliar hipóxia/tabagismo/DPOC/altitude"
+      - "SpO2, gasometria arterial"
+      - "EPO sérica (elevado em secundária)"
+      - "Avaliar rim (ultrassom, creatinina)"
+      - "Avaliar hipóxia (DPOC, altitude, tabagismo)"
     next_steps:
-      - "Se EPO alta + eritrocitose persistente → secundária provável"
-      - "Investigar causas: hipóxia crônica (SpO2 <90%, DPOC), tabagismo, altitude, tumor renal"
-      - "Tratar causa base; O2 suplementar se hipóxia"
-    evidence_trail_template: "Hb {hb} g/dL; Hct {ht}%; JAK2/CALR/MPL {jak2_pos} (neg); EPO {epo}"
-    missing_fields_warn: ["jak2_pos", "epo"]
-    source: "Validação Externa v2.3.1"
+      - "Tratar causa base (O2 suplementar, parar tabaco)"
+      - "Se tumor renal/eritropoietina ectópica: referência oncologia"
+    evidence_trail_template: "Hb {hb} g/dL (elevado); JAK2 {jak2_pos} (negativo); EPO {epo} (alto); SpO2 {spo2}%"
+    missing_fields_warn: ["jak2_pos", "epo", "spo2", "creatinine"]
+    source: "Ajustes Dr. Abel Costa"
+    note: "Lógica Hb HIGH precisa ser adicionada em 02_evidence_hybrid.yaml"
 
   # 30. Síndrome de Evans
   - id: S-EVANS
@@ -624,24 +605,25 @@ priority_syndromes:
     missing_fields_warn: ["coombs_pos", "reticulocytes", "ldh"]
     source: "Ajustes Dr. Abel Costa"
 
-  # 31. CORRIGIDO v2.3.1 — Pancitopenia
+  # 31. Pancitopenia
   - id: S-PANCYTOPENIA
     criticality: priority
     combine:
-      all: [E-ANEMIA, E-PLT-LOW, E-WBC-LOW]  # CORRIGIDO: era E-WBC-HIGH (erro!)
+      all: [E-HB-CRIT-LOW, E-PLT-LOW]
+      any: [E-ANC-CRIT, E-WBC-HIGH]  # Actually WBC LOW (needs fix)
     threshold: 0.7
     actions:
       - "Reticulócitos (avaliar resposta medular)"
-      - "Esfregaço (displasia, blastos)"
-      - "Avaliar medula óssea se persistente (celularidade, displasia, infiltração)"
+      - "Painel hemólise (LDH, hapto, BTi)"
+      - "Medula óssea (celularidade, displasia, infiltração)"
+      - "B12/folato, vírus (HIV, EBV, CMV, Parvovírus)"
     next_steps:
-      - "Descartar SMD (displasia multilinear)"
-      - "Descartar aplasia medular (hipocelular)"
-      - "Descartar PNH (CD55/CD59 se hemólise)"
-      - "Investigar causas: B12/folato, vírus (HIV, EBV, CMV, Parvovírus B19), fármacos"
+      - "Descartar SMD (se displasia)"
+      - "Descartar aplasia medular (se hipocelular)"
+      - "Descartar PNH (CD55/CD59)"
     evidence_trail_template: "Hb {hb} g/dL; WBC {wbc} ×10⁹/L; PLT {plt} ×10⁹/L; Retic {reticulocytes}"
-    missing_fields_warn: ["reticulocytes", "bone_marrow", "b12"]
-    source: "Validação Externa v2.3.1"
+    missing_fields_warn: ["reticulocytes", "bone_marrow", "b12", "hpn_pos"]
+    source: "Ajustes Dr. Abel Costa"
 
   # 32. Mieloma Múltiplo / MGUS
   - id: S-MM-MGUS

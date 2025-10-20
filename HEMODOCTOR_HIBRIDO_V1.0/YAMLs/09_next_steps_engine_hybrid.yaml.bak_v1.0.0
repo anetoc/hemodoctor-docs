@@ -1,9 +1,9 @@
-# HemoDoctor Hybrid V2.3.1 - Next Steps Engine
-# Integração SADMH V2.3 Always-Output Design + Validação Externa
+# HemoDoctor Hybrid V1.0 - Next Steps Engine
+# Integração SADMH V2.3 Always-Output Design
 # Dr. Abel Costa (IDOR-SP) - Outubro 2025
-# Baseado em: SADMH 09_next_steps_engine.yaml + 35 Síndromes Híbridas
+# Baseado em: SADMH 09_next_steps_engine.yaml + 34 Síndromes Híbridas
 
-version: hybrid_v2.3.1
+version: hybrid_v1.0.0
 module: next_steps_engine
 description: >
   Motor inteligente de próximos passos clínicos.
@@ -1019,81 +1019,6 @@ triggers:
         cost: low
         turnaround: fast
         prereq: Valores implausíveis
-
-  # ============================================================================
-  # NOVOS TRIGGERS v2.3.1 (Validação Externa)
-  # ============================================================================
-
-  # PV / Eritrocitose
-  - id: trigger-pv-erythrocytosis
-    when: "(E-HB-HIGH OR E-HCT-HIGH) AND (jak2_pos missing AND calr_pos missing AND mpl_pos missing)"
-    syndromes: [S-PV, S-ERITROCITOSE-SECUNDARIA]
-    suggest:
-      - level: priority
-        test: JAK2/CALR/MPL (driver mutations)
-        rationale: "Clonal vs secundária"
-        cost: high
-        turnaround: slow
-        prereq: CBC
-      - level: routine
-        test: EPO sérica
-        rationale: "Secundária se EPO alta"
-        cost: mid
-        turnaround: medium
-        prereq: CBC
-  
-  - id: trigger-pv-erythrocytosis-negative
-    when: "(E-HB-HIGH OR E-HCT-HIGH) AND (jak2_pos==false AND calr_pos==false AND mpl_pos==false)"
-    syndromes: [S-ERITROCITOSE-SECUNDARIA]
-    suggest:
-      - level: routine
-        test: Repetir CBC 2-6 semanas
-        rationale: "Confirmar persistência"
-        cost: low
-        turnaround: fast
-        prereq: CBC
-
-  # PTI - excluir pseudo antes de C2
-  - id: trigger-pti-exclude-pseudo
-    when: "plt<150 AND (mpv missing OR aglomerados_plaquetarios missing)"
-    syndromes: [S-PTI]
-    suggest:
-      - level: priority
-        test: Esfregaço
-        rationale: "Excluir pseudo/aglomerados ANTES de PTI"
-        cost: low
-        turnaround: fast
-        prereq: CBC
-      - level: routine
-        test: MPV
-        rationale: "Apoio: pseudo vs consumo"
-        cost: low
-        turnaround: fast
-        prereq: CBC
-
-  # Leucostase (crítico)
-  - id: trigger-leukostasis
-    when: "wbc>=100"
-    syndromes: []  # Crítico por valor absoluto
-    suggest:
-      - level: critical
-        test: Hematologia urgente
-        rationale: "Risco de leucostase (WBC ≥100)"
-        cost: mid
-        turnaround: fast
-        prereq: CBC
-
-  # APL suspeita (crítico - tempo-dependente)
-  - id: trigger-apl-suspect
-    when: "promielocitos==true OR (blastos==true AND (d_dimer high OR fibrinogen low))"
-    syndromes: [S-APL-SUSPEITA]
-    suggest:
-      - level: critical
-        test: Iniciar ATRA SE APL SUSPEITA
-        rationale: "Tempo-dependente - PML-RARA"
-        cost: high
-        turnaround: fast
-        prereq: CBC + morfologia
 
   # ============================================================================
   # BORDERLINE / ROTINA (OUTPUT GARANTIDO)

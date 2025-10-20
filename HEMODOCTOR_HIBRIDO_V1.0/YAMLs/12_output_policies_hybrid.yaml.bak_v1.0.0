@@ -1,11 +1,11 @@
 # 12_output_policies_hybrid.yaml
 # Output Policies e Render Final - ALWAYS-OUTPUT DESIGN
-# Integração SADMH V2.3 Always-Output Design + Validação Externa
-# Versão: v2.3.1
+# Integração SADMH V2.3 Always-Output Design
+# Versão: v2.3.0
 # Data: 2025-10-19
 # Maestro final: integra missingness + next_steps_engine + confidence + render
 
-version: output_policies_hybrid_v2.3.1
+version: output_policies_hybrid_v2.3.0
 module: output_orchestrator
 
 description: |
@@ -138,8 +138,7 @@ card_templates:
       alert_sound: true
       notification: "urgent"
       email_escalation: true
-      # NOVO v2.3.1 — Incluir leucostase e APL suspeita
-      sms_escalation_if: "anc < 0.2 OR plt < 10 OR wbc >= 100 OR apl_suspect == true"
+      sms_escalation_if: "anc < 0.2 OR plt < 10"
   
   # ---------------------------------------------------------------------------
   # REVIEW SAMPLE CARD
@@ -271,18 +270,6 @@ card_templates:
       highlight_color: "#00BFFF"
       alert_sound: false
       notification: "low_priority"
-    
-    # NOVO v2.3.1 — Regras borderline (adulto + pediátrico)
-    borderline_rules:
-      adult:
-        - "mcv in [80,82) or (98,100]"
-        - "plt in [140,150) or (450,500]"
-        - "wbc in [3.8,4) or (11,12]"
-      
-      # NOVO v2.3.1 — Faixas pediátricas
-      pediatric:
-        - "hb in [11,11.5)"
-        - "mcv in [75,78)"
   
   # ---------------------------------------------------------------------------
   # ROUTINE NORMAL CARD

@@ -1,10 +1,10 @@
 # 01_schema_hybrid.yaml
-# Schema Canônico Híbrido - 41 campos V2.3.1
+# Schema Canônico Híbrido - 40 campos V1.0
 # Dev Team base + HemoDoctor LOINC + SADMH expansão futura
-# Versão: v2.3.1
+# Versão: v1.0.0
 # Data: 2025-10-19
 
-version: schema_hybrid_v2.3.1
+version: schema_hybrid_v1.0.0
 
 # =============================================================================
 # CAMPOS CBC CORE (15 campos - Dev Team base)
@@ -207,15 +207,6 @@ fields:
     loinc: "4576-5"
     description: "Hemoglobina A2 (eletroforese)"
     physiological_range: [0, 10]
-    
-  # NOVO v2.3.1 — Eritropoietina sérica (opcional, para PV/eritrocitose)
-  - name: epo
-    type: float
-    unit: mIU/mL
-    required: false
-    description: "Eritropoietina sérica (PV vs eritrocitose secundária)"
-    physiological_range: [0, 200]
-    clinical_note: "EPO baixa sugere PV; EPO alta sugere eritrocitose secundária"
 
 # =============================================================================
 # MOLECULARES (9 campos - Dev Team triestado)
