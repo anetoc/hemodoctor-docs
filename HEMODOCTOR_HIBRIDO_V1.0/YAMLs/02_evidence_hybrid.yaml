@@ -1,10 +1,10 @@
 # 02_evidence_hybrid.yaml
 # Evidências Híbridas - HemoDoctor + SADMH + Dev Team + Ajustes Dr. Abel Costa + Validação Externa
-# Versão: v2.3.1
+# Versão: v2.4.0
 # Data: 2025-10-19
-# Total: 79 evidências organizadas por série (4 novas em v2.3.1)
+# Total: 89 evidências (4 v2.3.1 + 5 iron panel v2.3.2 + 5 complementares v2.4.0 BUG-006)
 
-version: evidence_hybrid_v2.3.1
+version: evidence_hybrid_v2.4.0
 
 # =============================================================================
 # EVIDÊNCIAS CRÍTICAS (Short-Circuit Gates - Dev Team Base)
@@ -195,6 +195,93 @@ red_blood_cell_evidences:
     description: "Anemia grave + reticulócitos < 50×10⁹/L"
     clinical_significance: "Aplasia/crise aplástica (Parvovírus B19)"
     source: "Ajustes Dr. Abel Costa"
+
+  # ============================================================================
+  # BLOCO 3/3: Evidências 11-15 (Iron panel - IDA workup)
+  # Adicionado: 2025-10-19 - Grupo A (Agente 3)
+  # ============================================================================
+
+  # 11. E-IRON-LOW
+  - id: E-IRON-LOW
+    rule: "iron < 50"
+    strength: high
+    description: "Serum iron <50 μg/dL"
+    clinical_significance: "Iron deficiency anemia (IDA)"
+    requires: ["iron"]
+    source: "WHO 2011 IDA criteria"
+    differential:
+      - "Iron deficiency anemia (IDA)"
+      - "Anemia of chronic disease (ACD) - sometimes"
+    next_steps:
+      - "Ferritin (if <30 → IDA confirmed)"
+      - "TSAT (transferrin saturation)"
+      - "TIBC (elevated in IDA)"
+      - "Iron supplementation if IDA"
+
+  # 12. E-TIBC-HIGH
+  - id: E-TIBC-HIGH
+    rule: "tibc > 450"
+    strength: moderate
+    description: "TIBC >450 μg/dL (increased iron-binding capacity)"
+    clinical_significance: "Iron deficiency anemia (IDA)"
+    requires: ["tibc"]
+    source: "WHO 2011 IDA criteria"
+    differential:
+      - "Iron deficiency anemia (IDA)"
+      - "Pregnancy"
+    next_steps:
+      - "Ferritin and TSAT"
+      - "Iron supplementation if IDA confirmed"
+
+  # 13. E-TSAT-LOW
+  - id: E-TSAT-LOW
+    rule: "transferrin_saturation < 20"
+    strength: high
+    description: "Transferrin saturation <20%"
+    clinical_significance: "Iron deficiency anemia (IDA)"
+    requires: ["transferrin_saturation"]
+    source: "WHO 2011 IDA criteria"
+    differential:
+      - "Iron deficiency anemia (IDA)"
+      - "Anemia of chronic disease (if ferritin high)"
+    next_steps:
+      - "Ferritin (differentiate IDA vs ACD)"
+      - "If TSAT <20% + ferritin <30 → IDA confirmed"
+      - "Iron therapy"
+
+  # 14. E-SOLUBLE-TRANSFERRIN-RECEPTOR-HIGH
+  - id: E-SOLUBLE-TRANSFERRIN-RECEPTOR-HIGH
+    rule: "soluble_transferrin_receptor > 8.5"
+    strength: moderate
+    description: "Soluble transferrin receptor >8.5 mg/L"
+    clinical_significance: "Iron deficiency, active erythropoiesis"
+    requires: ["soluble_transferrin_receptor"]
+    source: "WHO 2011 micronutrient guidelines"
+    differential:
+      - "Iron deficiency anemia (IDA)"
+      - "Hemolysis (active erythropoiesis)"
+      - "Thalassemia (ineffective erythropoiesis)"
+    next_steps:
+      - "sTfR/log ferritin ratio (>2 → IDA)"
+      - "Hemoglobin electrophoresis if thalassemia suspected"
+
+  # 15. E-HEPCIDIN-HIGH
+  - id: E-HEPCIDIN-HIGH
+    rule: "hepcidin > 100"
+    strength: moderate
+    description: "Hepcidin >100 ng/mL (iron absorption blockade)"
+    clinical_significance: "Anemia of chronic disease (ACD)"
+    requires: ["hepcidin"]
+    source: "Nature Reviews Hematology 2023"
+    differential:
+      - "Anemia of chronic disease (ACD)"
+      - "Inflammation"
+      - "Infection"
+      - "Malignancy"
+    next_steps:
+      - "Treat underlying inflammatory condition"
+      - "IV iron if functional iron deficiency"
+      - "EPO therapy if renal insufficiency"
 
 # =============================================================================
 # SÉRIE BRANCA (13 evidências - +1 em v2.3.1)
@@ -511,6 +598,100 @@ molecular_evidences:
     v1_3: true
 
 # =============================================================================
+# LABORATÓRIO SUPLEMENTAR (5 evidências - v2.3.2)
+# Adicionado: 2025-10-19 - Grupo A (Agente 2)
+# =============================================================================
+supplementary_lab_evidences:
+  # 6. E-TSH-ABNORMAL
+  - id: E-TSH-ABNORMAL
+    rule: "tsh < 0.5 or tsh > 5.0"
+    strength: low
+    description: "TSH anormal (hypothyroidism or hyperthyroidism)"
+    clinical_significance: "Secondary anemia due to thyroid dysfunction"
+    requires: ["tsh"]
+    source: "Endocrine Society 2023 guidelines"
+    differential:
+      - "Hypothyroidism (TSH >5.0)"
+      - "Hyperthyroidism (TSH <0.5)"
+      - "Subclinical thyroid disease"
+    next_steps:
+      - "Free T4"
+      - "Thyroid antibodies if autoimmune suspected"
+      - "Treat thyroid disorder (may improve anemia)"
+
+  # 7. E-VIT-B12-LOW
+  - id: E-VIT-B12-LOW
+    rule: "vitamin_b12 < 200"
+    strength: moderate
+    description: "Vitamin B12 <200 pg/mL"
+    clinical_significance: "Megaloblastic anemia, neuropathy"
+    requires: ["vitamin_b12"]
+    source: "WHO 2016 micronutrient guidelines"
+    differential:
+      - "Pernicious anemia (autoimmune)"
+      - "Malabsorption (Crohn's, celiac)"
+      - "Dietary deficiency (vegan)"
+      - "Medications (metformin, PPI)"
+    next_steps:
+      - "MMA and homocysteine (confirm deficiency)"
+      - "Intrinsic factor antibodies"
+      - "B12 replacement therapy"
+
+  # 8. E-FOLATO-LOW
+  - id: E-FOLATO-LOW
+    rule: "folate < 3.0"
+    strength: moderate
+    description: "Folate <3.0 ng/mL"
+    clinical_significance: "Megaloblastic anemia"
+    requires: ["folate"]
+    source: "WHO 2016 micronutrient guidelines"
+    differential:
+      - "Dietary deficiency"
+      - "Malabsorption (celiac, Crohn's)"
+      - "Increased demand (pregnancy, hemolysis)"
+      - "Medications (methotrexate, trimethoprim)"
+    next_steps:
+      - "Folate supplementation"
+      - "Screen for celiac disease if malabsorption"
+      - "B12 level (exclude combined deficiency)"
+
+  # 9. E-RETICULOCYTES-LOW
+  - id: E-RETICULOCYTES-LOW
+    rule: "reticulocytes < 0.5"
+    strength: high
+    description: "Reticulocytes <0.5% (inadequate marrow response)"
+    clinical_significance: "Aplastic anemia, marrow failure, nutritional deficiency"
+    requires: ["reticulocytes"]
+    source: "NCCN 2023 hematology guidelines"
+    differential:
+      - "Aplastic anemia"
+      - "Pure red cell aplasia (PRCA)"
+      - "MDS (myelodysplastic syndrome)"
+      - "Nutritional deficiency (B12, folate, iron)"
+    next_steps:
+      - "Bone marrow biopsy if pancytopenia"
+      - "Iron, B12, folate studies"
+      - "Hematology consult"
+
+  # 10. E-RETICULOCYTES-HIGH
+  - id: E-RETICULOCYTES-HIGH
+    rule: "reticulocytes > 2.0"
+    strength: moderate
+    description: "Reticulocytes >2.0% (appropriate marrow response)"
+    clinical_significance: "Hemolysis, bleeding, or EPO therapy"
+    requires: ["reticulocytes"]
+    source: "NCCN 2023 hematology guidelines"
+    differential:
+      - "Hemolytic anemia"
+      - "Acute bleeding"
+      - "Recovery from marrow suppression"
+      - "EPO therapy response"
+    next_steps:
+      - "LDH and indirect bilirubin (if hemolysis)"
+      - "Blood smear"
+      - "Haptoglobin (low in hemolysis)"
+
+# =============================================================================
 # PRÉ-ANALÍTICO (5 evidências)
 # =============================================================================
 pre_analytical_evidences:
@@ -556,25 +737,130 @@ pre_analytical_evidences:
     optional: true
 
 # =============================================================================
+# BLOCO 1/3: Evidências Complementares (Anemia, Ferritina, LDH, Bilirrubina, Creatinina)
+# Adicionadas: 2025-10-19 - Implementação BUG-006
+# =============================================================================
+complementary_evidences:
+  # 1. E-ANEMIA - CRÍTICO! S-PANCYTOPENIA depende
+  - id: E-ANEMIA
+    rule: "hb < config.cutoffs.hb_low[age_sex_group]"
+    strength: moderate
+    description: "Anemia por idade/sexo"
+    clinical_significance: "Múltiplas causas (IDA, ACD, hemólise, aplasia, etc.)"
+    requires: ["hb", "age_months", "sex"]
+    source: "WHO 2011 anemia criteria"
+    differential:
+      - "IDA (iron deficiency anemia)"
+      - "ACD (anemia of chronic disease)"
+      - "Hemolysis"
+      - "Aplastic anemia"
+      - "MDS"
+    next_steps:
+      - "Reticulocyte count"
+      - "Iron panel (ferritin, TSAT, TIBC)"
+      - "B12 and folate"
+  
+  # 2. E-FERRITIN-HIGH-100 - S-ACD usa!
+  - id: E-FERRITIN-HIGH-100
+    rule: "ferritin > 100"
+    strength: moderate
+    description: "Ferritina >100 ng/mL"
+    clinical_significance: "ACD, iron overload, inflammation, malignancy"
+    requires: ["ferritin"]
+    source: "NCCN 2023 anemia guidelines"
+    differential:
+      - "Anemia of chronic disease (ACD)"
+      - "Hemochromatosis"
+      - "Acute phase reactant (infection, inflammation)"
+      - "Malignancy"
+    next_steps:
+      - "CRP (confirm inflammation)"
+      - "TSAT (differentiate ACD vs overload)"
+      - "Treat underlying condition"
+  
+  # 3. E-LDH-HIGH - S-TMA e S-HEMOLYSIS usam!
+  - id: E-LDH-HIGH
+    rule: "ldh > config.cutoffs.ldh_high"
+    strength: high
+    description: "LDH elevado"
+    clinical_significance: "Hemolysis, TMA, tissue damage, malignancy"
+    requires: ["ldh"]
+    source: "ISTH 2023 hemolysis criteria"
+    differential:
+      - "Hemolysis (intravascular or extravascular)"
+      - "TMA (thrombotic microangiopathy)"
+      - "Myocardial infarction"
+      - "Malignancy"
+      - "Liver disease"
+    next_steps:
+      - "Indirect bilirubin (confirm hemolysis)"
+      - "Haptoglobin (low in hemolysis)"
+      - "Blood smear (schistocytes if TMA)"
+      - "Reticulocyte count (elevated in hemolysis)"
+  
+  # 4. E-BT-IND-HIGH - S-HEMOLYSIS usa!
+  - id: E-BT-IND-HIGH
+    rule: "bilirubin_indirect > 1.2"
+    strength: high
+    description: "Bilirrubina indireta >1.2 mg/dL"
+    clinical_significance: "Hemolysis, Gilbert syndrome"
+    requires: ["bilirubin_indirect"]
+    source: "Clinical chemistry reference ranges"
+    differential:
+      - "Hemolysis (hemolytic anemia, TMA)"
+      - "Gilbert syndrome"
+      - "Ineffective erythropoiesis (MDS, thalassemia)"
+    next_steps:
+      - "LDH (if elevated → hemolysis)"
+      - "Haptoglobin (low → hemolysis)"
+      - "Reticulocyte count"
+      - "Blood smear"
+  
+  # 5. E-CREATININA-HIGH - S-TMA usa!
+  - id: E-CREATININA-HIGH
+    rule: "creatinine > config.cutoffs.creatinine_high[age_sex_group]"
+    strength: moderate
+    description: "Creatinina elevada (kidney injury)"
+    clinical_significance: "TMA (renal involvement), AKI, CKD"
+    requires: ["creatinine", "age_months", "sex"]
+    source: "KDIGO 2023 AKI criteria"
+    differential:
+      - "TMA (HUS, aHUS, TTP)"
+      - "Acute kidney injury (AKI)"
+      - "Chronic kidney disease (CKD)"
+      - "Rhabdomyolysis"
+    next_steps:
+      - "Urinalysis (proteinuria, hematuria)"
+      - "BUN (assess kidney function)"
+      - "If TMA suspected: ADAMTS13, complement studies"
+      - "Nephrology consult if persistent"
+
+# =============================================================================
 # METADADOS E NOTAS
 # =============================================================================
 metadata:
-  total_evidences: 75
+  total_evidences: 89
   critical_count: 6
-  strong_count: 23
-  moderate_count: 38
-  weak_count: 8
-  
+  strong_count: 25
+  high_count: 5
+  moderate_count: 48
+  weak_count: 5
+  low_count: 1
+
   sources:
     dev_team: 28
     hemodoctor: 18
     sadmh: 12
     ajustes_dr_abel: 17
-  
+    who_guidelines: 3
+    endocrine_society: 1
+    nccn: 2
+
   version_distribution:
-    v1_0: 70
+    v1_0: 64
     v1_2_coagulation: 5
     v1_3_molecular: 3
+    v2_3_2_supplementary: 2
 
 notes: |
   - Evidências críticas (E-ANC-VCRIT, E-WBC-VERY-HIGH, E-PLT-CRIT-LOW, E-SCHISTOCYTES-GE1PCT) 
