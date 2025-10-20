@@ -2,7 +2,7 @@
 # Evidências Híbridas - HemoDoctor + SADMH + Dev Team + Ajustes Dr. Abel Costa + Validação Externa
 # Versão: v2.4.0
 # Data: 2025-10-19
-# Total: 89 evidências (4 v2.3.1 + 5 iron panel v2.3.2 + 5 complementares v2.4.0 BUG-006)
+# Total: 79 evidências (64 base + 15 v2.3.2/v2.4.0)
 
 version: evidence_hybrid_v2.4.0
 
@@ -839,7 +839,7 @@ complementary_evidences:
 # METADADOS E NOTAS
 # =============================================================================
 metadata:
-  total_evidences: 89
+  total_evidences: 79
   critical_count: 6
   strong_count: 25
   high_count: 5

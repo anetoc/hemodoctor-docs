@@ -1026,7 +1026,7 @@ triggers:
 
   # PV / Eritrocitose
   - id: trigger-pv-erythrocytosis
-    when: "(E-HB-HIGH OR E-HCT-HIGH) AND (jak2_pos missing AND calr_pos missing AND mpl_pos missing)"
+    when: "('E-HB-HIGH' in [e.id for e in evidences if e.status == 'present'] or 'E-HCT-HIGH' in [e.id for e in evidences if e.status == 'present']) and (jak2_pos is None and calr_pos is None and mpl_pos is None)"
     syndromes: [S-PV, S-ERITROCITOSE-SECUNDARIA]
     suggest:
       - level: priority
@@ -1043,7 +1043,7 @@ triggers:
         prereq: CBC
   
   - id: trigger-pv-erythrocytosis-negative
-    when: "(E-HB-HIGH OR E-HCT-HIGH) AND (jak2_pos==false AND calr_pos==false AND mpl_pos==false)"
+    when: "('E-HB-HIGH' in [e.id for e in evidences if e.status == 'present'] or 'E-HCT-HIGH' in [e.id for e in evidences if e.status == 'present']) and (jak2_pos == False and calr_pos == False and mpl_pos == False)"
     syndromes: [S-ERITROCITOSE-SECUNDARIA]
     suggest:
       - level: routine
@@ -1055,7 +1055,7 @@ triggers:
 
   # PTI - excluir pseudo antes de C2
   - id: trigger-pti-exclude-pseudo
-    when: "plt<150 AND (mpv missing OR aglomerados_plaquetarios missing)"
+    when: "('plt' in cbc and cbc['plt'] < 150) and (mpv is None or aglomerados_plaquetarios is None)"
     syndromes: [S-PTI]
     suggest:
       - level: priority
@@ -1085,7 +1085,7 @@ triggers:
 
   # APL suspeita (crítico - tempo-dependente)
   - id: trigger-apl-suspect
-    when: "promielocitos==true OR (blastos==true AND (d_dimer high OR fibrinogen low))"
+    when: "(promielocitos == True) or (blastos == True and ('E-DDIMER-HIGH' in [e.id for e in evidences if e.status == 'present'] or 'E-FIBRINOGEN-LOW' in [e.id for e in evidences if e.status == 'present']))"
     syndromes: [S-APL-SUSPEITA]
     suggest:
       - level: critical

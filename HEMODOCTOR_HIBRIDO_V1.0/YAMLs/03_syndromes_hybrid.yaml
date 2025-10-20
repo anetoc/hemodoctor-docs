@@ -709,9 +709,9 @@ routine_syndromes:
 # METADADOS E NOTAS
 # =============================================================================
 metadata:
-  total_syndromes: 34
+  total_syndromes: 35
   critical_count: 9
-  priority_count: 23
+  priority_count: 24
   review_sample_count: 1
   routine_count: 1
   

@@ -108,7 +108,15 @@ fields:
     loinc: "704-7"
     description: "Basófilos absolutos"
     physiological_range: [0, 2]
-    
+
+  - name: monocytes_abs
+    type: float
+    unit: 1e9/L
+    required: false
+    loinc: "742-7"
+    description: "Monócitos absolutos"
+    physiological_range: [0, 10]
+
   - name: plt
     type: float
     unit: 1e9/L
