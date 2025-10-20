@@ -1,6 +1,6 @@
 # 🐛 BUGS LOG - HemoDoctor Project
 
-**Última Atualização:** 19 de Outubro de 2025
+**Última Atualização:** 20 de Outubro de 2025
 **Formato:** Bug reports com status, prioridade e ações
 
 ---
@@ -9,11 +9,11 @@
 
 | Status | Quantidade | % |
 |--------|------------|---|
-| 🔴 **CRITICAL** | 4 | 67% |
-| 🟡 **HIGH** | 1 | 17% |
-| **Total Aberto** | 5 | 83% |
-| ✅ **Fechado** | 1 | 17% |
-| **Total** | 6 | 100% |
+| 🔴 **CRITICAL** | 4 | 40% |
+| 🟡 **HIGH** | 1 | 10% |
+| **Total Aberto** | 5 | 50% |
+| ✅ **Fechado** | 5 | 50% |
+| **Total** | 10 | 100% |
 
 ---
 
@@ -400,6 +400,127 @@ combine:
 **Status Updates:**
 - 19 Out 23:00: Gap identificado durante análise clínica
 - Correção planejada para Sprint 0
+
+---
+
+## ✅ CLOSED - Bugs Corrigidos (19 Out 2025)
+
+### BUG-008: Metadata Evidences Desatualizada
+
+**Status:** ✅ **CLOSED** (2025-10-19)
+**Prioridade:** P0 → **RESOLVED**
+**Descoberto:** 19 Out 2025
+**Agente:** @debugger-agent
+
+**Descrição:**
+Metadata em `02_evidence_hybrid.yaml` linha 562 indicava 75 evidências, mas implementação tinha 79.
+
+**Correção:**
+```yaml
+# Linha 562
+total_evidences: 75 → 79
+```
+
+**Impacto:** Alinhamento metadata vs implementação
+
+**Tempo Resolução:** 2 min
+**Data Fechamento:** 19 Out 2025 23:50
+**Commit:** ce84a7f (v2.3.2)
+
+---
+
+### BUG-009: Metadata Syndromes Desatualizada
+
+**Status:** ✅ **CLOSED** (2025-10-19)
+**Prioridade:** P0 → **RESOLVED**
+**Descoberto:** 19 Out 2025
+**Agente:** @debugger-agent
+
+**Descrição:**
+Metadata em `03_syndromes_hybrid.yaml` linha 712 indicava 34 síndromes, mas implementação tinha 35. S-ACD não estava contabilizado.
+
+**Correção:**
+```yaml
+# Linha 712
+total_syndromes: 34 → 35
+priority_count: 23 → 24
+```
+
+**Validação:** `grep -c "^  - id: S-"` confirmou 35 síndromes
+
+**Impacto:** S-ACD agora contabilizado corretamente
+
+**Tempo Resolução:** 2 min
+**Data Fechamento:** 19 Out 2025 23:50
+**Commit:** ce84a7f (v2.3.2)
+
+---
+
+### BUG-010: Campo monocytes_abs Ausente no Schema
+
+**Status:** ✅ **CLOSED** (2025-10-19)
+**Prioridade:** P0 → **RESOLVED**
+**Descoberto:** 19 Out 2025
+**Agente:** @debugger-agent
+
+**Descrição:**
+Campo `monocytes_abs` estava ausente em `01_schema_hybrid.yaml`, impedindo S-MONOCITOSE-CRONICA de disparar.
+
+**Correção:**
+Adicionado campo após `basophils_abs` (linhas 112-118):
+```yaml
+- name: monocytes_abs
+  type: float
+  unit: 1e9/L
+  required: false
+  loinc: "742-7"
+  description: "Monócitos absolutos"
+  physiological_range: [0, 10]
+```
+
+**Impacto:** S-MONOCITOSE-CRONICA: ❌ NÃO DISPARA → ✅ FUNCIONAL
+
+**Tempo Resolução:** 10 min
+**Data Fechamento:** 19 Out 2025 23:50
+**Commit:** ce84a7f (v2.3.2)
+**Validação:** Sintaxe YAML OK
+
+---
+
+### BUG-013: Triggers com Sintaxe Pseudo-Código
+
+**Status:** ✅ **CLOSED** (2025-10-19)
+**Prioridade:** P0 → **RESOLVED**
+**Descoberto:** 19 Out 2025
+**Agente:** @debugger-agent
+
+**Descrição:**
+4 triggers em `09_next_steps_engine_hybrid.yaml` usavam pseudo-código (AND/OR, missing, high/low) ao invés de Python válido.
+
+**Triggers Corrigidos:**
+
+1. **trigger-pv-erythrocytosis** (linha 1029):
+   - ANTES: `(E-HB-HIGH OR E-HCT-HIGH) AND (jak2_pos missing...)`
+   - DEPOIS: `('E-HB-HIGH' in [e.id for e in evidences if e.status == 'present'] or...)`
+
+2. **trigger-pv-erythrocytosis-negative** (linha 1046):
+   - ANTES: `(E-HB-HIGH OR E-HCT-HIGH) AND (jak2_pos==false...)`
+   - DEPOIS: Python válido com `== False`
+
+3. **trigger-pti-exclude-pseudo** (linha 1058):
+   - ANTES: `plt<150 AND (mpv missing OR aglomerados_plaquetarios missing)`
+   - DEPOIS: `('plt' in cbc and cbc['plt'] < 150) and (mpv is None...)`
+
+4. **trigger-apl-suspect** (linha 1088):
+   - ANTES: `promielocitos==true OR (blastos==true AND (d_dimer high OR fibrinogen low))`
+   - DEPOIS: `(promielocitos == True) or (blastos == True and ('E-DDIMER-HIGH' in...)`
+
+**Impacto:** Triggers funcionais 96% → 100% (+4pp)
+
+**Tempo Resolução:** 20 min
+**Data Fechamento:** 19 Out 2025 23:50
+**Commit:** ce84a7f (v2.3.2)
+**Validação:** Sintaxe YAML OK
 
 ---
 

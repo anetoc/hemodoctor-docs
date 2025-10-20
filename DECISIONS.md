@@ -1,6 +1,6 @@
 # 🎯 ARCHITECTURE DECISION RECORDS (ADRs) - HemoDoctor
 
-**Última Atualização:** 19 de Outubro de 2025
+**Última Atualização:** 20 de Outubro de 2025
 **Formato:** Architecture Decision Records (ADR)
 **Responsável:** @hemodoctor-orchestrator
 
