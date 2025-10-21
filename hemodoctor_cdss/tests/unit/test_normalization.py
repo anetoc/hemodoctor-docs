@@ -424,3 +424,235 @@ def test_integration_normalize_then_compute():
     computed = compute_absolute_counts(normalized)
     expected_anc = 8.5 * 70 / 100
     assert computed["anc"] == expected_anc
+
+
+# Test 12: validate_physiological_ranges()
+
+
+def test_validate_physiological_ranges_all_normal():
+    """Test validation with all values in normal range."""
+    from hemodoctor.engines.normalization import validate_physiological_ranges
+
+    cbc = {
+        "wbc": 7.5,
+        "plt": 250,
+        "hb": 14.5,
+        "anc": 4.0,
+        "rbc": 4.8,
+        "ht": 42,
+        "mcv": 88
+    }
+
+    warnings = validate_physiological_ranges(cbc)
+
+    assert len(warnings) == 0
+
+
+def test_validate_physiological_ranges_wbc_out_of_range():
+    """Test validation warns for WBC out of range."""
+    from hemodoctor.engines.normalization import validate_physiological_ranges
+
+    cbc = {
+        "wbc": 250,  # > 200 (max)
+        "age_years": 35,
+        "sex": "M"
+    }
+
+    warnings = validate_physiological_ranges(cbc)
+
+    assert len(warnings) > 0
+    assert any("WBC" in w for w in warnings)
+    assert any("fora da faixa" in w for w in warnings)
+
+
+def test_validate_physiological_ranges_hb_too_low():
+    """Test validation warns for Hb too low."""
+    from hemodoctor.engines.normalization import validate_physiological_ranges
+
+    cbc = {
+        "hb": 1.0,  # < 2 (min)
+    }
+
+    warnings = validate_physiological_ranges(cbc)
+
+    assert len(warnings) > 0
+    assert any("HB" in w for w in warnings)
+
+
+def test_validate_physiological_ranges_plt_too_high():
+    """Test validation warns for PLT too high."""
+    from hemodoctor.engines.normalization import validate_physiological_ranges
+
+    cbc = {
+        "plt": 2500,  # > 2000 (max)
+    }
+
+    warnings = validate_physiological_ranges(cbc)
+
+    assert len(warnings) > 0
+    assert any("PLT" in w for w in warnings)
+
+
+def test_validate_physiological_ranges_non_numeric_value():
+    """Test validation warns for non-numeric values."""
+    from hemodoctor.engines.normalization import validate_physiological_ranges
+
+    cbc = {
+        "wbc": "invalid",  # Non-numeric
+    }
+
+    warnings = validate_physiological_ranges(cbc)
+
+    assert len(warnings) > 0
+    assert any("WBC" in w and "não numérico" in w for w in warnings)
+
+
+def test_validate_physiological_ranges_missing_values():
+    """Test validation skips missing values (None)."""
+    from hemodoctor.engines.normalization import validate_physiological_ranges
+
+    cbc = {
+        "wbc": None,
+        "plt": None
+    }
+
+    warnings = validate_physiological_ranges(cbc)
+
+    # Should not warn about missing values
+    assert len(warnings) == 0
+
+
+def test_validate_physiological_ranges_multiple_out_of_range():
+    """Test validation warns for multiple values out of range."""
+    from hemodoctor.engines.normalization import validate_physiological_ranges
+
+    cbc = {
+        "wbc": 250,   # Out of range
+        "plt": 3000,  # Out of range
+        "hb": 30      # Out of range
+    }
+
+    warnings = validate_physiological_ranges(cbc)
+
+    # Should have 3 warnings
+    assert len(warnings) == 3
+
+
+# Test 13: apply_age_sex_cutoffs()
+
+
+def test_apply_age_sex_cutoffs_adult_male():
+    """Test age/sex cutoffs for adult male."""
+    from hemodoctor.engines.normalization import apply_age_sex_cutoffs
+
+    cbc = {
+        "hb": 14.5,
+        "age_years": 35,
+        "sex": "M"
+    }
+
+    result = apply_age_sex_cutoffs(cbc, yaml_parser=None)
+
+    # Should add cutoffs metadata
+    assert "_cutoffs" in result
+    assert "hb_lower" in result["_cutoffs"]
+    # Adult male: hb_lower = 13.0
+    assert result["_cutoffs"]["hb_lower"] == 13.0
+
+
+def test_apply_age_sex_cutoffs_adult_female():
+    """Test age/sex cutoffs for adult female."""
+    from hemodoctor.engines.normalization import apply_age_sex_cutoffs
+
+    cbc = {
+        "hb": 12.5,
+        "age_years": 35,
+        "sex": "F"
+    }
+
+    result = apply_age_sex_cutoffs(cbc, yaml_parser=None)
+
+    # Adult female: hb_lower = 12.0
+    assert result["_cutoffs"]["hb_lower"] == 12.0
+
+
+def test_apply_age_sex_cutoffs_pediatric_male():
+    """Test age/sex cutoffs for pediatric male."""
+    from hemodoctor.engines.normalization import apply_age_sex_cutoffs
+
+    cbc = {
+        "hb": 12.0,
+        "age_years": 10,
+        "sex": "M"
+    }
+
+    result = apply_age_sex_cutoffs(cbc, yaml_parser=None)
+
+    # Pediatric male: hb_lower = 11.5
+    assert result["_cutoffs"]["hb_lower"] == 11.5
+
+
+def test_apply_age_sex_cutoffs_pediatric_female():
+    """Test age/sex cutoffs for pediatric female."""
+    from hemodoctor.engines.normalization import apply_age_sex_cutoffs
+
+    cbc = {
+        "hb": 11.5,
+        "age_years": 10,
+        "sex": "F"
+    }
+
+    result = apply_age_sex_cutoffs(cbc, yaml_parser=None)
+
+    # Pediatric female: hb_lower = 11.0
+    assert result["_cutoffs"]["hb_lower"] == 11.0
+
+
+def test_apply_age_sex_cutoffs_missing_age():
+    """Test cutoffs when age is missing."""
+    from hemodoctor.engines.normalization import apply_age_sex_cutoffs
+
+    cbc = {
+        "hb": 14.5,
+        # age_years missing
+        "sex": "M"
+    }
+
+    result = apply_age_sex_cutoffs(cbc, yaml_parser=None)
+
+    # Should return unchanged (no cutoffs applied)
+    assert "_cutoffs" not in result
+
+
+def test_apply_age_sex_cutoffs_missing_sex():
+    """Test cutoffs when sex is missing."""
+    from hemodoctor.engines.normalization import apply_age_sex_cutoffs
+
+    cbc = {
+        "hb": 14.5,
+        "age_years": 35
+        # sex missing
+    }
+
+    result = apply_age_sex_cutoffs(cbc, yaml_parser=None)
+
+    # Should return unchanged (no cutoffs applied)
+    assert "_cutoffs" not in result
+
+
+def test_apply_age_sex_cutoffs_doesnt_modify_original():
+    """Test that apply_age_sex_cutoffs doesn't modify original dict."""
+    from hemodoctor.engines.normalization import apply_age_sex_cutoffs
+
+    cbc = {
+        "hb": 14.5,
+        "age_years": 35,
+        "sex": "M"
+    }
+
+    result = apply_age_sex_cutoffs(cbc, yaml_parser=None)
+
+    # Original should not have _cutoffs
+    assert "_cutoffs" not in cbc
+    # Result should have _cutoffs
+    assert "_cutoffs" in result
