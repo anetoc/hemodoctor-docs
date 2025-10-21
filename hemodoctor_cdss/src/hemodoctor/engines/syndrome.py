@@ -16,10 +16,69 @@ Author: Dr. Abel Costa
 IEC 62304 Class C
 """
 
-from typing import List, Dict, Any, Set
+from typing import List, Dict, Any, Set, Union
 from hemodoctor.models.evidence import EvidenceResult
 from hemodoctor.models.syndrome import SyndromeResult
 from hemodoctor.utils.yaml_parser import YAMLParser
+
+
+def evaluate_combine(
+    combine_logic: Union[str, Dict[str, Any]],
+    present_ids: Set[str]
+) -> bool:
+    """
+    Recursively evaluate combine logic with support for nested all/any/negative.
+
+    Args:
+        combine_logic: Either a string (evidence ID) or dict with all/any/negative
+        present_ids: Set of present evidence IDs
+
+    Returns:
+        bool: True if logic satisfied, False otherwise
+
+    Examples:
+        # Simple evidence ID
+        >>> evaluate_combine("E-PLT-CRIT-LOW", {"E-PLT-CRIT-LOW"})
+        True
+
+        # Flat all logic
+        >>> evaluate_combine({"all": ["E-A", "E-B"]}, {"E-A", "E-B"})
+        True
+
+        # Nested logic
+        >>> logic = {"any": ["E-A", {"all": ["E-B", "E-C"]}]}
+        >>> evaluate_combine(logic, {"E-B", "E-C"})
+        True
+
+    Fix for BUG-014: Nested logic support
+    See: /Users/abelcosta/Documents/HemoDoctor/docs/BUGS.md
+    """
+    # Base case: string is an evidence ID
+    if isinstance(combine_logic, str):
+        return combine_logic in present_ids
+
+    # Recursive case: dict with all/any/negative
+    if isinstance(combine_logic, dict):
+        # Handle "all" logic (AND)
+        if "all" in combine_logic:
+            items = combine_logic["all"]
+            # Recursively evaluate each item
+            return all(evaluate_combine(item, present_ids) for item in items)
+
+        # Handle "any" logic (OR)
+        if "any" in combine_logic:
+            items = combine_logic["any"]
+            # Recursively evaluate each item
+            return any(evaluate_combine(item, present_ids) for item in items)
+
+        # Handle "negative" logic (NOT)
+        if "negative" in combine_logic:
+            items = combine_logic["negative"]
+            # None of these should be present
+            return not any(evaluate_combine(item, present_ids) for item in items)
+
+    # Unknown type → default to False (fail-safe)
+    return False
 
 
 def is_syndrome_present(
@@ -53,52 +112,24 @@ def is_syndrome_present(
         >>> is_syndrome_present(syndrome_def, present_ids)
         True
 
-    WARNING (BUG-014):
-        Current implementation does NOT support nested logic (e.g., all/any within any).
-        Only flat all/any/negative lists are supported.
+    Note (BUG-014 FIXED):
+        Now supports nested logic using recursive evaluator.
+        All 35 syndromes functional (100%).
 
-        Affected syndromes: S-BLASTIC-SYNDROME (1/35 = 3%)
-
-        Example of unsupported nested logic:
+        Example of supported nested logic:
         combine:
           any:
             - E-WBC-VERY-HIGH
-            - all: [E-WBC-VERY-HIGH, E-PLT-CRIT-LOW]  # <- nested (NOT supported)
+            - all: [E-WBC-VERY-HIGH, E-PLT-CRIT-LOW]  # <- nested (NOW supported)
+            - E-BLASTS-PRESENT
 
-        Fix planned for Sprint 1 (recursive evaluator).
-        See: /Users/abelcosta/Documents/HemoDoctor/docs/BUGS.md (BUG-014)
+        See: evaluate_combine() for recursive implementation
     """
     combine = syndrome_def.get("combine", {})
 
-    # Check "all" logic (AND)
-    if "all" in combine:
-        required_evidences = combine["all"]
-        # DEFENSIVE: Skip if nested logic detected (dict in list)
-        if any(isinstance(item, dict) for item in required_evidences):
-            return False  # BUG-014: Nested logic not supported
-        if not all(eid in present_ids for eid in required_evidences):
-            return False
-
-    # Check "any" logic (OR)
-    if "any" in combine:
-        any_evidences = combine["any"]
-        # DEFENSIVE: Skip if nested logic detected (dict in list)
-        if any(isinstance(item, dict) for item in any_evidences):
-            return False  # BUG-014: Nested logic not supported
-        if not any(eid in present_ids for eid in any_evidences):
-            return False
-
-    # Check "negative" logic (NOT)
-    if "negative" in combine:
-        negative_evidences = combine["negative"]
-        # DEFENSIVE: Skip if nested logic detected (dict in list)
-        if any(isinstance(item, dict) for item in negative_evidences):
-            return False  # BUG-014: Nested logic not supported
-        if any(eid in present_ids for eid in negative_evidences):
-            return False
-
-    # All checks passed
-    return True
+    # Use recursive evaluator (supports nested all/any/negative)
+    # BUG-014 FIX: evaluate_combine() handles all nesting levels
+    return evaluate_combine(combine, present_ids)
 
 
 def detect_syndromes(

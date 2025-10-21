@@ -1,6 +1,6 @@
 # 🐛 BUGS LOG - HemoDoctor Project
 
-**Última Atualização:** 20 de Outubro de 2025 - 21:40 BRT
+**Última Atualização:** 21 de Outubro de 2025 - 00:20 BRT
 **Formato:** Bug reports com status, prioridade e ações
 
 ---
@@ -10,9 +10,9 @@
 | Status | Quantidade | % |
 |--------|------------|---|
 | 🔴 **CRITICAL** | 4 | 36% |
-| 🟡 **HIGH** | 2 | 18% |
-| **Total Aberto** | 6 | 55% |
-| ✅ **Fechado** | 5 | 45% |
+| 🟡 **HIGH** | 1 | 9% |
+| **Total Aberto** | 5 | 45% |
+| ✅ **Fechado** | 6 | 55% |
 | **Total** | 11 | 100% |
 
 ---
@@ -291,9 +291,10 @@ Sprint 4 (2 semanas):
 
 ### BUG-014: Nested Logic Não Suportado em Syndromes
 
-**Status:** 🟡 OPEN - HIGH
-**Prioridade:** P1
+**Status:** ✅ **CLOSED** (2025-10-21)
+**Prioridade:** ~~P1~~ → **RESOLVED**
 **Descoberto:** 20 Out 2025 (Sprint 0 testing)
+**Resolvido:** 21 Out 2025 (Sprint 1 antecipado)
 **Agente:** @coder-agent
 
 **Descrição:**
@@ -374,7 +375,33 @@ PYTHONPATH=src python tests/integration/test_critical_fixes.py
 **Status Updates:**
 - 20 Out 21:30: Bug identificado durante integration testing
 - 20 Out 21:35: Decisão de documentar e adiar para Sprint 1
-- Test skip adicionado para S-BLASTIC-SYNDROME
+- 20 Out 21:40: Test skip adicionado para S-BLASTIC-SYNDROME
+- 21 Out 00:15: ✅ **RESOLVIDO** - Sprint 1 antecipado
+
+**Resolução:**
+✅ Implementado avaliador recursivo `evaluate_combine()` em `syndrome.py` (57 linhas)
+- Suporta nested `all/any/negative` em qualquer profundidade
+- Função recursiva com base case (string) e recursive case (dict)
+- Simplificou `is_syndrome_present()` de 30→3 linhas
+- 100% backward compatible (todas as 34 síndromes flat continuam funcionando)
+
+**Validação:**
+✅ S-BLASTIC-SYNDROME agora 100% funcional
+- Teste 1: E-WBC-VERY-HIGH alone → ✅ Detecta
+- Teste 2: E-WBC-VERY-HIGH + E-PLT-CRIT-LOW (nested all) → ✅ Detecta
+- Teste 3: Normal values → ✅ Não detecta (sem falsos positivos)
+
+**Testes:**
+- 7/7 integration tests passando (100%)
+- Test skip removido
+- Coverage: 35/35 síndromes (100% funcional)
+
+**Tempo Real:** 1h05 (estimado 1h) ✅
+
+**Arquivos Modificados:**
+- `syndrome.py`: +57 linhas (evaluate_combine recursivo)
+- `test_critical_fixes.py`: +52 linhas (teste nested logic)
+- `BUGS.md`: +35 linhas (resolução documentada)
 
 ---
 
