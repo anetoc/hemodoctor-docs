@@ -27,12 +27,24 @@ import json
 import hashlib
 import hmac
 import os
+import secrets
 from datetime import datetime, timedelta
 from pathlib import Path
 
 
-# V0 Implementation: Hardcoded HMAC key (move to KMS in V1)
-_HMAC_SECRET_KEY = b"hemodoctor_wormlog_secret_v0_dev_only"
+# HMAC Secret Key (KMS-backed in production)
+# CRITICAL: Set HEMODOCTOR_WORM_SECRET environment variable in production
+# For development: fallback to secure random key (regenerated each restart)
+_HMAC_SECRET_KEY_ENV = os.getenv("HEMODOCTOR_WORM_SECRET")
+
+if _HMAC_SECRET_KEY_ENV:
+    # Production: Use KMS-backed secret from environment
+    _HMAC_SECRET_KEY = _HMAC_SECRET_KEY_ENV.encode()
+else:
+    # Development: Generate secure random key (WARNING: logs not portable across restarts)
+    # In production, ALWAYS set HEMODOCTOR_WORM_SECRET environment variable
+    _HMAC_SECRET_KEY = secrets.token_bytes(32)
+    print("WARNING: WORM log using ephemeral key (set HEMODOCTOR_WORM_SECRET env var for production)")
 
 
 def log_to_worm(

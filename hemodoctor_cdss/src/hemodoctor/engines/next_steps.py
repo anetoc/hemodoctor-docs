@@ -17,7 +17,7 @@ IEC 62304 Class C
 """
 
 from typing import List, Dict, Any
-from simpleeval import simple_eval, NameNotDefined
+from simpleeval import SimpleEval, NameNotDefined, DEFAULT_NAMES
 from hemodoctor.models.evidence import EvidenceResult
 from hemodoctor.models.syndrome import SyndromeResult
 from hemodoctor.utils.yaml_parser import YAMLParser
@@ -67,13 +67,12 @@ def generate_next_steps(
     triggers = next_steps_config.get("triggers", [])
 
     # Build context for 'when' evaluation
-    syndrome_ids = {s.id for s in syndromes}
-    evidence_ids = {e.id for e in evidences if e.status == "present"}
-
+    # CRITICAL: Pass full object lists (not just IDs)
+    # YAML triggers expect: evidences[0].id, evidences[0].status, etc.
     eval_context = {
         **cbc_data,  # Include all CBC fields (hb, plt, anc, etc.)
-        "syndromes": syndrome_ids,
-        "evidences": evidence_ids,
+        "syndromes": syndromes,  # List of SyndromeResult objects
+        "evidences": evidences,  # List of EvidenceResult objects
     }
 
     # Collect all suggestions from fired triggers
@@ -115,7 +114,8 @@ def evaluate_trigger_condition(condition: str, context: Dict[str, Any]) -> bool:
         bool: True if condition satisfied, False otherwise
 
     Safety:
-        - Uses simpleeval (NEVER eval())
+        - Uses SimpleEval (NEVER eval())
+        - Allows attribute access for Pydantic models (e.id, e.status)
         - Returns False on error (fail-safe)
         - Handles missing variables gracefully
 
@@ -123,16 +123,24 @@ def evaluate_trigger_condition(condition: str, context: Dict[str, Any]) -> bool:
         >>> context = {"hb": 6.0, "sex": "M"}
         >>> evaluate_trigger_condition("hb < 6.5 and sex == 'M'", context)
         True
-        >>> evaluate_trigger_condition("hb < 6.5 and sex == 'F'", context)
-        False
+        >>> context = {"evidences": [EvidenceResult(id="E-ANC", status="present", strength="high")]}
+        >>> evaluate_trigger_condition("'E-ANC' in [e.id for e in evidences]", context)
+        True
     """
     if not condition:
         return False
 
     try:
-        result = simple_eval(condition, names=context)
+        # Use SimpleEval (not simple_eval) to enable attribute access
+        s = SimpleEval(names=context)
+
+        # Enable attribute access for Pydantic models (e.id, e.status, etc.)
+        # This allows: [e.id for e in evidences if e.status == 'present']
+        s.ATTR_INDEX_FALLBACK = True
+
+        result = s.eval(condition)
         return bool(result)
-    except (NameNotDefined, KeyError, TypeError, ValueError):
+    except (NameNotDefined, KeyError, TypeError, ValueError, AttributeError):
         # Missing variable or evaluation error - fail-safe to False
         return False
     except Exception:

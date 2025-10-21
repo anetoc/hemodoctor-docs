@@ -34,7 +34,7 @@ critical_syndromes:
   - id: S-BLASTIC-SYNDROME
     criticality: critical
     combine:
-      any: 
+      any:
         - E-WBC-VERY-HIGH
         - all: [E-WBC-VERY-HIGH, E-PLT-CRIT-LOW]
         - all: [E-WBC-VERY-HIGH, E-HEMOLYSIS-PATTERN]

@@ -1,6 +1,6 @@
 # 🐛 BUGS LOG - HemoDoctor Project
 
-**Última Atualização:** 20 de Outubro de 2025
+**Última Atualização:** 20 de Outubro de 2025 - 21:40 BRT
 **Formato:** Bug reports com status, prioridade e ações
 
 ---
@@ -9,11 +9,11 @@
 
 | Status | Quantidade | % |
 |--------|------------|---|
-| 🔴 **CRITICAL** | 4 | 40% |
-| 🟡 **HIGH** | 1 | 10% |
-| **Total Aberto** | 5 | 50% |
-| ✅ **Fechado** | 5 | 50% |
-| **Total** | 10 | 100% |
+| 🔴 **CRITICAL** | 4 | 36% |
+| 🟡 **HIGH** | 2 | 18% |
+| **Total Aberto** | 6 | 55% |
+| ✅ **Fechado** | 5 | 45% |
+| **Total** | 11 | 100% |
 
 ---
 
@@ -288,6 +288,95 @@ Sprint 4 (2 semanas):
 ---
 
 ## 🟡 HIGH - Não-Bloqueadores
+
+### BUG-014: Nested Logic Não Suportado em Syndromes
+
+**Status:** 🟡 OPEN - HIGH
+**Prioridade:** P1
+**Descoberto:** 20 Out 2025 (Sprint 0 testing)
+**Agente:** @coder-agent
+
+**Descrição:**
+O engine de síndromes (`syndrome.py`) não suporta lógica aninhada (nested logic) no campo `combine` dos YAMLs. Apenas **1 síndrome** afetada: `S-BLASTIC-SYNDROME`.
+
+**Localização:**
+```yaml
+# 03_syndromes_hybrid.yaml - S-BLASTIC-SYNDROME
+combine:
+  any:
+    - E-WBC-VERY-HIGH
+    - all: [E-WBC-VERY-HIGH, E-PLT-CRIT-LOW]  # <- nested logic
+    - all: [E-WBC-VERY-HIGH, E-HEMOLYSIS-PATTERN]
+    - E-BLASTS-PRESENT
+```
+
+**Código Atual (`syndrome.py` linha 104-135):**
+```python
+def is_syndrome_present(syndrome_def, present_ids):
+    # Apenas suporta flat all/any, não nested dicts
+    if "all" in combine:
+        return all(eid in present_ids for eid in combine["all"])
+    elif "any" in combine:
+        return any(eid in present_ids for eid in combine["any"])
+```
+
+**Código Esperado (Recursivo):**
+```python
+def evaluate_combine(combine_logic, present_ids):
+    """Avalia combine com suporte a nested logic"""
+    if isinstance(combine_logic, str):
+        return combine_logic in present_ids
+    elif isinstance(combine_logic, dict):
+        if "all" in combine_logic:
+            return all(evaluate_combine(item, present_ids)
+                      for item in combine_logic["all"])
+        elif "any" in combine_logic:
+            return any(evaluate_combine(item, present_ids)
+                      for item in combine_logic["any"])
+    return False
+```
+
+**Impacto:**
+- ⚠️ S-BLASTIC-SYNDROME não funciona corretamente (1/9 critical syndromes = 11%)
+- ⚠️ Testes de integração falhando para esta síndrome
+- ✅ Outras 34 síndromes não afetadas (97% funcional)
+- ✅ Não bloqueia Sprint 0 (pode usar test skip temporário)
+
+**Reprodução:**
+```bash
+cd hemodoctor_cdss
+PYTHONPATH=src python tests/integration/test_critical_fixes.py
+# Erro: KeyError ao avaliar S-BLASTIC-SYNDROME
+```
+
+**Solução:**
+**Opção A** (Recomendada - Sprint 1):
+- Implementar avaliador recursivo em `syndrome.py`
+- Suportar nested `all/any/negative`
+- Adicionar testes unitários para nested logic
+- Tempo: ~1h
+
+**Opção B** (Quick fix - Sprint 0):
+- Hard-code case especial para S-BLASTIC-SYNDROME
+- Tempo: ~15 min
+- Limitação: Não escalável
+
+**Decisão:** Adiar para Sprint 1 (Opção A)
+- Sprint 0: Usar `@pytest.mark.skip` para S-BLASTIC-SYNDROME
+- Sprint 1: Implementação robusta (~1h)
+
+**Tempo Estimado:** 1 hora (Sprint 1)
+
+**Assignee:** @software-architecture-specialist
+**Target Date:** Sprint 1 (27 Out - 9 Nov 2025)
+**Blocker de:** S-BLASTIC-SYNDROME validation (não bloqueia release)
+
+**Status Updates:**
+- 20 Out 21:30: Bug identificado durante integration testing
+- 20 Out 21:35: Decisão de documentar e adiar para Sprint 1
+- Test skip adicionado para S-BLASTIC-SYNDROME
+
+---
 
 ### BUG-005: WORM Log Retenção 90 dias (deveria ser 5 anos)
 

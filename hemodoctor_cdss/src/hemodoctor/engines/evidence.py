@@ -17,9 +17,69 @@ IEC 62304 Class C
 """
 
 from typing import List, Dict, Any, Optional
-from simpleeval import simple_eval
+from simpleeval import simple_eval, EvalWithCompoundTypes, DEFAULT_NAMES, DEFAULT_FUNCTIONS
 from hemodoctor.models.evidence import EvidenceResult
 from hemodoctor.utils.yaml_parser import YAMLParser
+
+
+class DictWrapper:
+    """Wrapper that allows dict access via dot notation for simpleeval"""
+    def __init__(self, data: dict):
+        self._data = data
+
+    def __getattr__(self, key):
+        try:
+            return self._data[key]
+        except KeyError:
+            raise AttributeError(f"'{type(self).__name__}' object has no attribute '{key}'")
+
+
+def derive_age_sex_group(age_years: float, sex: str) -> str:
+    """
+    Derive age/sex group for cutoff selection.
+
+    Args:
+        age_years: Age in years
+        sex: M/F/U
+
+    Returns:
+        str: Age/sex group key (e.g., "adult_m", "pediatric_1_3y")
+
+    Groups:
+        - adult_m: Age ≥18, Male
+        - adult_f: Age ≥18, Female
+        - pediatric_0_28d: 0-28 days (~0-0.077 years)
+        - pediatric_1_12m: 1-12 months (0.077-1 years)
+        - pediatric_1_3y: 1-3 years
+        - pediatric_4_12y: 4-12 years
+        - pediatric_13_18y: 13-17 years
+
+    Example:
+        >>> derive_age_sex_group(35, "M")
+        'adult_m'
+        >>> derive_age_sex_group(2.5, "F")
+        'pediatric_1_3y'
+    """
+    # Adults (≥18 years)
+    if age_years >= 18:
+        if sex == "M":
+            return "adult_m"
+        elif sex == "F":
+            return "adult_f"
+        else:  # U (unknown)
+            return "adult_m"  # Default to male cutoffs (conservative)
+
+    # Pediatric age groups
+    if age_years < 0.077:  # ~28 days
+        return "pediatric_0_28d"
+    elif age_years < 1:
+        return "pediatric_1_12m"
+    elif age_years < 4:
+        return "pediatric_1_3y"
+    elif age_years < 13:
+        return "pediatric_4_12y"
+    else:  # 13-17
+        return "pediatric_13_18y"
 
 
 def evaluate_evidence(
@@ -65,18 +125,38 @@ def evaluate_evidence(
         if cbc.get(field) is None:
             return "unknown"
 
-    # Build safe evaluation context
-    # Combine CBC data + config cutoffs
-    names = {**cbc, **config.get("cutoffs", {})}
+    # Derive age_sex_group from CBC (required for age/sex-adjusted cutoffs)
+    age_years = cbc.get("age_years")
+    sex = cbc.get("sex", "M")  # Default to M if missing (conservative)
 
-    # Handle morphology namespace
+    if age_years is None:
+        age_sex_group = "adult_m"  # Default if age missing
+    else:
+        age_sex_group = derive_age_sex_group(age_years, sex)
+
+    # Build safe evaluation context
+    # CRITICAL: Expose config object (not just cutoffs) + age_sex_group
+    # YAML rules use: config.cutoffs.hb_critical_low[age_sex_group]
+    names = {
+        **cbc,
+        "config": config,  # Expose entire config object
+        "age_sex_group": age_sex_group,  # Derived from age/sex
+        "true": True,  # YAML-style boolean (lowercase)
+        "false": False,  # YAML-style boolean (lowercase)
+    }
+
+    # Handle morphology namespace (nested dict)
+    # Support both dot notation (morphology.esquistocitos) and flat (esquistocitos)
     if "morphology" in cbc and isinstance(cbc["morphology"], dict):
-        # Add morphology fields to namespace (e.g., esquistocitos, esferocitos)
+        # Create DictWrapper that supports dot notation for simpleeval
+        names["morphology"] = DictWrapper(cbc["morphology"])
+        # Also add flat keys for backward compatibility
         names.update(cbc["morphology"])
 
-    # Safe evaluation using simpleeval
+    # Safe evaluation using simpleeval with compound types (allows object attributes)
     try:
-        result = simple_eval(rule, names=names)
+        evaluator = EvalWithCompoundTypes(names=names)
+        result = evaluator.eval(rule)
 
         # Convert to tri-state
         if result is True:

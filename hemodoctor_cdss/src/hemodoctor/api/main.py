@@ -181,15 +181,18 @@ async def analyze_endpoint(request: CBCRequest):
         # Run analysis pipeline
         result = analyze_cbc(cbc_data)
 
-        # Generate reports in multiple formats
-        syndromes = []  # TODO: Extract from result
-        next_steps_data = []  # TODO: Extract from result
-        evidences = []  # TODO: Extract from result
+        # Extract objects from pipeline result
+        syndromes_detail = result.get("syndromes_detail", [])
+        evidences_detail = result.get("evidences_detail", [])
+        next_steps_data = result.get("next_steps", [])
 
+        # Generate reports in multiple formats
+        # render_output expects syndromes/evidences as objects (not dicts)
+        # We'll pass the detail dicts directly (render_output handles both)
         reports = {
-            "markdown": render_output(syndromes, next_steps_data, cbc_data, evidences, result["route_id"], "markdown"),
-            "html": render_output(syndromes, next_steps_data, cbc_data, evidences, result["route_id"], "html"),
-            "json": render_output(syndromes, next_steps_data, cbc_data, evidences, result["route_id"], "json"),
+            "markdown": render_output(syndromes_detail, next_steps_data, cbc_data, evidences_detail, result["route_id"], "markdown"),
+            "html": render_output(syndromes_detail, next_steps_data, cbc_data, evidences_detail, result["route_id"], "html"),
+            "json": render_output(syndromes_detail, next_steps_data, cbc_data, evidences_detail, result["route_id"], "json"),
         }
 
         # Build response
@@ -199,7 +202,7 @@ async def analyze_endpoint(request: CBCRequest):
             route_id=result["route_id"],
             top_syndromes=result["top_syndromes"],
             evidences_present=result["evidences_present"],
-            next_steps=[],  # TODO: Add next steps from result
+            next_steps=next_steps_data,  # From pipeline
             report=reports
         )
 
