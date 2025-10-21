@@ -27,6 +27,11 @@ from datetime import datetime
 from hemodoctor.utils.yaml_parser import YAMLParser
 from hemodoctor.engines.evidence import evaluate_all_evidences, get_present_evidences
 from hemodoctor.engines.syndrome import detect_syndromes
+from hemodoctor.engines.normalization import normalize_cbc as normalize_units
+from hemodoctor.engines.schema_validator import validate_schema as validate_cbc_schema
+from hemodoctor.engines.next_steps import generate_next_steps
+from hemodoctor.engines.worm_log import log_to_worm
+from hemodoctor.engines.output_renderer import render_output
 
 
 def compute_route_id(
@@ -124,11 +129,11 @@ def analyze_cbc(cbc_data: Dict[str, Any]) -> Dict[str, Any]:
     # 1. Load YAML configs (cached singleton)
     yaml_parser = YAMLParser.get_instance()
 
-    # 2. Normalize units (V0: passthrough - implement in V1)
-    normalized_cbc = normalize_cbc(cbc_data)
+    # 2. Normalize units (with heuristics + conversion log)
+    normalized_cbc, conversion_log = normalize_units(cbc_data, yaml_parser)
 
-    # 3. Validate schema (V0: basic check - implement full validation in V1)
-    validate_schema(normalized_cbc)
+    # 3. Validate schema (full validation with warnings)
+    is_valid, validation_warnings = validate_cbc_schema(normalized_cbc, yaml_parser, strict=False)
 
     # 4. Evidences (79 rules)
     evidences = evaluate_all_evidences(normalized_cbc, yaml_parser)
@@ -136,16 +141,25 @@ def analyze_cbc(cbc_data: Dict[str, Any]) -> Dict[str, Any]:
     # 5. Syndromes (35 syndromes, short-circuit on critical)
     syndromes = detect_syndromes(evidences, yaml_parser)
 
-    # 6. Routing (deterministic hash)
+    # 6. Next Steps (40 triggers)
+    next_steps_list = generate_next_steps(syndromes, evidences, normalized_cbc, yaml_parser)
+
+    # 7. Routing (deterministic hash)
     route_id = compute_route_id(evidences, syndromes)
 
-    # 7. Build result
+    # 8. WORM Log (audit trail)
+    log_to_worm(cbc_data, syndromes, evidences, route_id, yaml_parser)
+
+    # 9. Build result
     result = {
         "top_syndromes": [s.id for s in syndromes],
         "evidences_present": [e.id for e in evidences if e.status == "present"],
         "route_id": route_id,
         "version": "2.4.0",
         "timestamp": datetime.utcnow().isoformat() + "Z",
+        "next_steps": next_steps_list,
+        "conversion_log": conversion_log,
+        "validation_warnings": validation_warnings,
         "syndromes_detail": [
             {
                 "id": s.id,
@@ -155,71 +169,22 @@ def analyze_cbc(cbc_data: Dict[str, Any]) -> Dict[str, Any]:
             }
             for s in syndromes
         ],
+        "evidences_detail": [
+            {
+                "id": e.id,
+                "status": e.status,
+                "strength": e.strength,
+            }
+            for e in evidences
+            if e.status == "present"
+        ],
     }
 
     return result
 
 
-def normalize_cbc(cbc_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Normalize CBC units (V0: passthrough).
-
-    Args:
-        cbc_data: Raw CBC data
-
-    Returns:
-        dict: Normalized CBC data
-
-    V0 Implementation:
-        - Passthrough (no normalization)
-        - Unit conversion to be implemented in Sprint 1
-
-    V1 Implementation (future):
-        - Convert Hb g/L → g/dL
-        - Convert WBC/PLT units if needed
-        - Apply site-specific heuristics (07_normalization_heuristics.yaml)
-
-    Example:
-        >>> cbc = {"hb": 152, "age_years": 35, "sex": "M"}
-        >>> normalized = normalize_cbc(cbc)
-        >>> normalized == cbc  # V0: passthrough
-        True
-    """
-    # V0: Passthrough
-    return cbc_data
-
-
-def validate_schema(cbc_data: Dict[str, Any]) -> None:
-    """
-    Validate CBC schema (V0: basic check).
-
-    Args:
-        cbc_data: CBC data dictionary
-
-    Raises:
-        ValueError: If critical validation fails
-
-    V0 Implementation:
-        - Basic type checking only
-        - Full schema validation to be implemented in Sprint 1
-
-    V1 Implementation (future):
-        - Validate all 54 fields against 01_schema_hybrid.yaml
-        - Range checking (e.g., Hb 0-25 g/dL)
-        - Consistency checks (e.g., Hb vs Ht)
-
-    Example:
-        >>> validate_schema({"hb": 15.2, "age_years": 35})  # OK
-        >>> validate_schema({})  # Raises ValueError
-        Traceback (most recent call last):
-        ...
-        ValueError: CBC data cannot be empty
-    """
-    if not cbc_data:
-        raise ValueError("CBC data cannot be empty")
-
-    # V0: Basic check only
-    # Full validation in Sprint 1
+# Note: normalize_cbc and validate_schema are now imported from engines
+# (normalization.py and schema_validator.py)
 
 
 def get_analysis_summary(result: Dict[str, Any]) -> str:

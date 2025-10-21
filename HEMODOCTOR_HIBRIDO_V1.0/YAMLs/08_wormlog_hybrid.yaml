@@ -15,7 +15,7 @@ description: |
   - **Write-Once:** Cada entrada é escrita UMA vez (append-only)
   - **Read-Many:** Leitura irrestrita para auditoria
   - **Immutability:** Hash chain + HMAC impedem adulteração
-  - **Retention:** 90 dias (LGPD) com purga automatizada
+  - **Retention:** 5 anos / 1825 dias (ANVISA/FDA) com purga automatizada
   - **Auditability:** ANVISA/FDA/ISO 13485 compliant
   
   **Segurança:**
@@ -43,7 +43,7 @@ segmenting:
   description: |
     **Rotação diária:**
     - Arquivo por dia: 2025-10-19_hemodoctor_hybrid.jsonl
-    - Facilita retenção (purgar arquivo inteiro após 90d)
+    - Facilita retenção (purgar arquivo inteiro após 5 anos)
     - Reduz risco de arquivo gigante (max ~100k casos/dia = ~50 MB/dia)
   
   max_size_per_segment: "500 MB"
@@ -126,25 +126,26 @@ immutability:
 # SEÇÃO 3: RETENTION E PURGE
 # =============================================================================
 retention:
-  days: 90
+  days: 1825  # 5 anos (ANVISA RDC 657/2022 + FDA 21 CFR Part 11)
   
   rationale: |
-    **LGPD Art. 16:**
-    - Dados de saúde devem ser mantidos pelo tempo necessário
-    - 90 dias permite auditoria pós-facto + troubleshooting
-    - Após 90d: purgar para minimização de dados
+    **ANVISA RDC 657/2022 + FDA 21 CFR Part 11:**
+    - Dispositivos médicos (Classe II/III): retenção mínima 5 anos
+    - Permite auditoria regulatória completa e rastreabilidade
+    - LGPD Art. 16: dados de saúde mantidos pelo tempo necessário (compliance)
+    - Após 5 anos: purgar para minimização de dados
   
   purge_mode: sealed_segment_delete
   
   description_purge: |
     **Purga por segmento inteiro:**
-    - Arquivo com segment_end_ts > 90 dias atrás → deletar
+    - Arquivo com segment_end_ts > 1825 dias atrás (5 anos) → deletar
     - Nunca purgar segmento parcialmente (integridade)
     - Log de purga: registrar quais segmentos foram deletados
   
   purge_policy:
-    - "Segmento A (2025-01-01): se hoje > 2025-04-01 → deletar"
-    - "Segmento B (2025-01-02): se hoje > 2025-04-02 → deletar"
+    - "Segmento A (2025-01-01): se hoje > 2030-01-01 → deletar (após 5 anos)"
+    - "Segmento B (2025-01-02): se hoje > 2030-01-02 → deletar (após 5 anos)"
   
   exceptions:
     - "Casos sob investigação regulatória: retenção indefinida"
@@ -155,8 +156,8 @@ retention:
     log_file: "wormlog_purge.log"
     
     example_log: |
-      2025-04-01T02:00:00Z - Purged 2025-01-01_hemodoctor_hybrid.jsonl (age: 90 days, entries: 1234)
-      2025-04-02T02:00:00Z - Purged 2025-01-02_hemodoctor_hybrid.jsonl (age: 90 days, entries: 1189)
+      2030-01-01T02:00:00Z - Purged 2025-01-01_hemodoctor_hybrid.jsonl (age: 1825 days / 5 anos, entries: 1234)
+      2030-01-02T02:00:00Z - Purged 2025-01-02_hemodoctor_hybrid.jsonl (age: 1825 days / 5 anos, entries: 1189)
 
 # =============================================================================
 # SEÇÃO 4: ENTRY SCHEMA
@@ -383,7 +384,7 @@ compliance:
       WORM log atende:
       - Registro imutável (append-only + HMAC)
       - Rastreabilidade (route_id + data_lineage)
-      - Retenção 90d (LGPD compatível)
+      - Retenção 5 anos / 1825d (ANVISA/FDA compatível)
   
   fda:
     regulation: "21 CFR Part 11 (Electronic Records)"
@@ -409,7 +410,7 @@ compliance:
       - Legível: JSONL (human-readable)
       - Identificável: case_id_hash + route_id
       - Rastreável: data_lineage + engine_version
-      - Retenção: 90d automatizada
+      - Retenção: 5 anos / 1825d automatizada
   
   lgpd:
     regulation: "LGPD Art. 16 (Dados de Saúde)"
@@ -419,7 +420,7 @@ compliance:
       WORM log atende:
       - Pseudonimização: case_id_hash (irreversível)
       - Minimização: apenas campos essenciais
-      - Retenção mínima: 90d com purga automatizada
+      - Retenção mínima: 5 anos / 1825d com purga automatizada
 
 # =============================================================================
 # SEÇÃO 7: VALIDATION E TESTING
@@ -458,10 +459,10 @@ validation:
   
   retention_tests:
     - name: "Automated purge"
-      description: "Verificar purga automatizada após 90d"
+      description: "Verificar purga automatizada após 5 anos (1825d)"
       test: |
-        # Criar segmento fake com 91 dias atrás
-        fake_segment = create_segment(date="2025-01-01")
+        # Criar segmento fake com 1826 dias atrás (5 anos + 1 dia)
+        fake_segment = create_segment(date="2020-01-01")
         # Rodar purge
         run_purge_job()
         # Verificar que fake_segment foi deletado
@@ -481,7 +482,7 @@ metadata:
   
   format: "JSONL (JSON Lines)"
   rotation: "daily"
-  retention: "90 days"
+  retention: "1825 days (5 anos)"
   immutability_mechanisms:
     - "Hash chaining (segment→segment)"
     - "HMAC per event (KMS-backed key)"
@@ -495,7 +496,7 @@ metadata:
 
 notes: |
   - WORM log é a espinha dorsal da auditoria regulatória
-  - Garantias: write-once, immutability (hash chain + HMAC), retention (90d)
+  - Garantias: write-once, immutability (hash chain + HMAC), retention (5 anos / 1825d)
   - Cada evento registra: case_id_hash, route_id, evidences, syndromes, output_class, conflicts, next_steps, HMAC
   - Segmenting diário facilita retenção e purga
   - Tools: jq, ripgrep, pandas para query/analytics
