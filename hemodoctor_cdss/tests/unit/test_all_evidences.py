@@ -35,7 +35,7 @@ def all_evidence_defs(yaml_parser):
 @pytest.fixture(scope="module")
 def config(yaml_parser):
     """Get configuration from YAML."""
-    return yaml_parser.get_config()
+    return yaml_parser.config  # Property, not method
 
 
 # Test Data Generator
