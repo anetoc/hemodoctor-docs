@@ -1,0 +1,89 @@
+# 12_output_policies_hybrid.v2.3.1-cdss.yaml
+# Políticas de Output focadas em CDSS seguro e microcopy não-diagnóstica
+# Versão: v2.3.1-cdss
+# Complemento ao 12_output_policies_hybrid.yaml base
+
+metadata:
+  version: 2.3.1-cdss
+  selection_order: [critical, review_sample, priority, borderline, routine]
+  always_output: true
+  append_disclaimer: true
+
+selection:
+  rules:
+    - if: any_critical_true
+      use: critical
+    - elif: preanalytical_flags_true
+      use: review_sample
+    - elif: any_priority_true
+      use: priority
+    - elif: has_borderline
+      use: borderline
+    - else:
+      use: routine
+
+escalation:
+  notify:
+    sms_if:
+      - "anc < 0.2e9"
+      - "plt < 10e9"
+      - "wbc >= 100e9"
+      - "apl_suspect == true"
+    lock_route_until_ack: true
+
+borderline:
+  adult:
+    - "mcv in [80,82) or (98,100]"
+    - "plt in [140,150) or (450,500]"
+    - "wbc in [3.8,4) or (11,12]"
+  pediatric:
+    - "hb in [11,11.5)"
+    - "mcv in [75,78)"
+  render_as_note: true
+
+next_steps:
+  policy:
+    order_by: [impact_on_outcome, cost_band, turnaround]
+    max_items: 4
+    deduplicate: true
+    skip_if_already_ordered: true
+    group_levels: [critical, priority, routine]
+  
+  gating:
+    # Não sugerir avançados antes de básicos
+    - name: anemia_workup
+      if: "S-IDA OR S-ACD OR S-MACRO-B12-FOLATE"
+      require_first: ["Ferritina", "TSat", "CRP", "B12", "Folato"]
+    
+    - name: thrombocytopenia_workup
+      if: "plt<150"
+      require_first: ["Esfregaço", "MPV"]
+
+microcopy:
+  non_diagnostic_banner: "CDSS de apoio à decisão. Não substitui julgamento clínico. Resultado não é diagnóstico."
+  compat_words:
+    C0: "indícios insuficientes"
+    C1: "padrão compatível"
+    C2: "padrão sugestivo"
+  critical_time_phrase: "Ação tempo-sensível"
+
+render:
+  values:
+    show_cutoffs_from_config: true
+    max_per_line: 6
+  missingness:
+    show_top_k: 2
+  routine:
+    default_tip: "Repetir hemograma em 2–6 semanas ou conforme protocolo local"
+
+audit:
+  include:
+    - route_id
+    - fired_evidences
+    - top_syndromes
+    - key_values_compact
+    - engine_versions
+    - config_hash
+    - code_hash
+    - event_id
+

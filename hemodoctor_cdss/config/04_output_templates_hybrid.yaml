@@ -1,0 +1,234 @@
+# 04_output_templates_hybrid.v2.3.1-cdss.yaml
+
+# Propósito: microcopy segura para CDSS (não diagnóstico), voltada a médicos não-hematologistas.
+
+# Observação: placeholders entre {chaves} devem ser preenchidos pelo orquestrador.
+
+# Compatível com camadas existentes (00–03, 05–09, 11).
+
+metadata:
+  version: 2.3.1-cdss
+  locale: pt-BR
+  audience: "profissionais de saúde (médicos generalistas / não hematologistas)"
+  disclaimer: "CDSS de apoio à decisão. Não substitui julgamento clínico. Resultado não é diagnóstico."
+  style:
+    max_syndromes: 3
+    show_missingness_top_k: 2
+    show_values_decimals:
+      hb: 1
+      mcv: 0
+      rdw: 1
+      wbc: 1
+      plt: 0
+      anc: 2
+      mchc: 1
+    bullets:
+      next_steps_max: 4
+      values_per_line_max: 6
+
+lexicon:
+  allowed_verbs:
+    - "padrão compatível com"
+    - "sugere"
+    - "pode representar"
+    - "considerar"
+    - "recomenda-se"
+    - "priorizar"
+    - "classificar risco como"
+    - "solicitar"
+    - "repetir em"
+  avoid:
+    - "diagnóstico de"
+    - "tem (doença)"
+    - "confirma"
+    - "é (doença)"
+    - "câncer/leucemia"  # usar "suspeita" quando aplicável
+
+placeholders_doc: |
+  # Campos esperados do orquestrador
+  * case_id
+  * route_id
+  * engine_versions
+  * syndromes: [ { id, name, confidence: C0|C1|C2, criticality, evidence_trail, key_values } ]
+  * next_steps: [ { level: critical|priority|routine, text } ]
+  * missingness: [ strings ]
+  * warnings: [ strings ]
+
+# ======================
+# TEMPLATES DE CARDS
+# ======================
+
+templates:
+  critical:
+    header: "CRÍTICO — {headline}"
+    body: |
+      Hipótese: **{syndrome_name} (C{confidence})** — {compat_phrase}.
+      **Por quê:** {evidence_short}. {values_line}
+      **Ação tempo-sensível:** {next_step_1}; {next_step_2}; {next_step_3}.
+      {missing_line}
+      *{disclaimer}*
+    compat_phrases:
+      default: "alta suspeita com base em achados laboratoriais críticos"
+    fields:
+      values_line: "Valores: {key_values_compact}."
+      missing_line: "Lacunas: {missingness_top_k}."
+
+  priority:
+    header: "PRIORIDADE — {headline}"
+    body: |
+      Hipótese: **{syndrome_name} (C{confidence})** — {compat_phrase}.
+      **Por quê:** {evidence_short}. {values_line}
+      **Próximos passos:** 1) {next_step_1}; 2) {next_step_2}; 3) {next_step_3}; 4) {next_step_4}.
+      {missing_line}
+      *{disclaimer}*
+    compat_phrases:
+      C1: "padrão compatível"
+      C2: "padrão sugestivo"
+      default: "padrão compatível"
+    fields:
+      values_line: "Valores: {key_values_compact}."
+      missing_line: "Lacunas: {missingness_top_k}."
+
+  routine:
+    header: "ROTINA — {headline}"
+    body: |
+      **Sem achados críticos/prioritários.** {borderline_note}
+      **Orientação:** {routine_tip}.
+      *{disclaimer}*
+    defaults:
+      routine_tip: "Repetir hemograma em 2–6 semanas ou conforme protocolo local"
+
+  review_sample:
+    header: "REVER AMOSTRA — Pré-analítico suspeito"
+    body: |
+      **Motivo:** {preanalytical_reason}.
+      **Ação recomendada:** {recollect_actions}.
+      *{disclaimer}*
+
+  # opcional (quando houver um borderline renderer separado)
+  borderline:
+    header: "BORDERLINE — {headline}"
+    body: |
+      Parâmetros próximos aos limites de referência. {values_line}
+      **Orientação:** {routine_tip}.
+      *{disclaimer}*
+
+helpers:
+  values_compaction:
+    joiner: ", "
+    key_order: [hb, mcv, rdw, wbc, anc, plt, mchc]
+  missingness_render:
+    prefix: "Lacunas: "
+    joiner: "; "
+    max_items: 2
+  headlines:
+    by_criticality:
+      critical: "Risco imediato"
+      priority: "Investigar direcionado"
+      routine: "Sem alertas relevantes"
+      review_sample: "Validação pré-analítica necessária"
+
+# ======================
+# MAPEAMENTO DE SÍNDROMES → TEXTOS CURTOS
+# ======================
+
+syndrome_microcopy:
+  S-TMA:
+    headline: "Suspeita de microangiopatia trombótica (MAT)"
+    compat: "alta suspeita (PLT crítica + esquistócitos)"
+    next_steps:
+      - "Esfregaço imediato"
+      - "ADAMTS13/Complemento"
+      - "Creatinina e coagulograma"
+  
+  S-NEUTROPENIA-GRAVE:
+    headline: "Risco infeccioso por neutropenia"
+    compat: "achado crítico (ANC muito baixa)"
+    next_steps:
+      - "Precauções/antibioticoterapia conforme protocolo"
+      - "Avaliar foco infeccioso"
+  
+  S-LEUCOSE_VERY_HIGH:
+    headline: "Risco de leucostase"
+    compat: "WBC muito elevado"
+    next_steps:
+      - "Contato urgente com hematologia"
+      - "Exames dirigidos conforme protocolo"
+  
+  S-APL-SUSPEITA:
+    headline: "Leucemia promielocítica aguda — suspeita"
+    compat: "padrão compatível (promielócitos + coagulopatia)"
+    next_steps:
+      - "Seguir protocolo local; considerar ATRA"
+  
+  S-IDA:
+    headline: "Anemia ferropriva — investigação"
+    compat: "padrão compatível (microcitose + RDW alto)"
+    next_steps:
+      - "Ferritina e TSat"
+      - "CRP (diferenciar inflamação)"
+  
+  S-MACRO-B12-FOLATE:
+    headline: "Macrocitose por deficiência — investigação"
+    compat: "padrão compatível"
+    next_steps:
+      - "B12 e folato"
+      - "Se B12 200–300, considerar testes confirmatórios"
+  
+  S-HEMOLYSIS:
+    headline: "Hemólise — investigação"
+    compat: "padrão compatível"
+    next_steps:
+      - "Reticulócitos, haptoglobina, bilirrubina indireta, DAT"
+      - "G6PD/PK se DAT negativo"
+  
+  S-MPN-PLAQUETARIA:
+    headline: "Trombocitose — clonal possível"
+    compat: "padrão compatível (persistente)"
+    next_steps:
+      - "Ferritina/CRP (reativo)"
+      - "Se >650 ×10^9/L, JAK2/CALR/MPL"
+  
+  S-PV:
+    headline: "Eritrocitose — PV a considerar"
+    compat: "padrão compatível (Hb/Ht altos)"
+    next_steps:
+      - "Repetir CBC; confirmar persistência"
+      - "JAK2/CALR/MPL"
+      - "EPO sérica (quando disponível)"
+  
+  S-ERITROCITOSE-SECUNDARIA:
+    headline: "Eritrocitose — secundária a considerar"
+    compat: "padrão compatível (Hb/Ht altos, sem marcadores clonais)"
+    next_steps:
+      - "Repetir CBC"
+      - "EPO sérica (alta sugere secundária)"
+  
+  S-PTI:
+    headline: "Trombocitopenia imune — possível"
+    compat: "padrão compatível"
+    next_steps:
+      - "**Antes** excluir pseudo (esfregaço/MPV)"
+      - "Revisar medicamentos/infecção"
+  
+  S-PSEUDO-THROMBO:
+    headline: "Pseudotrombocitopenia — provável"
+    compat: "clumps/MPV compatíveis"
+    next_steps:
+      - "Recoleta citrato/PLT-F"
+      - "Esfregaço"
+  
+  S-ACD:
+    headline: "Anemia da doença crônica/inflamatória — investigação"
+    compat: "padrão compatível (anemia + ferritina alta/CRP alto)"
+    next_steps:
+      - "Confirmar CRP/ferritina/TSat"
+      - "Tratar condição inflamatória de base"
+  
+  S-PANCYTOPENIA:
+    headline: "Pancitopenia — investigação dirigida"
+    compat: "padrão compatível (3 séries baixas)"
+    next_steps:
+      - "Reticulócitos"
+      - "Esfregaço (displasia, blastos)"
+      - "Avaliar medula óssea se persistente"
