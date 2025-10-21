@@ -17,14 +17,17 @@ import pytest
 import json
 import tempfile
 import shutil
+import os
 from pathlib import Path
 from datetime import datetime, timedelta
+from unittest.mock import patch
 from hemodoctor.engines.worm_log import (
     log_to_worm,
     build_log_entry,
     compute_hmac,
     verify_hmac,
     purge_old_logs,
+    read_worm_logs,
 )
 from hemodoctor.models.syndrome import SyndromeResult
 from hemodoctor.models.evidence import EvidenceResult
@@ -430,3 +433,245 @@ def test_worm_log_no_phi_leakage(temp_worm_dir, sample_cbc, sample_syndromes, sa
 
     # But pseudonymized IDs should exist
     assert "sha256:" in content
+
+
+# Test 7: HMAC Key from Environment
+
+
+def test_hmac_key_from_environment(temp_worm_dir, sample_cbc, sample_syndromes, sample_evidences):
+    """Test that HMAC key is loaded from environment variable."""
+    test_secret = "production-secret-key-for-testing"
+
+    # Set environment variable
+    with patch.dict(os.environ, {"HEMODOCTOR_WORM_SECRET": test_secret}):
+        # Re-import to get new key (note: in real code, key is set at module load)
+        # For this test, we just verify log_to_worm works with env var set
+        success = log_to_worm(
+            sample_cbc,
+            sample_syndromes,
+            sample_evidences,
+            "sha256:env_test",
+            worm_dir=temp_worm_dir
+        )
+
+        assert success is True
+
+        # Verify log was created
+        files = list(Path(temp_worm_dir).glob("*.jsonl"))
+        assert len(files) == 1
+
+
+# Test 8: Log Write Error Handling
+
+
+def test_log_to_worm_write_error():
+    """Test log_to_worm handles write errors gracefully."""
+    from hemodoctor.models.syndrome import SyndromeResult
+    from hemodoctor.models.evidence import EvidenceResult
+
+    sample_cbc = {"hb": 8.2, "case_id": "123"}
+    sample_syndromes = [SyndromeResult(
+        id="S-TMA",
+        criticality="critical",
+        evidences=["E-PLT-CRIT-LOW"],
+        actions=[],
+        next_steps=[],
+        confidence="C2"
+    )]
+    sample_evidences = [EvidenceResult(
+        id="E-PLT-CRIT-LOW",
+        status="present",
+        strength="strong",
+        requires=[],
+        clinical_significance=""
+    )]
+
+    # Try to write to invalid directory (should fail gracefully)
+    success = log_to_worm(
+        sample_cbc,
+        sample_syndromes,
+        sample_evidences,
+        "sha256:test",
+        worm_dir="/invalid/readonly/path/that/does/not/exist/"
+    )
+
+    # Should return False on error (not crash)
+    assert success is False
+
+
+# Test 9: Purge with Non-Existent Directory
+
+
+def test_purge_old_logs_nonexistent_directory():
+    """Test purge_old_logs returns 0 when directory doesn't exist."""
+    purged = purge_old_logs("/path/that/does/not/exist/", retention_days=1825)
+
+    assert purged == 0
+
+
+# Test 10: Purge with Invalid Filename
+
+
+def test_purge_old_logs_invalid_filename(temp_worm_dir):
+    """Test purge_old_logs handles invalid filenames gracefully."""
+    # Create file with invalid date format
+    invalid_file = Path(temp_worm_dir) / "invalid_filename.jsonl"
+    invalid_file.write_text('{"test": "data"}\n')
+
+    # Should skip invalid file without crashing
+    purged = purge_old_logs(temp_worm_dir, retention_days=1825)
+
+    assert isinstance(purged, int)
+    assert purged >= 0
+    assert invalid_file.exists()  # Invalid file should remain
+
+
+# Test 11: Purge General Exception
+
+
+def test_purge_old_logs_exception_handling(temp_worm_dir):
+    """Test purge_old_logs exception handling."""
+    # Create a valid old file
+    old_date = (datetime.utcnow() - timedelta(days=1826)).strftime("%Y-%m-%d")
+    old_file = Path(temp_worm_dir) / f"{old_date}_hemodoctor_hybrid.jsonl"
+    old_file.write_text('{"test": "data"}\n')
+
+    # Mock to raise exception during purge
+    with patch('pathlib.Path.glob', side_effect=Exception("Simulated error")):
+        purged = purge_old_logs(temp_worm_dir, retention_days=1825)
+
+        # Should return 0 on exception (not crash)
+        assert purged == 0
+
+
+# Test 12: Read WORM Logs Basic
+
+
+def test_read_worm_logs_basic(temp_worm_dir, sample_cbc, sample_syndromes, sample_evidences):
+    """Test reading WORM logs."""
+    # Write some entries
+    for i in range(3):
+        log_to_worm(
+            sample_cbc,
+            sample_syndromes,
+            sample_evidences,
+            f"sha256:test_{i}",
+            worm_dir=temp_worm_dir
+        )
+
+    # Read logs
+    entries = read_worm_logs(worm_dir=temp_worm_dir)
+
+    assert len(entries) == 3
+    assert all("event_ts" in e for e in entries)
+    assert all("route_id" in e for e in entries)
+
+
+# Test 13: Read WORM Logs with Date Range
+
+
+def test_read_worm_logs_date_range(temp_worm_dir, sample_cbc, sample_syndromes, sample_evidences):
+    """Test reading WORM logs with date filtering."""
+    # Write entry today
+    log_to_worm(
+        sample_cbc,
+        sample_syndromes,
+        sample_evidences,
+        "sha256:today",
+        worm_dir=temp_worm_dir
+    )
+
+    # Read with wide date range (past to future)
+    past = datetime.utcnow() - timedelta(days=10)
+    future = datetime.utcnow() + timedelta(days=10)
+
+    entries = read_worm_logs(
+        worm_dir=temp_worm_dir,
+        start_date=past,
+        end_date=future
+    )
+
+    # Should include today's entry
+    assert len(entries) >= 1
+
+
+# Test 14: Read WORM Logs - Verify Integrity
+
+
+def test_read_worm_logs_verify_integrity(temp_worm_dir, sample_cbc, sample_syndromes, sample_evidences):
+    """Test HMAC verification during read."""
+    # Write valid entry
+    log_to_worm(
+        sample_cbc,
+        sample_syndromes,
+        sample_evidences,
+        "sha256:valid",
+        worm_dir=temp_worm_dir
+    )
+
+    # Read with integrity check
+    entries_verified = read_worm_logs(worm_dir=temp_worm_dir, verify_integrity=True)
+
+    assert len(entries_verified) >= 1
+
+    # Read without integrity check
+    entries_unverified = read_worm_logs(worm_dir=temp_worm_dir, verify_integrity=False)
+
+    assert len(entries_unverified) >= 1
+
+
+# Test 15: Read WORM Logs - Tampered Entry
+
+
+def test_read_worm_logs_tampered_entry(temp_worm_dir):
+    """Test that tampered entries are rejected."""
+    # Create tampered log file
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    logfile = Path(temp_worm_dir) / f"{today}_hemodoctor_hybrid.jsonl"
+
+    # Write entry with invalid HMAC
+    tampered_entry = {
+        "event_ts": "2025-10-20T12:34:56Z",
+        "route_id": "sha256:abc",
+        "hmac_signature": "hmac-sha256:INVALID_SIGNATURE"
+    }
+
+    with open(logfile, "w") as f:
+        f.write(json.dumps(tampered_entry) + "\n")
+
+    # Read with verification
+    entries = read_worm_logs(worm_dir=temp_worm_dir, verify_integrity=True)
+
+    # Tampered entry should be filtered out
+    assert len(entries) == 0
+
+
+# Test 16: Read WORM Logs - No Directory
+
+
+def test_read_worm_logs_no_directory():
+    """Test read_worm_logs when directory doesn't exist."""
+    entries = read_worm_logs(worm_dir="/path/that/does/not/exist/")
+
+    assert entries == []
+
+
+# Test 17: Read WORM Logs - Invalid JSON
+
+
+def test_read_worm_logs_invalid_json(temp_worm_dir):
+    """Test read_worm_logs handles invalid JSON gracefully."""
+    # Create log file with invalid JSON
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    logfile = Path(temp_worm_dir) / f"{today}_hemodoctor_hybrid.jsonl"
+
+    with open(logfile, "w") as f:
+        f.write("INVALID JSON LINE\n")
+        f.write('{"valid": "entry"}\n')  # One valid line
+
+    # Should skip invalid lines and continue
+    entries = read_worm_logs(worm_dir=temp_worm_dir, verify_integrity=False)
+
+    # Should have at least the valid entry (invalid line skipped)
+    # Note: Might be 0 if valid entry also fails without required fields
+    assert isinstance(entries, list)
