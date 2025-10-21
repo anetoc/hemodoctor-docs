@@ -332,7 +332,7 @@ def test_analyze_invalid_json(client):
     """Test analyze with invalid JSON."""
     response = client.post(
         "/analyze",
-        data="invalid json",
+        content="invalid json",
         headers={"Content-Type": "application/json"}
     )
 
@@ -344,7 +344,7 @@ def test_analyze_wrong_content_type(client):
     """Test analyze with wrong content type."""
     response = client.post(
         "/analyze",
-        data="hb=14.5&mcv=88&wbc=7.5",  # Form data instead of JSON
+        content="hb=14.5&mcv=88&wbc=7.5",  # Form data instead of JSON
         headers={"Content-Type": "application/x-www-form-urlencoded"}
     )
 

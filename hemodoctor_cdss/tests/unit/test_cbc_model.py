@@ -24,12 +24,16 @@ def test_cbc_model_basic():
     cbc = CBCInput(
         hb=15.0,
         mcv=88,
-        wbc=7.5
+        wbc=7.5,
+        age_years=35,  # Required field
+        sex="M"  # Required field
     )
 
     assert cbc.hb == 15.0
     assert cbc.mcv == 88
     assert cbc.wbc == 7.5
+    assert cbc.age_years == 35
+    assert cbc.sex == "M"
 
 
 def test_cbc_model_with_optional_fields():

@@ -19,21 +19,18 @@ def test_yaml_parser_invalid_config_dir():
 
 
 def test_yaml_parser_missing_yaml_file():
-    """Test YAMLParser handles missing YAML file."""
+    """Test YAMLParser raises RuntimeError for missing critical YAML files."""
     # Create temporary config directory
     with tempfile.TemporaryDirectory() as tmpdir:
         config_dir = Path(tmpdir)
 
-        # Create some required YAML files but not all
+        # Create only one YAML file (missing 15 critical files)
         (config_dir / "00_config_hybrid.yaml").write_text("version: 1.0\n")
 
-        # Should raise error for missing files
-        # Note: YAMLParser expects all 16 YAML files
-        parser = YAMLParser(config_dir=config_dir)
-
-        # Trying to access non-existent property would fail
-        # But parser was created, so at least __init__ worked
-        assert parser is not None
+        # Should raise RuntimeError for missing critical YAML files
+        # YAMLParser expects all 16 YAML files (14 critical + 2 optional)
+        with pytest.raises(RuntimeError, match="Failed to load critical YAML"):
+            YAMLParser(config_dir=config_dir)
 
 
 def test_yaml_parser_invalid_yaml_syntax():

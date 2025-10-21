@@ -23,7 +23,7 @@ IEC 62304 Class C
 """
 
 from typing import Dict, Any, List
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def render_output(
@@ -103,7 +103,7 @@ def render_markdown(
     # Header
     lines.append("# HemoDoctor - Relatório de Análise CBC")
     lines.append("")
-    lines.append(f"**Data:** {datetime.utcnow().strftime('%d/%m/%Y %H:%M UTC')}")
+    lines.append(f"**Data:** {datetime.now(timezone.utc).strftime('%d/%m/%Y %H:%M UTC')}")
     lines.append(f"**Route ID:** `{route_id[:16]}...`")
     lines.append(f"**Versão:** v2.4.0")
     lines.append("")
@@ -290,7 +290,7 @@ def render_json(
     # Build JSON structure
     output = {
         "version": "2.4.0",
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
         "route_id": route_id,
         "syndromes": syndrome_data,
         "evidences": evidence_data,

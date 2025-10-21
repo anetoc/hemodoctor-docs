@@ -19,7 +19,7 @@ import tempfile
 import shutil
 import os
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 from hemodoctor.engines.worm_log import (
     log_to_worm,
@@ -248,7 +248,7 @@ def test_log_to_worm_basic(temp_worm_dir, sample_cbc, sample_syndromes, sample_e
     assert success is True
 
     # Check file was created
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     expected_file = Path(temp_worm_dir) / f"{today}_hemodoctor_hybrid.jsonl"
     assert expected_file.exists()
 
@@ -275,7 +275,7 @@ def test_log_to_worm_append_mode(temp_worm_dir, sample_cbc, sample_syndromes, sa
     log_to_worm(sample_cbc, sample_syndromes, sample_evidences, route_id2, worm_dir=temp_worm_dir)
 
     # Check both entries exist
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     logfile = Path(temp_worm_dir) / f"{today}_hemodoctor_hybrid.jsonl"
 
     with open(logfile, "r") as f:
@@ -336,7 +336,7 @@ def test_log_to_worm_daily_rotation(temp_worm_dir, sample_cbc, sample_syndromes,
 def test_purge_old_logs_no_old_files(temp_worm_dir):
     """Test purge when no old files exist."""
     # Create a recent log file
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     logfile = Path(temp_worm_dir) / f"{today}_hemodoctor_hybrid.jsonl"
     logfile.write_text('{"test": "data"}\n')
 
@@ -349,12 +349,12 @@ def test_purge_old_logs_no_old_files(temp_worm_dir):
 def test_purge_old_logs_deletes_old_files(temp_worm_dir):
     """Test purge deletes files older than retention period."""
     # Create old log file (> 1825 days old)
-    old_date = (datetime.utcnow() - timedelta(days=1826)).strftime("%Y-%m-%d")
+    old_date = (datetime.now(timezone.utc) - timedelta(days=1826)).strftime("%Y-%m-%d")
     old_file = Path(temp_worm_dir) / f"{old_date}_hemodoctor_hybrid.jsonl"
     old_file.write_text('{"test": "old_data"}\n')
 
     # Create recent file
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     recent_file = Path(temp_worm_dir) / f"{today}_hemodoctor_hybrid.jsonl"
     recent_file.write_text('{"test": "recent_data"}\n')
 
@@ -387,7 +387,7 @@ def test_worm_log_integration(temp_worm_dir, sample_cbc, sample_syndromes, sampl
     assert success is True
 
     # Read from WORM
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     logfile = Path(temp_worm_dir) / f"{today}_hemodoctor_hybrid.jsonl"
 
     with open(logfile, "r") as f:
@@ -421,7 +421,7 @@ def test_worm_log_no_phi_leakage(temp_worm_dir, sample_cbc, sample_syndromes, sa
     assert success is True
 
     # Read log file
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     logfile = Path(temp_worm_dir) / f"{today}_hemodoctor_hybrid.jsonl"
 
     content = logfile.read_text()
@@ -532,7 +532,7 @@ def test_purge_old_logs_invalid_filename(temp_worm_dir):
 def test_purge_old_logs_exception_handling(temp_worm_dir):
     """Test purge_old_logs exception handling."""
     # Create a valid old file
-    old_date = (datetime.utcnow() - timedelta(days=1826)).strftime("%Y-%m-%d")
+    old_date = (datetime.now(timezone.utc) - timedelta(days=1826)).strftime("%Y-%m-%d")
     old_file = Path(temp_worm_dir) / f"{old_date}_hemodoctor_hybrid.jsonl"
     old_file.write_text('{"test": "data"}\n')
 
@@ -582,8 +582,8 @@ def test_read_worm_logs_date_range(temp_worm_dir, sample_cbc, sample_syndromes, 
     )
 
     # Read with wide date range (past to future)
-    past = datetime.utcnow() - timedelta(days=10)
-    future = datetime.utcnow() + timedelta(days=10)
+    past = datetime.now(timezone.utc) - timedelta(days=10)
+    future = datetime.now(timezone.utc) + timedelta(days=10)
 
     entries = read_worm_logs(
         worm_dir=temp_worm_dir,
@@ -626,7 +626,7 @@ def test_read_worm_logs_verify_integrity(temp_worm_dir, sample_cbc, sample_syndr
 def test_read_worm_logs_tampered_entry(temp_worm_dir):
     """Test that tampered entries are rejected."""
     # Create tampered log file
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     logfile = Path(temp_worm_dir) / f"{today}_hemodoctor_hybrid.jsonl"
 
     # Write entry with invalid HMAC
@@ -662,7 +662,7 @@ def test_read_worm_logs_no_directory():
 def test_read_worm_logs_invalid_json(temp_worm_dir):
     """Test read_worm_logs handles invalid JSON gracefully."""
     # Create log file with invalid JSON
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     logfile = Path(temp_worm_dir) / f"{today}_hemodoctor_hybrid.jsonl"
 
     with open(logfile, "w") as f:

@@ -7,7 +7,7 @@ Author: Dr. Abel Costa
 IEC 62304 Class C
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, List
 
 
@@ -40,6 +40,7 @@ class EvidenceResult(BaseModel):
     clinical_significance: str = Field(default="", description="Clinical meaning")
     rule: Optional[str] = Field(default=None, description="Original rule expression")
 
-    class Config:
-        frozen = False  # Allow modification for testing
-        extra = "forbid"  # Reject unknown fields
+    model_config = ConfigDict(
+        frozen=False,  # Allow modification for testing
+        extra="forbid"  # Reject unknown fields
+    )

@@ -9,7 +9,7 @@ Author: Dr. Abel Costa
 IEC 62304 Class C
 """
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Optional, Dict
 
 
@@ -103,10 +103,10 @@ class CBCInput(BaseModel):
             pass  # Allow for review_sample syndrome detection
         return v
 
-    class Config:
-        frozen = False
-        extra = "forbid"
-        json_schema_extra = {
+    model_config = ConfigDict(
+        frozen=False,
+        extra="forbid",
+        json_schema_extra={
             "example": {
                 "hb": 8.2,
                 "wbc": 2.1,
@@ -115,3 +115,4 @@ class CBCInput(BaseModel):
                 "sex": "M",
             }
         }
+    )

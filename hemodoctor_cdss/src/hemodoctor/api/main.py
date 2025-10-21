@@ -23,9 +23,9 @@ IEC 62304 Class C
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Dict, Any, Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 
 from hemodoctor.api.pipeline import analyze_cbc
@@ -83,8 +83,8 @@ class CBCRequest(BaseModel):
     case_id: Optional[str] = Field(None, description="Case ID (will be pseudonymized)")
     site_id: Optional[str] = Field(None, description="Site ID (will be pseudonymized)")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "hb": 15.2,
                 "mcv": 88,
@@ -97,6 +97,7 @@ class CBCRequest(BaseModel):
                 "site_id": "HOSPITAL-ABC"
             }
         }
+    )
 
 
 class AnalysisResponse(BaseModel):
@@ -109,8 +110,8 @@ class AnalysisResponse(BaseModel):
     next_steps: List[Dict[str, Any]] = Field(..., description="Recommended next steps")
     report: Dict[str, str] = Field(..., description="Formatted reports (markdown, html, json)")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "version": "2.4.0",
                 "timestamp": "2025-10-20T12:34:56.789Z",
@@ -125,6 +126,7 @@ class AnalysisResponse(BaseModel):
                 }
             }
         }
+    )
 
 
 class HealthResponse(BaseModel):
@@ -176,7 +178,7 @@ async def analyze_endpoint(request: CBCRequest):
     """
     try:
         # Convert request to dict
-        cbc_data = request.dict(exclude_none=True)
+        cbc_data = request.model_dump(exclude_none=True)
 
         # Run analysis pipeline
         result = analyze_cbc(cbc_data)
@@ -249,7 +251,7 @@ async def health_check():
         return HealthResponse(
             status="healthy",
             version="2.4.0",
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(timezone.utc).isoformat() + "Z",
             yamls_loaded=yamls_loaded
         )
 
@@ -259,7 +261,7 @@ async def health_check():
             content={
                 "status": "unhealthy",
                 "error": str(e),
-                "timestamp": datetime.utcnow().isoformat() + "Z"
+                "timestamp": datetime.now(timezone.utc).isoformat() + "Z"
             }
         )
 

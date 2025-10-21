@@ -7,7 +7,7 @@ Author: Dr. Abel Costa
 IEC 62304 Class C
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import List, Optional
 
 
@@ -41,6 +41,7 @@ class SyndromeResult(BaseModel):
     confidence: Optional[str] = Field(default=None, description="Confidence level C0/C1/C2")
     route_id: Optional[str] = Field(default=None, description="Deterministic SHA256 hash")
 
-    class Config:
-        frozen = False
-        extra = "forbid"
+    model_config = ConfigDict(
+        frozen=False,
+        extra="forbid"
+    )

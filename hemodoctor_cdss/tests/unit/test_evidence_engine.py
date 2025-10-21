@@ -144,9 +144,13 @@ def test_E_SCHISTOCYTES_GE1PCT_present(basic_config):
     evidence = {
         "id": "E-SCHISTOCYTES-GE1PCT",
         "rule": "esquistocitos == true",
-        "requires": ["esquistocitos"],
+        "requires": ["morphology"],  # Fixed: Check morphology dict exists, not nested key
     }
-    cbc = {"morphology": {"esquistocitos": True}}
+    cbc = {
+        "morphology": {"esquistocitos": True},
+        "age_years": 35,  # Required for evaluation context
+        "sex": "M"  # Required for evaluation context
+    }
 
     result = evaluate_evidence(evidence, cbc, basic_config)
 

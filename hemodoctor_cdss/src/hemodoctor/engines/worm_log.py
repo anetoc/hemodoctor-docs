@@ -28,7 +28,7 @@ import hashlib
 import hmac
 import os
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -105,7 +105,7 @@ def log_to_worm(
         Path(worm_dir).mkdir(parents=True, exist_ok=True)
 
         # Generate daily filename
-        today = datetime.utcnow().strftime("%Y-%m-%d")
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         filename = f"{today}_hemodoctor_hybrid.jsonl"
         filepath = Path(worm_dir) / filename
 
@@ -180,7 +180,7 @@ def build_log_entry(
 
     # Build entry
     entry = {
-        "event_ts": datetime.utcnow().isoformat() + "Z",
+        "event_ts": datetime.now(timezone.utc).isoformat() + "Z",
         "case_id_hash": case_id_hash,
         "site_id_hash": site_id_hash,
         "route_id": route_id,
@@ -285,7 +285,7 @@ def purge_old_logs(worm_dir: str = "wormlog/", retention_days: int = 1825) -> in
             return 0
 
         # Calculate cutoff date
-        cutoff_date = datetime.utcnow() - timedelta(days=retention_days)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=retention_days)
 
         deleted_count = 0
 
@@ -301,7 +301,7 @@ def purge_old_logs(worm_dir: str = "wormlog/", retention_days: int = 1825) -> in
                     # Delete file
                     filepath.unlink()
                     deleted_count += 1
-                    print(f"WORM log purged: {filepath.name} (age: {(datetime.utcnow() - file_date).days} days)")
+                    print(f"WORM log purged: {filepath.name} (age: {(datetime.now(timezone.utc) - file_date).days} days)")
 
             except (ValueError, IndexError) as e:
                 # Skip files with invalid naming
@@ -335,7 +335,7 @@ def read_worm_logs(
 
     Example:
         >>> # Read last 7 days
-        >>> start = datetime.utcnow() - timedelta(days=7)
+        >>> start = datetime.now(timezone.utc) - timedelta(days=7)
         >>> entries = read_worm_logs("wormlog/", start_date=start)
         >>> len(entries) >= 0
         True
@@ -348,16 +348,16 @@ def read_worm_logs(
 
     # Determine date range
     if start_date is None:
-        start_date = datetime(2000, 1, 1)  # Far past
+        start_date = datetime(2000, 1, 1, tzinfo=timezone.utc)  # Far past
     if end_date is None:
-        end_date = datetime.utcnow() + timedelta(days=1)  # Tomorrow
+        end_date = datetime.now(timezone.utc) + timedelta(days=1)  # Tomorrow
 
     # Read matching files
     for filepath in sorted(worm_path.glob("*.jsonl")):
         try:
             # Parse date from filename
             date_str = filepath.stem.split("_")[0]
-            file_date = datetime.strptime(date_str, "%Y-%m-%d")
+            file_date = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
 
             # Check date range
             if not (start_date <= file_date <= end_date):

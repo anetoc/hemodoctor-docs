@@ -22,7 +22,7 @@ IEC 62304 Class C
 from typing import Dict, Any, List
 import hashlib
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 from hemodoctor.utils.yaml_parser import YAMLParser
 from hemodoctor.engines.evidence import evaluate_all_evidences, get_present_evidences
@@ -156,7 +156,7 @@ def analyze_cbc(cbc_data: Dict[str, Any]) -> Dict[str, Any]:
         "evidences_present": [e.id for e in evidences if e.status == "present"],
         "route_id": route_id,
         "version": "2.4.0",
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
         "next_steps": next_steps_list,
         "conversion_log": conversion_log,
         "validation_warnings": validation_warnings,
