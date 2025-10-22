@@ -1,0 +1,90 @@
+{
+  "S-NEUTROPENIA-GRAVE": {
+    "tp": 30,
+    "fn": 0,
+    "fp": 0,
+    "tn": 210,
+    "sensitivity": 1.0,
+    "specificity": 1.0,
+    "ppv": 1.0,
+    "npv": 1.0,
+    "total_cases": 30
+  },
+  "S-BLASTIC-SYNDROME": {
+    "tp": 30,
+    "fn": 0,
+    "fp": 0,
+    "tn": 210,
+    "sensitivity": 1.0,
+    "specificity": 1.0,
+    "ppv": 1.0,
+    "npv": 1.0,
+    "total_cases": 30
+  },
+  "S-TMA": {
+    "tp": 30,
+    "fn": 0,
+    "fp": 0,
+    "tn": 210,
+    "sensitivity": 1.0,
+    "specificity": 1.0,
+    "ppv": 1.0,
+    "npv": 1.0,
+    "total_cases": 30
+  },
+  "S-PLT-CRITICA": {
+    "tp": 30,
+    "fn": 0,
+    "fp": 0,
+    "tn": 210,
+    "sensitivity": 1.0,
+    "specificity": 1.0,
+    "ppv": 1.0,
+    "npv": 1.0,
+    "total_cases": 30
+  },
+  "S-ANEMIA-GRAVE": {
+    "tp": 30,
+    "fn": 0,
+    "fp": 0,
+    "tn": 210,
+    "sensitivity": 1.0,
+    "specificity": 1.0,
+    "ppv": 1.0,
+    "npv": 1.0,
+    "total_cases": 30
+  },
+  "S-NEUTROFILIA-LEFTSHIFT-CRIT": {
+    "tp": 30,
+    "fn": 0,
+    "fp": 0,
+    "tn": 210,
+    "sensitivity": 1.0,
+    "specificity": 1.0,
+    "ppv": 1.0,
+    "npv": 1.0,
+    "total_cases": 30
+  },
+  "S-THROMBOCITOSE-CRIT": {
+    "tp": 30,
+    "fn": 0,
+    "fp": 0,
+    "tn": 210,
+    "sensitivity": 1.0,
+    "specificity": 1.0,
+    "ppv": 1.0,
+    "npv": 1.0,
+    "total_cases": 30
+  },
+  "S-CIVD": {
+    "tp": 30,
+    "fn": 0,
+    "fp": 0,
+    "tn": 210,
+    "sensitivity": 1.0,
+    "specificity": 1.0,
+    "ppv": 1.0,
+    "npv": 1.0,
+    "total_cases": 30
+  }
+}

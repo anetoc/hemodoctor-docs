@@ -10,6 +10,25 @@ Prover documentação técnica completa e rastreável para submissão regulatór
 
 ## 🏗️ Estrutura do Projeto
 
+### hemodoctor_cdss/ ⭐ **IMPLEMENTAÇÃO ATIVA**
+Sistema de decisão clínica completo (SaMD Class III):
+
+- **src/**: Código-fonte (~2,660 linhas)
+  - Engines: Evidence, Syndrome, Next Steps, Normalization, WORM Log, Output Renderer
+  - API: FastAPI REST (4 endpoints)
+  - Models: Pydantic schemas
+- **config/**: ✅ **16 YAMLs v2.4.0** (ÚNICA FONTE DA VERDADE!)
+  - 79 evidências, 35 síndromes, 40 triggers
+  - **NOTA**: YAMLs movidos de `HEMODOCTOR_HIBRIDO_V1.0/YAMLs/` em 21 Out 2025
+- **tests/**: 466 testes (89% coverage)
+  - 362 core tests (100% pass rate)
+  - 104 security tests (OWASP Top 10)
+- **docs/**: Documentação técnica + materiais validação
+- **data/synthetic_cases/**: Casos sintéticos CSV
+- **wormlog/**: Audit trail HMAC-SHA256
+
+**Status**: ✅ Sprint 0+1 COMPLETOS | ⏳ Sprint 2 PLANEJADO (22-28 Out)
+
 ### AUTHORITATIVE_BASELINE/
 Base autoritativa de documentação regulatória organizada em 10 módulos conforme requisitos ANVISA/FDA:
 
@@ -273,11 +292,17 @@ Para informações detalhadas sobre versionamento, histórico de mudanças e roa
 - Validação clínica em ambiente real
 - Conformidade ética (CEP)
 
-## 📦 Versão Consolidada
+## 📦 HEMODOCTOR_HIBRIDO_V1.0/
+Especificação técnica original:
 
-Disponível versão empacotada:
-- `HEMODOCTOR_CONSOLIDADO_v2.0_20251010.zip`
-- `HEMODOCTOR_CONSOLIDADO_v2.0_20251010/` (descompactado)
+- **YAMLs/**: ⚠️ **YAMLs MOVIDOS** para `hemodoctor_cdss/config/` (21 Out 2025)
+  - Ver `YAMLs/README_MOVED.md` para localização atual
+- **Analise_Comparativa/**: Design decisions
+- **Documentacao_Tecnica/**: Especificações técnicas
+- **README.md**: Visão geral V1.0
+- **INDEX_COMPLETO.md**: Índice detalhado
+- **QUICKSTART_IMPLEMENTACAO.md**: Guia dev team
+- **CLAUDE.md**: Contexto para IA
 
 ## 📄 Licença
 
@@ -289,9 +314,10 @@ Para questões sobre o projeto ou submissões regulatórias, entre em contato at
 
 ---
 
-**Status Atual**: ✅ SUBMISSION READY - Pronto para submissão ANVISA  
-**Última Atualização**: 12 de Outubro de 2025  
-**Versão da Documentação**: v2.0.0  
-**Completude Geral**: 100% (10/10 módulos completos) 🎉  
-**Status Projeto**: 95%+ PRONTO PARA SUBMISSÕES  
-**Última Sessão**: 12-13 Out 2025 - 12 docs criados, 11 TODO completos (58%)
+**Status Atual**: ✅ IMPLEMENTATION COMPLETE - Sprint 0+1 DONE
+**Última Atualização**: 21 de Outubro de 2025
+**Versão da Documentação**: v2.4.0
+**Completude Geral**: 100% (10/10 módulos docs + implementação 98%) 🎉
+**Status Projeto**: 98% - Sprint 2 planejado (22-28 Out)
+**Última Sessão**: 21 Out 2025 - Consolidação estrutura (YAMLs únicos, Excel movido)
+**Testes**: 466 total (362 core + 104 security) - 100% pass rate - 89% coverage 🏆
