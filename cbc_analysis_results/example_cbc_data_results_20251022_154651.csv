@@ -1,0 +1,31 @@
+patient_id,age_months,age_years,age_group,platelet_count,severity_level,risk_level,clinical_significance,timestamp
+PAT001,1.0,0.08,PED-01: Neonatal,180000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471430
+PAT002,6.0,0.5,PED-02: Infant Early,250000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471444
+PAT003,24.0,2.0,PED-03: Infant Late,120000,Mild Thrombocytopenia,LOW,"Mild decrease, usually asymptomatic",2025-10-22T15:46:51.471448
+PAT004,24.0,2.0,PED-03: Infant Late,450000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471452
+PAT005,72.0,6.0,PED-04: Preschool,200000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471456
+PAT006,144.0,12.0,PED-05: School Age,175000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471459
+PAT007,216.0,18.0,PED-06: Adolescent,380000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471463
+PAT008,3.5,0.29,PED-02: Infant Early,475000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471472
+PAT009,12.0,1.0,PED-03: Infant Late,300000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471480
+PAT010,48.0,4.0,PED-04: Preschool,400000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471484
+PAT011,96.0,8.0,PED-05: School Age,425000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471489
+PAT012,180.0,15.0,PED-06: Adolescent,190000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471492
+PAT013,0.5,0.04,PED-01: Neonatal,350000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471495
+PAT014,2.0,0.17,PED-02: Infant Early,220000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471502
+PAT015,30.0,2.5,PED-04: Preschool,150000,Mild Thrombocytopenia,LOW,"Mild decrease, usually asymptomatic",2025-10-22T15:46:51.471505
+PAT016,60.0,5.0,PED-04: Preschool,180000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471508
+PAT017,120.0,10.0,PED-05: School Age,440000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471529
+PAT018,200.0,16.67,PED-06: Adolescent,350000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471534
+PAT019,15.0,1.25,PED-03: Infant Late,80000,Moderate Thrombocytopenia,MEDIUM,Increased bleeding risk with trauma/surgery,2025-10-22T15:46:51.471539
+PAT020,90.0,7.5,PED-05: School Age,600000,Mild Thrombocytosis,LOW,"Mild elevation, often reactive",2025-10-22T15:46:51.471544
+PAT021,1.0,0.08,PED-01: Neonatal,400000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471548
+PAT022,6.0,0.5,PED-02: Infant Early,475000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471552
+PAT023,24.0,2.0,PED-03: Infant Late,475000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471555
+PAT024,72.0,6.0,PED-04: Preschool,450000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471558
+PAT025,144.0,12.0,PED-05: School Age,450000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471560
+PAT026,216.0,18.0,PED-06: Adolescent,400000,Normal,LOW,Platelet count within normal range,2025-10-22T15:46:51.471566
+PAT027,12.0,1.0,PED-03: Infant Late,45000,Severe Thrombocytopenia,HIGH,"High bleeding risk, spontaneous bleeding possible",2025-10-22T15:46:51.471569
+PAT028,48.0,4.0,PED-04: Preschool,18000,Critical Thrombocytopenia,CRITICAL,"Life-threatening, spontaneous bleeding likely",2025-10-22T15:46:51.471571
+PAT029,96.0,8.0,PED-05: School Age,850000,Severe Thrombocytosis,HIGH,Increased thrombosis risk,2025-10-22T15:46:51.471574
+PAT030,180.0,15.0,PED-06: Adolescent,1100000,Critical Thrombocytosis,CRITICAL,"Extreme thrombosis risk, urgent evaluation needed",2025-10-22T15:46:51.471577

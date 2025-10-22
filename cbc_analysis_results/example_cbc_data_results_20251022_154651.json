@@ -1,0 +1,730 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-22T15:46:51.472129",
+    "total_records": 30,
+    "version": "1.0.0",
+    "bug_fix_applied": "BUG-002 (Inclusive age boundaries)"
+  },
+  "results": [
+    {
+      "patient_id": "PAT001",
+      "age_months": 1.0,
+      "age_years": 0.08,
+      "age_group": {
+        "name": "PED-01: Neonatal",
+        "age_min": 0.0,
+        "age_max": 1.0,
+        "platelet_min": 150,
+        "platelet_max": 400
+      },
+      "platelet_count": 180000,
+      "platelet_count_formatted": "180,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 180000,
+        "reference_min": 150000,
+        "reference_max": 400000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471430",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT002",
+      "age_months": 6.0,
+      "age_years": 0.5,
+      "age_group": {
+        "name": "PED-02: Infant Early",
+        "age_min": 1.0,
+        "age_max": 6.0,
+        "platelet_min": 200,
+        "platelet_max": 475
+      },
+      "platelet_count": 250000,
+      "platelet_count_formatted": "250,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 250000,
+        "reference_min": 200000,
+        "reference_max": 475000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471444",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT003",
+      "age_months": 24.0,
+      "age_years": 2.0,
+      "age_group": {
+        "name": "PED-03: Infant Late",
+        "age_min": 6.0,
+        "age_max": 24.0,
+        "platelet_min": 200,
+        "platelet_max": 475
+      },
+      "platelet_count": 120000,
+      "platelet_count_formatted": "120,000",
+      "severity": {
+        "level": "Mild Thrombocytopenia",
+        "platelet_count": 120000,
+        "reference_min": 200000,
+        "reference_max": 475000,
+        "clinical_significance": "Mild decrease, usually asymptomatic",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471448",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT004",
+      "age_months": 24.0,
+      "age_years": 2.0,
+      "age_group": {
+        "name": "PED-03: Infant Late",
+        "age_min": 6.0,
+        "age_max": 24.0,
+        "platelet_min": 200,
+        "platelet_max": 475
+      },
+      "platelet_count": 450000,
+      "platelet_count_formatted": "450,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 450000,
+        "reference_min": 200000,
+        "reference_max": 475000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471452",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT005",
+      "age_months": 72.0,
+      "age_years": 6.0,
+      "age_group": {
+        "name": "PED-04: Preschool",
+        "age_min": 24.0,
+        "age_max": 72.0,
+        "platelet_min": 180,
+        "platelet_max": 450
+      },
+      "platelet_count": 200000,
+      "platelet_count_formatted": "200,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 200000,
+        "reference_min": 180000,
+        "reference_max": 450000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471456",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT006",
+      "age_months": 144.0,
+      "age_years": 12.0,
+      "age_group": {
+        "name": "PED-05: School Age",
+        "age_min": 72.0,
+        "age_max": 144.0,
+        "platelet_min": 150,
+        "platelet_max": 450
+      },
+      "platelet_count": 175000,
+      "platelet_count_formatted": "175,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 175000,
+        "reference_min": 150000,
+        "reference_max": 450000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471459",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT007",
+      "age_months": 216.0,
+      "age_years": 18.0,
+      "age_group": {
+        "name": "PED-06: Adolescent",
+        "age_min": 144.0,
+        "age_max": 216.0,
+        "platelet_min": 150,
+        "platelet_max": 400
+      },
+      "platelet_count": 380000,
+      "platelet_count_formatted": "380,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 380000,
+        "reference_min": 150000,
+        "reference_max": 400000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471463",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT008",
+      "age_months": 3.5,
+      "age_years": 0.29,
+      "age_group": {
+        "name": "PED-02: Infant Early",
+        "age_min": 1.0,
+        "age_max": 6.0,
+        "platelet_min": 200,
+        "platelet_max": 475
+      },
+      "platelet_count": 475000,
+      "platelet_count_formatted": "475,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 475000,
+        "reference_min": 200000,
+        "reference_max": 475000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471472",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT009",
+      "age_months": 12.0,
+      "age_years": 1.0,
+      "age_group": {
+        "name": "PED-03: Infant Late",
+        "age_min": 6.0,
+        "age_max": 24.0,
+        "platelet_min": 200,
+        "platelet_max": 475
+      },
+      "platelet_count": 300000,
+      "platelet_count_formatted": "300,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 300000,
+        "reference_min": 200000,
+        "reference_max": 475000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471480",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT010",
+      "age_months": 48.0,
+      "age_years": 4.0,
+      "age_group": {
+        "name": "PED-04: Preschool",
+        "age_min": 24.0,
+        "age_max": 72.0,
+        "platelet_min": 180,
+        "platelet_max": 450
+      },
+      "platelet_count": 400000,
+      "platelet_count_formatted": "400,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 400000,
+        "reference_min": 180000,
+        "reference_max": 450000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471484",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT011",
+      "age_months": 96.0,
+      "age_years": 8.0,
+      "age_group": {
+        "name": "PED-05: School Age",
+        "age_min": 72.0,
+        "age_max": 144.0,
+        "platelet_min": 150,
+        "platelet_max": 450
+      },
+      "platelet_count": 425000,
+      "platelet_count_formatted": "425,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 425000,
+        "reference_min": 150000,
+        "reference_max": 450000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471489",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT012",
+      "age_months": 180.0,
+      "age_years": 15.0,
+      "age_group": {
+        "name": "PED-06: Adolescent",
+        "age_min": 144.0,
+        "age_max": 216.0,
+        "platelet_min": 150,
+        "platelet_max": 400
+      },
+      "platelet_count": 190000,
+      "platelet_count_formatted": "190,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 190000,
+        "reference_min": 150000,
+        "reference_max": 400000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471492",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT013",
+      "age_months": 0.5,
+      "age_years": 0.04,
+      "age_group": {
+        "name": "PED-01: Neonatal",
+        "age_min": 0.0,
+        "age_max": 1.0,
+        "platelet_min": 150,
+        "platelet_max": 400
+      },
+      "platelet_count": 350000,
+      "platelet_count_formatted": "350,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 350000,
+        "reference_min": 150000,
+        "reference_max": 400000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471495",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT014",
+      "age_months": 2.0,
+      "age_years": 0.17,
+      "age_group": {
+        "name": "PED-02: Infant Early",
+        "age_min": 1.0,
+        "age_max": 6.0,
+        "platelet_min": 200,
+        "platelet_max": 475
+      },
+      "platelet_count": 220000,
+      "platelet_count_formatted": "220,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 220000,
+        "reference_min": 200000,
+        "reference_max": 475000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471502",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT015",
+      "age_months": 30.0,
+      "age_years": 2.5,
+      "age_group": {
+        "name": "PED-04: Preschool",
+        "age_min": 24.0,
+        "age_max": 72.0,
+        "platelet_min": 180,
+        "platelet_max": 450
+      },
+      "platelet_count": 150000,
+      "platelet_count_formatted": "150,000",
+      "severity": {
+        "level": "Mild Thrombocytopenia",
+        "platelet_count": 150000,
+        "reference_min": 180000,
+        "reference_max": 450000,
+        "clinical_significance": "Mild decrease, usually asymptomatic",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471505",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT016",
+      "age_months": 60.0,
+      "age_years": 5.0,
+      "age_group": {
+        "name": "PED-04: Preschool",
+        "age_min": 24.0,
+        "age_max": 72.0,
+        "platelet_min": 180,
+        "platelet_max": 450
+      },
+      "platelet_count": 180000,
+      "platelet_count_formatted": "180,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 180000,
+        "reference_min": 180000,
+        "reference_max": 450000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471508",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT017",
+      "age_months": 120.0,
+      "age_years": 10.0,
+      "age_group": {
+        "name": "PED-05: School Age",
+        "age_min": 72.0,
+        "age_max": 144.0,
+        "platelet_min": 150,
+        "platelet_max": 450
+      },
+      "platelet_count": 440000,
+      "platelet_count_formatted": "440,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 440000,
+        "reference_min": 150000,
+        "reference_max": 450000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471529",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT018",
+      "age_months": 200.0,
+      "age_years": 16.67,
+      "age_group": {
+        "name": "PED-06: Adolescent",
+        "age_min": 144.0,
+        "age_max": 216.0,
+        "platelet_min": 150,
+        "platelet_max": 400
+      },
+      "platelet_count": 350000,
+      "platelet_count_formatted": "350,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 350000,
+        "reference_min": 150000,
+        "reference_max": 400000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471534",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT019",
+      "age_months": 15.0,
+      "age_years": 1.25,
+      "age_group": {
+        "name": "PED-03: Infant Late",
+        "age_min": 6.0,
+        "age_max": 24.0,
+        "platelet_min": 200,
+        "platelet_max": 475
+      },
+      "platelet_count": 80000,
+      "platelet_count_formatted": "80,000",
+      "severity": {
+        "level": "Moderate Thrombocytopenia",
+        "platelet_count": 80000,
+        "reference_min": 200000,
+        "reference_max": 475000,
+        "clinical_significance": "Increased bleeding risk with trauma/surgery",
+        "risk_level": "MEDIUM"
+      },
+      "timestamp": "2025-10-22T15:46:51.471539",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT020",
+      "age_months": 90.0,
+      "age_years": 7.5,
+      "age_group": {
+        "name": "PED-05: School Age",
+        "age_min": 72.0,
+        "age_max": 144.0,
+        "platelet_min": 150,
+        "platelet_max": 450
+      },
+      "platelet_count": 600000,
+      "platelet_count_formatted": "600,000",
+      "severity": {
+        "level": "Mild Thrombocytosis",
+        "platelet_count": 600000,
+        "reference_min": 150000,
+        "reference_max": 450000,
+        "clinical_significance": "Mild elevation, often reactive",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471544",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT021",
+      "age_months": 1.0,
+      "age_years": 0.08,
+      "age_group": {
+        "name": "PED-01: Neonatal",
+        "age_min": 0.0,
+        "age_max": 1.0,
+        "platelet_min": 150,
+        "platelet_max": 400
+      },
+      "platelet_count": 400000,
+      "platelet_count_formatted": "400,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 400000,
+        "reference_min": 150000,
+        "reference_max": 400000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471548",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT022",
+      "age_months": 6.0,
+      "age_years": 0.5,
+      "age_group": {
+        "name": "PED-02: Infant Early",
+        "age_min": 1.0,
+        "age_max": 6.0,
+        "platelet_min": 200,
+        "platelet_max": 475
+      },
+      "platelet_count": 475000,
+      "platelet_count_formatted": "475,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 475000,
+        "reference_min": 200000,
+        "reference_max": 475000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471552",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT023",
+      "age_months": 24.0,
+      "age_years": 2.0,
+      "age_group": {
+        "name": "PED-03: Infant Late",
+        "age_min": 6.0,
+        "age_max": 24.0,
+        "platelet_min": 200,
+        "platelet_max": 475
+      },
+      "platelet_count": 475000,
+      "platelet_count_formatted": "475,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 475000,
+        "reference_min": 200000,
+        "reference_max": 475000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471555",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT024",
+      "age_months": 72.0,
+      "age_years": 6.0,
+      "age_group": {
+        "name": "PED-04: Preschool",
+        "age_min": 24.0,
+        "age_max": 72.0,
+        "platelet_min": 180,
+        "platelet_max": 450
+      },
+      "platelet_count": 450000,
+      "platelet_count_formatted": "450,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 450000,
+        "reference_min": 180000,
+        "reference_max": 450000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471558",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT025",
+      "age_months": 144.0,
+      "age_years": 12.0,
+      "age_group": {
+        "name": "PED-05: School Age",
+        "age_min": 72.0,
+        "age_max": 144.0,
+        "platelet_min": 150,
+        "platelet_max": 450
+      },
+      "platelet_count": 450000,
+      "platelet_count_formatted": "450,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 450000,
+        "reference_min": 150000,
+        "reference_max": 450000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471560",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT026",
+      "age_months": 216.0,
+      "age_years": 18.0,
+      "age_group": {
+        "name": "PED-06: Adolescent",
+        "age_min": 144.0,
+        "age_max": 216.0,
+        "platelet_min": 150,
+        "platelet_max": 400
+      },
+      "platelet_count": 400000,
+      "platelet_count_formatted": "400,000",
+      "severity": {
+        "level": "Normal",
+        "platelet_count": 400000,
+        "reference_min": 150000,
+        "reference_max": 400000,
+        "clinical_significance": "Platelet count within normal range",
+        "risk_level": "LOW"
+      },
+      "timestamp": "2025-10-22T15:46:51.471566",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT027",
+      "age_months": 12.0,
+      "age_years": 1.0,
+      "age_group": {
+        "name": "PED-03: Infant Late",
+        "age_min": 6.0,
+        "age_max": 24.0,
+        "platelet_min": 200,
+        "platelet_max": 475
+      },
+      "platelet_count": 45000,
+      "platelet_count_formatted": "45,000",
+      "severity": {
+        "level": "Severe Thrombocytopenia",
+        "platelet_count": 45000,
+        "reference_min": 200000,
+        "reference_max": 475000,
+        "clinical_significance": "High bleeding risk, spontaneous bleeding possible",
+        "risk_level": "HIGH"
+      },
+      "timestamp": "2025-10-22T15:46:51.471569",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT028",
+      "age_months": 48.0,
+      "age_years": 4.0,
+      "age_group": {
+        "name": "PED-04: Preschool",
+        "age_min": 24.0,
+        "age_max": 72.0,
+        "platelet_min": 180,
+        "platelet_max": 450
+      },
+      "platelet_count": 18000,
+      "platelet_count_formatted": "18,000",
+      "severity": {
+        "level": "Critical Thrombocytopenia",
+        "platelet_count": 18000,
+        "reference_min": 180000,
+        "reference_max": 450000,
+        "clinical_significance": "Life-threatening, spontaneous bleeding likely",
+        "risk_level": "CRITICAL"
+      },
+      "timestamp": "2025-10-22T15:46:51.471571",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT029",
+      "age_months": 96.0,
+      "age_years": 8.0,
+      "age_group": {
+        "name": "PED-05: School Age",
+        "age_min": 72.0,
+        "age_max": 144.0,
+        "platelet_min": 150,
+        "platelet_max": 450
+      },
+      "platelet_count": 850000,
+      "platelet_count_formatted": "850,000",
+      "severity": {
+        "level": "Severe Thrombocytosis",
+        "platelet_count": 850000,
+        "reference_min": 150000,
+        "reference_max": 450000,
+        "clinical_significance": "Increased thrombosis risk",
+        "risk_level": "HIGH"
+      },
+      "timestamp": "2025-10-22T15:46:51.471574",
+      "warnings": []
+    },
+    {
+      "patient_id": "PAT030",
+      "age_months": 180.0,
+      "age_years": 15.0,
+      "age_group": {
+        "name": "PED-06: Adolescent",
+        "age_min": 144.0,
+        "age_max": 216.0,
+        "platelet_min": 150,
+        "platelet_max": 400
+      },
+      "platelet_count": 1100000,
+      "platelet_count_formatted": "1,100,000",
+      "severity": {
+        "level": "Critical Thrombocytosis",
+        "platelet_count": 1100000,
+        "reference_min": 150000,
+        "reference_max": 400000,
+        "clinical_significance": "Extreme thrombosis risk, urgent evaluation needed",
+        "risk_level": "CRITICAL"
+      },
+      "timestamp": "2025-10-22T15:46:51.471577",
+      "warnings": []
+    }
+  ]
+}
