@@ -137,7 +137,7 @@ def detect_syndromes(
     yaml_parser: YAMLParser
 ) -> List[SyndromeResult]:
     """
-    Detect syndromes using DAG fusion with short-circuit.
+    Detect syndromes using DAG fusion with multiple critical syndrome support.
 
     Args:
         evidences: List of evidence evaluation results (79 total)
@@ -146,24 +146,28 @@ def detect_syndromes(
     Returns:
         List of SyndromeResult objects (1-N syndromes)
 
-    Critical Safety:
-        - Stops after FIRST critical syndrome (short-circuit)
+    Critical Safety (Solution 2 - Sprint 4):
+        - Collects ALL critical syndromes before short-circuiting
+        - Allows co-occurrence of multiple critical conditions
+        - Short-circuits only after all critical syndromes evaluated
         - Sorted by precedence (critical → priority → review → routine)
         - Never returns empty list (fallback: S-INCONCLUSIVO)
 
-    Example:
-        >>> from hemodoctor.utils.yaml_parser import YAMLParser
-        >>> parser = YAMLParser.get_instance()
+    Example (co-occurrence):
+        >>> # Case with PLT=1997 + neutrofilia leftshift
+        >>> # Expected: BOTH S-THROMBOCITOSE-CRIT AND S-NEUTROFILIA-LEFTSHIFT-CRIT
         >>> evidences = [
-        ...     EvidenceResult(id="E-PLT-CRIT-LOW", status="present", strength="strong"),
-        ...     EvidenceResult(id="E-SCHISTOCYTES-GE1PCT", status="present", strength="strong"),
-        ...     EvidenceResult(id="E-LDH-HIGH", status="present", strength="high"),
+        ...     EvidenceResult(id="E-PLT-VERY-HIGH", status="present", strength="strong"),
+        ...     EvidenceResult(id="E-NEUTROFILIA-CRIT", status="present", strength="strong"),
         ... ]
         >>> syndromes = detect_syndromes(evidences, parser)
-        >>> syndromes[0].id
-        'S-TMA'
-        >>> syndromes[0].criticality
-        'critical'
+        >>> len(syndromes)  # Both critical syndromes detected
+        2
+
+    Note:
+        Sprint 4 fix for S-THROMBOCITOSE-CRIT FN=22/30 (73%)
+        Root cause: S-NEUTROFILIA-LEFTSHIFT-CRIT (line 6) short-circuited
+        before S-THROMBOCITOSE-CRIT (line 7) could be evaluated.
     """
     syndrome_defs = yaml_parser.get_all_syndrome_defs()
 
@@ -171,6 +175,7 @@ def detect_syndromes(
     present_ids = {e.id for e in evidences if e.status == "present"}
 
     results = []
+    found_critical = False
 
     # Syndrome definitions are already sorted by precedence in YAML
     # (critical syndromes first, then priority, then review_sample, then routine)
@@ -186,8 +191,16 @@ def detect_syndromes(
             )
             results.append(syndrome)
 
-            # SHORT-CIRCUIT: Stop after first critical syndrome
-            if syndrome_def.get("short_circuit") or syndrome_def["criticality"] == "critical":
+            # SOLUTION 2: Collect ALL critical syndromes before short-circuiting
+            if syndrome_def["criticality"] == "critical":
+                found_critical = True
+                # Don't break - continue evaluating other critical syndromes
+            elif found_critical:
+                # We've found at least one critical and now hit a non-critical
+                # Short-circuit here (don't evaluate lower-priority syndromes)
+                break
+            elif syndrome_def.get("short_circuit"):
+                # Explicit short-circuit flag for non-critical syndromes
                 break
 
     # Fallback: Always return something (guaranteed output)
