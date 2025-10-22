@@ -296,6 +296,15 @@ def purge_old_logs(worm_dir: str = "wormlog/", retention_days: int = 1825) -> in
                 date_str = filepath.stem.split("_")[0]
                 file_date = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
 
+                # BUGFIX (BUG-020): Never delete current day's file
+                # Compare dates only (strip time component)
+                today = datetime.now(timezone.utc).date()
+                file_date_only = file_date.date()
+
+                if file_date_only == today:
+                    # Skip current day's file (never delete)
+                    continue
+
                 # Check if older than retention period
                 if file_date < cutoff_date:
                     # Delete file

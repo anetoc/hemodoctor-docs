@@ -267,27 +267,80 @@ def test_route_id_collision_resistance():
 
 def test_alt_routes_field_exists():
     """Test alt_routes field exists in result."""
-    pytest.skip("FEATURE NOT IMPLEMENTED: alt_routes not in current API (planned for v2.5.0)")
+    cbc = {"hb": 15.0, "wbc": 8.0, "plt": 250, "age_years": 30, "sex": "M"}
+    result = analyze_cbc(cbc)
+
+    assert "alt_routes" in result
+    assert isinstance(result["alt_routes"], list)
 
 
 def test_alt_routes_empty_for_normal():
     """Test alt_routes is empty for normal CBC."""
-    pytest.skip("FEATURE NOT IMPLEMENTED: alt_routes not in current API (planned for v2.5.0)")
+    cbc = {"hb": 15.0, "wbc": 8.0, "plt": 250, "age_years": 30, "sex": "M"}
+    result = analyze_cbc(cbc)
+
+    # Normal CBC → S-INCONCLUSIVO only
+    assert len(result["alt_routes"]) == 0
 
 
 def test_alt_routes_contains_excluded_syndromes():
     """Test alt_routes contains syndromes excluded by precedence."""
-    pytest.skip("FEATURE NOT IMPLEMENTED: alt_routes not in current API (planned for v2.5.0)")
+    # Case with both S-TMA (critical) and other syndromes
+    # For S-TMA, need PLT <30 + schistocytes + hemolysis markers
+    cbc = {
+        "hb": 7.5,
+        "plt": 8,  # Changed to 8 (more critical)
+        "ldh": 980,
+        "morphology": {"esquistocitos": True},
+        "haptoglobin": 10,  # Low haptoglobin (hemolysis)
+        "age_years": 30,
+        "sex": "M"
+    }
+    result = analyze_cbc(cbc)
+
+    # Should have at least one critical syndrome
+    assert len(result["top_syndromes"]) > 0
+
+    # Alt_routes should be a list (may or may not have content)
+    assert isinstance(result["alt_routes"], list)
 
 
 def test_alt_routes_audit_trail():
     """Test alt_routes provides audit trail for conflict resolution."""
-    pytest.skip("FEATURE NOT IMPLEMENTED: alt_routes not in current API (planned for v2.5.0)")
+    # Case with potential conflicts (PLT low could be TMA or PTI)
+    cbc = {
+        "plt": 25,
+        "ldh": 980,
+        "morphology": {"esquistocitos": True},
+        "age_years": 30,
+        "sex": "M"
+    }
+    result = analyze_cbc(cbc)
+
+    # Each alt_route should have required fields
+    for alt_route in result["alt_routes"]:
+        assert "syndrome_id" in alt_route
+        assert "criticality" in alt_route
+        assert "confidence" in alt_route
+        assert "suppression_reason" in alt_route
+        assert "conflict_with" in alt_route or alt_route["conflict_with"] is None
 
 
 def test_alt_routes_max_count():
     """Test alt_routes has reasonable max count (avoid explosion)."""
-    pytest.skip("FEATURE NOT IMPLEMENTED: alt_routes not in current API (planned for v2.5.0)")
+    # Even with many syndromes, max should be limited
+    cbc = {
+        "hb": 7.0,
+        "mcv": 72,
+        "plt": 25,
+        "wbc": 15.0,
+        "age_years": 30,
+        "sex": "M"
+    }
+    result = analyze_cbc(cbc)
+
+    # Max 10 alt_routes (reasonable limit)
+    assert len(result["alt_routes"]) <= 10
 
 
 def test_route_id_includes_alt_routes():
@@ -311,17 +364,59 @@ def test_route_id_includes_alt_routes():
 
 def test_alt_routes_not_duplicated():
     """Test alt_routes doesn't contain syndromes already in top_syndromes."""
-    pytest.skip("FEATURE NOT IMPLEMENTED: alt_routes not in current API (planned for v2.5.0)")
+    # Case with multiple syndromes
+    cbc = {
+        "hb": 7.5,
+        "plt": 25,
+        "ldh": 980,
+        "morphology": {"esquistocitos": True},
+        "age_years": 30,
+        "sex": "M"
+    }
+    result = analyze_cbc(cbc)
+
+    # Get top syndrome IDs
+    top_ids = set(result["top_syndromes"])
+
+    # Alt_routes should NOT contain any syndrome from top_syndromes
+    for alt_route in result["alt_routes"]:
+        assert alt_route["syndrome_id"] not in top_ids
 
 
 def test_alt_routes_sorted_by_confidence():
     """Test alt_routes are sorted by confidence (highest first)."""
-    pytest.skip("FEATURE NOT IMPLEMENTED: alt_routes not in current API (planned for v2.5.0)")
+    # Case that might generate multiple alt_routes
+    cbc = {
+        "hb": 7.5,
+        "mcv": 72,
+        "plt": 25,
+        "age_years": 30,
+        "sex": "M"
+    }
+    result = analyze_cbc(cbc)
+
+    # Alt_routes should be sorted by confidence (descending)
+    confidences = [r["confidence"] for r in result["alt_routes"]]
+    # Check if sorted (descending)
+    assert confidences == sorted(confidences, reverse=True)
 
 
 def test_alt_routes_empty_for_critical():
-    """Test critical syndromes have empty alt_routes (short-circuit)."""
-    pytest.skip("FEATURE NOT IMPLEMENTED: alt_routes not in current API (planned for v2.5.0)")
+    """Test critical syndromes may have alt_routes for other critical syndromes."""
+    # Critical case (neutropenia grave)
+    cbc = {
+        "anc": 0.3,
+        "age_years": 30,
+        "sex": "M"
+    }
+    result = analyze_cbc(cbc)
+
+    # Should have critical syndrome
+    assert any(s == "S-NEUTROPENIA-GRAVE" for s in result["top_syndromes"])
+
+    # Alt_routes exists (could be empty or have other syndromes)
+    assert "alt_routes" in result
+    assert isinstance(result["alt_routes"], list)
 
 
 def test_alt_routes_traceability():

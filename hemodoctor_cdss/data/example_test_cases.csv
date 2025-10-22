@@ -1,0 +1,21 @@
+case_id,hb,mcv,wbc,plt,anc,age_years,sex,morphology.schistocytes,morphology.blasts,morphology.left_shift,expected_syndrome,notes
+CASE-001,15.2,88,8.5,250,4.0,35,M,,,,S-NORMAL,Normal healthy adult male
+CASE-002,13.5,88,7.5,220,3.8,28,F,,,,S-NORMAL,Normal healthy adult female
+CASE-003,5.8,65,12.0,180,8.0,8,M,,,,S-ANEMIA-GRAVE,Severe microcytic anemia (pediatric)
+CASE-004,4.5,70,10.5,200,7.5,5,M,,,,S-ANEMIA-GRAVE,Very severe anemia (age 5)
+CASE-005,14.0,110,4.2,8,0.3,42,F,,,,S-PLT-CRITICA+S-NEUTROPENIA-GRAVE,Multiple critical syndromes
+CASE-006,8.5,92,15.0,450,12.0,5,M,,,,S-LEUKOCYTOSIS-REACTIVE,Reactive leukocytosis (infection suspected)
+CASE-007,10.2,75,9.5,220,5.5,28,F,,,,S-ANEMIA-MILD,Mild microcytic anemia
+CASE-008,16.8,95,32.5,550,28.0,45,M,,,,S-LEUKOCYTOSIS-SUSPECT,Leukocytosis suspicious for malignancy
+CASE-009,9.0,105,7.2,95,4.0,65,F,,,,S-THROMBOCYTOPENIA-MODERATE,Moderate thrombocytopenia
+CASE-010,7.2,88,3.5,22,0.8,12,M,,,,S-PANCYTOPENIA-SEVERE,Severe pancytopenia (aplastic anemia suspected)
+CASE-011,11.5,78,8.0,180,4.5,18,F,,,,S-IDA-PROBABLE,Iron deficiency anemia probable
+CASE-012,13.0,88,8.2,120,4.2,52,M,,,,S-THROMBOCYTOPENIA-MILD,Mild thrombocytopenia
+CASE-013,12.5,88,4.5,250,0.3,8,M,,,,S-NEUTROPENIA-GRAVE,Critical neutropenia (ANC < 0.5)
+CASE-014,8.5,95,45.0,85,35.0,10,M,,True,,S-BLASTIC-SYNDROME,Blasts present (acute leukemia suspected)
+CASE-015,7.5,85,12.0,35,8.0,8,M,True,,,S-TMA,TMA triad (schistocytes + anemia + thrombocytopenia)
+CASE-016,12.5,88,8.5,8,4.0,35,M,,,,S-PLT-CRITICA,Critical thrombocytopenia (PLT < 10)
+CASE-017,4.8,85,8.0,220,4.5,8,M,,,,S-ANEMIA-GRAVE,Life-threatening anemia (Hb < 5.0)
+CASE-018,13.5,88,45.0,250,38.0,8,M,,,True,S-NEUTROFILIA-LEFTSHIFT-CRIT,Critical neutrophilia with left shift
+CASE-019,14.5,88,8.5,1850,4.5,45,M,,,,S-THROMBOCITOSE-CRIT,Critical thrombocytosis (PLT > 1800)
+CASE-020,9.5,88,15.0,45,12.0,42,M,True,,,S-CIVD,CIVD suspected (schistocytes + thrombocytopenia)

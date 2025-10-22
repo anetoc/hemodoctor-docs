@@ -26,7 +26,7 @@ from datetime import datetime, timezone
 
 from hemodoctor.utils.yaml_parser import YAMLParser
 from hemodoctor.engines.evidence import evaluate_all_evidences, get_present_evidences
-from hemodoctor.engines.syndrome import detect_syndromes
+from hemodoctor.engines.syndrome import detect_syndromes, detect_all_syndromes, generate_alt_routes
 from hemodoctor.engines.normalization import normalize_cbc as normalize_units
 from hemodoctor.engines.schema_validator import validate_schema as validate_cbc_schema
 from hemodoctor.engines.next_steps import generate_next_steps
@@ -36,7 +36,8 @@ from hemodoctor.engines.output_renderer import render_output
 
 def compute_route_id(
     evidences: List,
-    syndromes: List
+    syndromes: List,
+    alt_routes: List[Dict[str, Any]] = None
 ) -> str:
     """
     Compute deterministic SHA256 hash for routing/audit.
@@ -44,6 +45,7 @@ def compute_route_id(
     Args:
         evidences: List of EvidenceResult objects
         syndromes: List of SyndromeResult objects
+        alt_routes: Optional list of alternative routes (v2.6.0+)
 
     Returns:
         str: SHA256 hash (64 hex chars)
@@ -51,6 +53,7 @@ def compute_route_id(
     Determinism:
         - Same input always produces same hash
         - Used for routing, audit trail, deduplication
+        - Alt_routes included for complete traceability (v2.6.0+)
 
     Example:
         >>> from hemodoctor.models.evidence import EvidenceResult
@@ -71,10 +74,16 @@ def compute_route_id(
     # Extract syndrome IDs (sorted for determinism)
     syndrome_ids = sorted([s.id for s in syndromes])
 
+    # Extract alt_route syndrome IDs (sorted for determinism)
+    alt_route_ids = []
+    if alt_routes:
+        alt_route_ids = sorted([r["syndrome_id"] for r in alt_routes])
+
     # Build deterministic data structure
     route_data = {
         "evidences": present_evidence_ids,
         "syndromes": syndrome_ids,
+        "alt_routes": alt_route_ids,  # v2.6.0+
     }
 
     # Compute SHA256 hash
@@ -141,11 +150,17 @@ def analyze_cbc(cbc_data: Dict[str, Any]) -> Dict[str, Any]:
     # 5. Syndromes (35 syndromes, short-circuit on critical)
     syndromes = detect_syndromes(evidences, yaml_parser)
 
+    # 5b. All syndromes (for alt_routes - v2.6.0+)
+    all_syndromes = detect_all_syndromes(evidences, yaml_parser)
+
+    # 5c. Alternative routes (v2.6.0+)
+    alt_routes = generate_alt_routes(syndromes, all_syndromes, evidences, yaml_parser)
+
     # 6. Next Steps (40 triggers)
     next_steps_list = generate_next_steps(syndromes, evidences, normalized_cbc, yaml_parser)
 
-    # 7. Routing (deterministic hash)
-    route_id = compute_route_id(evidences, syndromes)
+    # 7. Routing (deterministic hash with alt_routes)
+    route_id = compute_route_id(evidences, syndromes, alt_routes)
 
     # 8. WORM Log (audit trail)
     log_to_worm(cbc_data, syndromes, evidences, route_id, yaml_parser)
@@ -154,8 +169,9 @@ def analyze_cbc(cbc_data: Dict[str, Any]) -> Dict[str, Any]:
     result = {
         "top_syndromes": [s.id for s in syndromes],
         "evidences_present": [e.id for e in evidences if e.status == "present"],
+        "alt_routes": alt_routes,  # v2.6.0+
         "route_id": route_id,
-        "version": "2.4.0",
+        "version": "2.6.0",  # Updated for alt_routes feature
         "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
         "next_steps": next_steps_list,
         "conversion_log": conversion_log,

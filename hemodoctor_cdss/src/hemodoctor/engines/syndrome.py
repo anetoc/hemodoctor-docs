@@ -327,3 +327,294 @@ def count_syndromes_by_criticality(
         criticality = syndrome.criticality
         counts[criticality] = counts.get(criticality, 0) + 1
     return counts
+
+
+def detect_all_syndromes(
+    evidences: List[EvidenceResult],
+    yaml_parser: YAMLParser
+) -> List[SyndromeResult]:
+    """
+    Detect ALL syndromes without precedence filtering.
+
+    Args:
+        evidences: List of evidence evaluation results (79 total)
+        yaml_parser: YAMLParser singleton instance
+
+    Returns:
+        List of ALL true syndromes (before precedence applied)
+
+    Note:
+        This function is used by generate_alt_routes() to find syndromes
+        that were excluded by precedence rules.
+
+    Example:
+        >>> # Case with both S-TMA (critical) and S-PTI (priority)
+        >>> evidences = [
+        ...     EvidenceResult(id="E-PLT-CRIT-LOW", status="present", strength="strong"),
+        ... ]
+        >>> all_syndromes = detect_all_syndromes(evidences, parser)
+        >>> # Returns both S-TMA and S-PTI (before precedence)
+    """
+    syndrome_defs = yaml_parser.get_all_syndrome_defs()
+
+    # Build set of present evidence IDs for fast lookup
+    present_ids = {e.id for e in evidences if e.status == "present"}
+
+    all_syndromes = []
+
+    # Evaluate ALL syndromes (no short-circuit)
+    for syndrome_def in syndrome_defs:
+        # Check if syndrome logic satisfied
+        if is_syndrome_present(syndrome_def, present_ids):
+            syndrome = SyndromeResult(
+                id=syndrome_def["id"],
+                criticality=syndrome_def["criticality"],
+                evidences=list(present_ids),  # All present evidences
+                actions=syndrome_def.get("actions", []),
+                next_steps=syndrome_def.get("next_steps", []),
+            )
+            all_syndromes.append(syndrome)
+
+    return all_syndromes
+
+
+def compute_alt_route_confidence(
+    syndrome: SyndromeResult,
+    evidences: List[EvidenceResult]
+) -> float:
+    """
+    Compute confidence score for alternative route.
+
+    Args:
+        syndrome: Syndrome result
+        evidences: List of evidence results
+
+    Returns:
+        float: Confidence score (0.0-1.0)
+
+    Logic:
+        - Start with base score: 1.0
+        - For each required evidence:
+            - strong: +0.0 (no penalty)
+            - moderate: -0.1
+            - weak: -0.2
+            - missing: -0.3
+        - Clamp to [0.0, 1.0]
+
+    Example:
+        >>> syndrome = SyndromeResult(id="S-PTI", criticality="priority", evidences=["E-PLT-LOW"])
+        >>> evidences = [
+        ...     EvidenceResult(id="E-PLT-LOW", status="present", strength="strong"),
+        ...     EvidenceResult(id="E-ISOLATED-THROMBO", status="present", strength="moderate"),
+        ... ]
+        >>> confidence = compute_alt_route_confidence(syndrome, evidences)
+        >>> confidence
+        0.9
+    """
+    # Build evidence lookup
+    evidence_map = {e.id: e for e in evidences}
+
+    # Start with base score
+    score = 1.0
+
+    # Get syndrome evidences (from combine logic)
+    syndrome_evidence_ids = syndrome.evidences
+
+    # Penalize based on evidence strength
+    for evidence_id in syndrome_evidence_ids:
+        evidence = evidence_map.get(evidence_id)
+
+        if not evidence or evidence.status != "present":
+            # Missing evidence: -0.3 penalty
+            score -= 0.3
+        elif evidence.strength == "moderate":
+            # Moderate evidence: -0.1 penalty
+            score -= 0.1
+        elif evidence.strength == "weak":
+            # Weak evidence: -0.2 penalty
+            score -= 0.2
+        # Strong evidence: no penalty
+
+    # Clamp to [0.0, 1.0]
+    return max(0.0, min(1.0, score))
+
+
+def determine_suppression_reason(
+    syndrome: SyndromeResult,
+    top_syndromes: List[SyndromeResult],
+    yaml_parser: YAMLParser
+) -> str:
+    """
+    Determine why syndrome was not selected (suppression reason).
+
+    Args:
+        syndrome: Alternative syndrome (not selected)
+        top_syndromes: Selected syndromes
+        yaml_parser: YAML parser instance
+
+    Returns:
+        str: Human-readable suppression reason
+
+    Taxonomy:
+        1. Precedence (Critical > Priority)
+        2. Precedence (Critical Order)
+        3. Precedence (Priority Order)
+        4. Conflict (Negative Pair)
+        5. Conflict (Soft)
+        6. Review Sample
+
+    Example:
+        >>> syndrome = SyndromeResult(id="S-PTI", criticality="priority", ...)
+        >>> top_syndromes = [SyndromeResult(id="S-TMA", criticality="critical", ...)]
+        >>> reason = determine_suppression_reason(syndrome, top_syndromes, parser)
+        >>> reason
+        'Precedence: S-TMA (critical) > S-PTI (priority)'
+    """
+    # Case 1: Review sample blocks all
+    if any(s.id == "S-REVIEW-SAMPLE" for s in top_syndromes):
+        return "Precedence: S-REVIEW-SAMPLE blocks all other results"
+
+    # Case 2: Critical > Priority
+    top_critical = [s for s in top_syndromes if s.criticality == "critical"]
+    if top_critical and syndrome.criticality != "critical":
+        top_id = top_critical[0].id
+        return f"Precedence: {top_id} (critical) > {syndrome.id} ({syndrome.criticality})"
+
+    # Case 3: Critical order (among critical syndromes)
+    if syndrome.criticality == "critical" and top_critical:
+        # Both are critical, precedence by order
+        top_id = top_critical[0].id
+        return f"Precedence: {top_id} (critical priority) > {syndrome.id} (critical)"
+
+    # Case 4: Priority order (severity_weight)
+    # Simplified: just say precedence by priority
+    if top_syndromes:
+        top_id = top_syndromes[0].id
+        return f"Precedence: {top_id} (higher priority) > {syndrome.id}"
+
+    # Default
+    return "Suppressed by precedence rules"
+
+
+def check_conflict(
+    syndrome: SyndromeResult,
+    top_syndromes: List[SyndromeResult],
+    yaml_parser: YAMLParser
+) -> Union[str, None]:
+    """
+    Check if syndrome conflicts with top syndromes.
+
+    Args:
+        syndrome: Alternative syndrome
+        top_syndromes: Selected syndromes
+        yaml_parser: YAML parser instance
+
+    Returns:
+        str or None: Syndrome ID it conflicts with, or None
+
+    Example:
+        >>> syndrome = SyndromeResult(id="S-PTI", ...)
+        >>> top_syndromes = [SyndromeResult(id="S-TMA", ...)]
+        >>> conflict = check_conflict(syndrome, top_syndromes, parser)
+        >>> conflict
+        'S-TMA'
+    """
+    # Conflict matrix (simplified - hardcoded for V0)
+    # In V1, this would load from 07_conflict_matrix_hybrid.yaml
+    CONFLICT_PAIRS = {
+        ("S-TMA", "S-PTI"),
+        ("S-PTI", "S-TMA"),
+        ("S-TMA", "S-THROMBOCITOSE"),
+        ("S-THROMBOCITOSE", "S-TMA"),
+        ("S-PSEUDO-THROMBO", "S-PLT-CRITICA"),
+        ("S-PLT-CRITICA", "S-PSEUDO-THROMBO"),
+        ("S-IDA", "S-ALFA-THAL"),
+        ("S-ALFA-THAL", "S-IDA"),
+        ("S-IDA", "S-ACD"),
+        ("S-ACD", "S-IDA"),
+        ("S-BETA-THAL", "S-ALFA-THAL"),
+        ("S-ALFA-THAL", "S-BETA-THAL"),
+        ("S-LEUCOEMOIDE", "S-CML"),
+        ("S-CML", "S-LEUCOEMOIDE"),
+    }
+
+    for top_syndrome in top_syndromes:
+        if (syndrome.id, top_syndrome.id) in CONFLICT_PAIRS:
+            return top_syndrome.id
+
+    return None
+
+
+def generate_alt_routes(
+    top_syndromes: List[SyndromeResult],
+    all_syndromes: List[SyndromeResult],
+    evidences: List[EvidenceResult],
+    yaml_parser: YAMLParser,
+    max_alt_routes: int = 10
+) -> List[Dict[str, Any]]:
+    """
+    Generate alternative routes from syndromes not selected.
+
+    Args:
+        top_syndromes: Selected syndromes (displayed to user)
+        all_syndromes: All true syndromes (before precedence)
+        evidences: Evidence results (for confidence scoring)
+        yaml_parser: YAML parser instance
+        max_alt_routes: Max number of alt_routes to return
+
+    Returns:
+        List of alt_route dicts, sorted by confidence
+
+    Example:
+        >>> top_syndromes = [SyndromeResult(id="S-TMA", criticality="critical", ...)]
+        >>> all_syndromes = [
+        ...     SyndromeResult(id="S-TMA", ...),
+        ...     SyndromeResult(id="S-PTI", ...)
+        ... ]
+        >>> alt_routes = generate_alt_routes(top_syndromes, all_syndromes, evidences, parser)
+        >>> alt_routes
+        [
+            {
+                "syndrome_id": "S-PTI",
+                "criticality": "priority",
+                "confidence": 0.75,
+                "suppression_reason": "Precedence: S-TMA (critical) > S-PTI (priority)",
+                "conflict_with": "S-TMA"
+            }
+        ]
+    """
+    top_ids = {s.id for s in top_syndromes}
+    alt_routes = []
+
+    for syndrome in all_syndromes:
+        if syndrome.id in top_ids:
+            continue  # Skip syndromes already in top
+
+        # Skip S-INCONCLUSIVO (fallback syndrome)
+        if syndrome.id == "S-INCONCLUSIVO":
+            continue
+
+        # Compute confidence
+        confidence = compute_alt_route_confidence(syndrome, evidences)
+
+        # Determine suppression reason
+        suppression_reason = determine_suppression_reason(
+            syndrome, top_syndromes, yaml_parser
+        )
+
+        # Check conflict
+        conflict_with = check_conflict(syndrome, top_syndromes, yaml_parser)
+
+        alt_routes.append({
+            "syndrome_id": syndrome.id,
+            "criticality": syndrome.criticality,
+            "confidence": confidence,
+            "suppression_reason": suppression_reason,
+            "conflict_with": conflict_with,
+        })
+
+    # Sort by confidence (highest first)
+    alt_routes.sort(key=lambda r: -r["confidence"])
+
+    # Limit to max
+    return alt_routes[:max_alt_routes]
