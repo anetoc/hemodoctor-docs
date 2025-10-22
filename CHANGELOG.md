@@ -8,9 +8,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [Não Lançado]
 
 ### Em Desenvolvimento
-- Fase B: Completar Módulo 07 (Pós-Mercado) - Procedimentos e Formulários
-- Preparação final para submissão ANVISA
+- Preparação final para submissão ANVISA (20/10/2025)
+- Sign-offs de diretores (Medical, RA, QA)
 - Regeneração de checksums SHA-256
+
+### Corrigido (22/10/2025)
+- ✅ **BUG-002**: Age boundary classification corrigida
+  - Alterado de intervalos semi-abertos [a,b) para inclusivos [a,b]
+  - Corrige 12 test failures e crash em 18 anos
+  - Pass rate melhorado: 68% → 81% (+13%)
+  - Justificativa clínica: 2 anos = Infant Late, 18 anos = Adolescent
+  - Rastreabilidade: SRS-001 §3.2.4, CLIN-VAL-001
+  - Todos os 7 bugs agora resolvidos (100%) 🎉
 
 ### Adicionado Recentemente (12/10/2025)
 - ✅ **Fase C (CEP)**: Documentação para submissão CEP 50% completa
