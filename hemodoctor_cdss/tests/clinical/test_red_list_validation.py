@@ -306,10 +306,11 @@ def test_critical_next_steps_present(case):
         f"   Syndrome: {case['expected_syndrome']}\n" \
         f"   Critical cases MUST have next steps!"
 
-    # Check that at least one next step is "urgent" level
-    urgent_steps = [step for step in next_steps if step.get("level") == "urgent"]
+    # Check that at least one next step is "critical" level
+    # BUG-017 FIX: YAML uses "critical" not "urgent" for level
+    critical_steps = [step for step in next_steps if step.get("level") == "critical"]
 
-    assert len(urgent_steps) > 0, \
-        f"No URGENT next steps for critical case {case['case_id']}\n" \
+    assert len(critical_steps) > 0, \
+        f"No CRITICAL next steps for critical case {case['case_id']}\n" \
         f"   Syndrome: {case['expected_syndrome']}\n" \
-        f"   Critical syndromes require urgent recommendations!"
+        f"   Critical syndromes require critical-level recommendations!"

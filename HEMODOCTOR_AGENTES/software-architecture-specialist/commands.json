@@ -1,0 +1,85 @@
+{
+  "commands": {
+    "/system-architecture": {
+      "description": "Documentar arquitetura completa do sistema (SDD-001)",
+      "usage": "/system-architecture [nivel] [componentes] [integrações]",
+      "examples": [
+        "/system-architecture completa microserviços LIS+FHIR",
+        "/system-architecture overview principais APIs"
+      ],
+      "output": "SDD-001 com diagramas, especificações e interfaces"
+    },
+    "/api-specification": {
+      "description": "Gerar especificação OpenAPI 3.0 completa",
+      "usage": "/api-specification [versão] [endpoints] [autenticação]",
+      "examples": [
+        "/api-specification v1.1 CBC-analysis OAuth2",
+        "/api-specification v2.0 completa FHIR+OAuth2"
+      ],
+      "output": "Documentação API com esquemas e exemplos"
+    },
+    "/database-design": {
+      "description": "Documentar design e esquema do banco de dados",
+      "usage": "/database-design [escopo] [tabelas] [performance]",
+      "examples": [
+        "/database-design completo hdoc_* otimizado",
+        "/database-design core pacientes+resultados"
+      ],
+      "output": "Modelo ER, DDL e estratégias de otimização"
+    },
+    "/security-architecture": {
+      "description": "Arquitetura de segurança e cibersegurança",
+      "usage": "/security-architecture [nivel] [controles] [compliance]",
+      "examples": [
+        "/security-architecture enterprise LGPD+HIPAA completo",
+        "/security-architecture core OAuth2+TLS básico"
+      ],
+      "output": "Especificação de segurança com controles implementados"
+    },
+    "/performance-specs": {
+      "description": "Especificações de performance e escalabilidade",
+      "usage": "/performance-specs [métricas] [carga] [SLA]",
+      "examples": [
+        "/performance-specs <2s 1000-users 99.9%",
+        "/performance-specs response-time load-test uptime"
+      ],
+      "output": "Requisitos de performance com benchmarks"
+    },
+    "/integration-design": {
+      "description": "Design de integrações externas (LIS, HIS, FHIR)",
+      "usage": "/integration-design [sistemas] [protocolos] [dados]",
+      "examples": [
+        "/integration-design LIS+HIS HL7-FHIR CBC-data",
+        "/integration-design terceiros REST-API estruturado"
+      ],
+      "output": "Especificações de integração e mapeamentos"
+    },
+    "/iec62304-compliance": {
+      "description": "Documentação para conformidade IEC 62304 Classe C",
+      "usage": "/iec62304-compliance [fase] [artefatos] [verificação]",
+      "examples": [
+        "/iec62304-compliance planejamento todos V&V",
+        "/iec62304-compliance implementação código testes"
+      ],
+      "output": "Documentação IEC 62304 com evidências de conformidade"
+    },
+    "/ai-architecture": {
+      "description": "Arquitetura específica para componentes AI/ML",
+      "usage": "/ai-architecture [modelos] [pipeline] [explicabilidade]",
+      "examples": [
+        "/ai-architecture CBC-models MLOps SHAP-values",
+        "/ai-architecture inferência serving monitoramento"
+      ],
+      "output": "Arquitetura AI/ML com governança e transparência"
+    },
+    "/deployment-strategy": {
+      "description": "Estratégia de implantação e CI/CD",
+      "usage": "/deployment-strategy [ambiente] [pipeline] [rollback]",
+      "examples": [
+        "/deployment-strategy produção blue-green automated-rollback",
+        "/deployment-strategy cloud CI-CD disaster-recovery"
+      ],
+      "output": "Plano de deployment com procedimentos operacionais"
+    }
+  }
+}

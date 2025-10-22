@@ -1,0 +1,38 @@
+# HemoDoctor CDSS - Dependencies
+# Generated: 2025-10-20
+# IEC 62304 Class C Compliance
+
+# Core
+python>=3.11
+pyyaml>=6.0.1
+pydantic>=2.5.0
+python-dateutil>=2.8.2
+
+# Safe Expression Evaluation (NEVER use eval())
+simpleeval>=0.9.13
+
+# API
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.6
+
+# WORM Log & Audit
+cryptography>=41.0.0  # HMAC-SHA256
+
+# Output Rendering
+jinja2>=3.1.3
+markdown>=3.5.0
+fhir.resources>=7.1.0  # FHIR R4
+
+# Testing
+pytest>=7.4.4
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.1
+
+# Code Quality
+black>=24.1.0
+mypy>=1.8.0
+ruff>=0.1.14
+
+# Development
+ipython>=8.20.0

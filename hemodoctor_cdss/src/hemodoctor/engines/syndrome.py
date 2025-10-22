@@ -180,6 +180,12 @@ def detect_syndromes(
     # Syndrome definitions are already sorted by precedence in YAML
     # (critical syndromes first, then priority, then review_sample, then routine)
     for syndrome_def in syndrome_defs:
+        # BUG-018 FIX: Short-circuit BEFORE evaluating non-critical syndromes
+        # (not after detecting them)
+        if found_critical and syndrome_def["criticality"] != "critical":
+            # We've collected all critical syndromes, now skip non-critical
+            break
+
         # Check if syndrome logic satisfied
         if is_syndrome_present(syndrome_def, present_ids):
             syndrome = SyndromeResult(
@@ -195,10 +201,6 @@ def detect_syndromes(
             if syndrome_def["criticality"] == "critical":
                 found_critical = True
                 # Don't break - continue evaluating other critical syndromes
-            elif found_critical:
-                # We've found at least one critical and now hit a non-critical
-                # Short-circuit here (don't evaluate lower-priority syndromes)
-                break
             elif syndrome_def.get("short_circuit"):
                 # Explicit short-circuit flag for non-critical syndromes
                 break
@@ -212,6 +214,36 @@ def detect_syndromes(
             actions=["Avaliar clinicamente (sintomas, comorbidades)"],
             next_steps=["Repetir CBC se indicação clínica"],
         ))
+
+    # BUG-017 FIX: Sort syndromes by clinical priority
+    # Critical syndromes are sorted by clinical urgency
+    # (CIVD, TMA, PLT-CRIT before others)
+    CRITICALITY_ORDER = {
+        "critical": 0,
+        "priority": 1,
+        "review_sample": 2,
+        "routine": 3
+    }
+
+    CRITICAL_PRIORITY = {
+        # Life-threatening (highest priority)
+        "S-CIVD": 0,
+        "S-TMA": 1,
+        "S-BLASTIC-SYNDROME": 2,  # BUG-019 FIX: Acute leukemia - extremely critical
+        "S-PLT-CRITICA": 3,
+        # Urgent but not immediately life-threatening
+        "S-NEUTROPENIA-GRAVE": 4,
+        "S-ANEMIA-GRAVE": 5,  # BUG-019 FIX: Severe but not as critical as blasts
+        "S-THROMBOCITOSE-CRIT": 6,
+        "S-NEUTROFILIA-LEFTSHIFT-CRIT": 7,
+    }
+
+    # Sort by: 1) criticality level, 2) critical priority, 3) syndrome ID (stable)
+    results.sort(key=lambda s: (
+        CRITICALITY_ORDER.get(s.criticality, 99),
+        CRITICAL_PRIORITY.get(s.id, 50),  # Critical syndromes by priority, others default to 50
+        s.id  # Stable sort for non-critical
+    ))
 
     return results
 

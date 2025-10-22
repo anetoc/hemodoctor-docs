@@ -1,0 +1,112 @@
+{
+  "commands": {
+    "/clinical-workflow-validation": {
+      "description": "Validar fluxogramas clínicos contra especificações técnicas",
+      "usage": "/clinical-workflow-validation [workflow] [population]",
+      "examples": [
+        "/clinical-workflow-validation anemia-investigation adulto+pediatrico",
+        "/clinical-workflow-validation leukocytosis-evaluation all-ages"
+      ],
+      "output": "FLOW-001 com validação completa dos workflows clínico-técnicos"
+    },
+    "/variable-clinical-mapping": {
+      "description": "Mapear e validar variáveis HDOC contra conhecimento clínico",
+      "usage": "/variable-clinical-mapping [scope] [validation]",
+      "examples": [
+        "/variable-clinical-mapping 63-variables complete-validation",
+        "/variable-clinical-mapping CBC-parameters clinical-evidence"
+      ],
+      "output": "VAR-001 com mapeamento clínico-técnico completo e validado"
+    },
+    "/reference-ranges-specification": {
+      "description": "Especificar valores de referência por população",
+      "usage": "/reference-ranges-specification [population] [standards]",
+      "examples": [
+        "/reference-ranges-specification adulto+pediatrico CLSI-guidelines",
+        "/reference-ranges-specification age-specific evidence-based"
+      ],
+      "output": "RANGE-001 com ranges completos por idade/sexo/etnia"
+    },
+    "/algorithm-clinical-review": {
+      "description": "Revisar algoritmos contra evidências clínicas",
+      "usage": "/algorithm-clinical-review [algorithms] [evidence]",
+      "examples": [
+        "/algorithm-clinical-review CBC-interpretation evidence-based",
+        "/algorithm-clinical-review decision-trees clinical-validation"
+      ],
+      "output": "ALGO-001 com validação clínica completa dos algoritmos"
+    },
+    "/api-routes-clinical-spec": {
+      "description": "Especificar rotas de API com contexto clínico completo",
+      "usage": "/api-routes-clinical-spec [endpoints] [integration]",
+      "examples": [
+        "/api-routes-clinical-spec CBC-analysis LIS-integration",
+        "/api-routes-clinical-spec clinical-endpoints FHIR-compliant"
+      ],
+      "output": "ROUTE-001 com especificações clínico-técnicas detalhadas"
+    },
+    "/data-dictionary-complete": {
+      "description": "Criar dicionário completo clínico-técnico padronizado",
+      "usage": "/data-dictionary-complete [variables] [standards]",
+      "examples": [
+        "/data-dictionary-complete hdoc-variables LOINC+SNOMED",
+        "/data-dictionary-complete CBC-parameters international-standards"
+      ],
+      "output": "DICT-001 com dicionário padronizado e mapeamentos"
+    },
+    "/clinical-equivalencies": {
+      "description": "Mapear equivalências entre sistemas e padrões",
+      "usage": "/clinical-equivalencies [mappings] [standards]",
+      "examples": [
+        "/clinical-equivalencies laboratory-codes HL7-FHIR",
+        "/clinical-equivalencies analyzer-results standardized-units"
+      ],
+      "output": "EQUIV-001 com mapeamentos e equivalências padronizadas"
+    },
+    "/database-schema-clinical": {
+      "description": "Validar schema de banco com necessidades clínicas",
+      "usage": "/database-schema-clinical [tables] [validation]",
+      "examples": [
+        "/database-schema-clinical hdoc-tables clinical-requirements",
+        "/database-schema-clinical complete-schema pediatric-expansion"
+      ],
+      "output": "Schema validado e otimizado para contexto clínico"
+    },
+    "/dev-team-guidance": {
+      "description": "Gerar orientações detalhadas para equipe de desenvolvimento",
+      "usage": "/dev-team-guidance [scope] [mvp-focus]",
+      "examples": [
+        "/dev-team-guidance complete-system MVP-priorities",
+        "/dev-team-guidance clinical-implementation step-by-step"
+      ],
+      "output": "Guia técnico detalhado com passos de implementação"
+    },
+    "/clinical-technical-bridge": {
+      "description": "Fazer ponte completa entre especificações clínicas e técnicas",
+      "usage": "/clinical-technical-bridge [integration] [traceability]",
+      "examples": [
+        "/clinical-technical-bridge workflows-algorithms complete-trace",
+        "/clinical-technical-bridge clinical-requirements technical-specs"
+      ],
+      "output": "HEMO-001 com integração clínico-técnica completa"
+    },
+    "/modification-requirements": {
+      "description": "Especificar modificações necessárias no sistema",
+      "usage": "/modification-requirements [changes] [clinical-impact]",
+      "examples": [
+        "/modification-requirements pediatric-expansion clinical-validation",
+        "/modification-requirements MVP-enhancements evidence-based"
+      ],
+      "output": "Lista detalhada de modificações com impacto clínico"
+    },
+    "/critical-values-setup": {
+      "description": "Configurar valores críticos e alertas clínicos",
+      "usage": "/critical-values-setup [parameters] [urgency-levels]",
+      "examples": [
+        "/critical-values-setup CBC-parameters age-specific",
+        "/critical-values-setup panic-values immediate-alert"
+      ],
+      "output": "Sistema de alertas críticos configurado clinicamente"
+    }
+  }
+}

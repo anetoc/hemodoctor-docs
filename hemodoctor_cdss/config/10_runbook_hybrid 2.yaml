@@ -1,0 +1,710 @@
+# 10_runbook_hybrid.yaml
+# Roadmap Técnico e Operacional - V0 → V1 → V2
+# Integração SADMH V2.3 + HemoDoctor Hybrid + Validação Externa
+# Versão: v2.3.1
+# Data: 2025-10-19
+# Plano de implementação para dev team
+
+version: runbook_hybrid_v2.3.1
+module: roadmap_operacional
+
+description: |
+  Roadmap técnico de 8-14 semanas para implementação completa do HemoDoctor Hybrid V1.0.
+  
+  **Fases:**
+  - **V0 (8 sem):** Determinístico puro (regras + precedence)
+  - **V1 (4 sem):** Calibração Platt + Confidence (C0/C1/C2)
+  - **V2 (4-6 sem):** ML/GNN explicável (opcional, roadmap futuro)
+  
+  **Pré-requisitos:**
+  - Time dev: 2 engenheiros backend + 1 QA
+  - Dados: 4.500 CBCs IDOR-SP + 500 ground truth adjudicados
+  - Infra: CI/CD, KMS, PostgreSQL (TimescaleDB), FHIR endpoint (opcional)
+
+# =============================================================================
+# SEÇÃO 1: V0 - DETERMINÍSTICO (8 SEMANAS)
+# =============================================================================
+v0_deterministic:
+  
+  goal: "Sistema totalmente funcional e seguro para ANVISA submission V1.0"
+  
+  timeline: "8 semanas (Sprint 0-4)"
+  
+  deliverables:
+    - "Motor de regras (34 síndromes, 75 evidências)"
+    - "Pipeline completo (normalização → card final)"
+    - "Red List validation (FN críticos = 0)"
+    - "Retrospectiva 500 casos (sens/spec/abstenção)"
+    - "WORM log + auditoria"
+    - "Documentação técnica + IFU draft"
+  
+  # ---------------------------------------------------------------------------
+  # SPRINT 0: Setup (1 semana)
+  # ---------------------------------------------------------------------------
+  sprint_0:
+    name: "Setup e Parser"
+    duration: "1 semana"
+    
+    tasks:
+      - task: "Repo setup (Git, CI/CD, pre-commit hooks)"
+        assignee: "eng-1"
+        estimated_hours: 8
+      
+      - task: "Parser CSV/HL7 (ingestão canônica)"
+        assignee: "eng-1"
+        estimated_hours: 16
+        details: |
+          - Suportar CSV (delimitadores: , | ;)
+          - Suportar HL7 v2.x (ORU^R01 messages)
+          - Mapear campos para schema 01_schema_hybrid.yaml
+          - Validar tipos e ranges
+      
+      - task: "Normalização de unidades (00_config_hybrid.yaml)"
+        assignee: "eng-2"
+        estimated_hours: 16
+        details: |
+          - Converter g/L → g/dL (se mediana > 50)
+          - Converter mmol/L → g/dL para Hb (×1.61)
+          - Converter /µL → ×10^9/L (se mediana > 1000)
+          - Converter % → absoluto para ht/rdw
+      
+      - task: "Bateria sintética (50 casos teste)"
+        assignee: "qa"
+        estimated_hours: 8
+        details: "Gerar 50 casos cobrindo todas as 34 síndromes"
+    
+    milestone: "✅ Parser + normalização funcionais"
+  
+  # ---------------------------------------------------------------------------
+  # SPRINT 1: Evidências + Síndromes (2 semanas)
+  # ---------------------------------------------------------------------------
+  sprint_1:
+    name: "Evidências + Síndromes (core engine)"
+    duration: "2 semanas"
+    
+    tasks:
+      - task: "Implementar módulo 02 (evidências - 75 regras)"
+        assignee: "eng-1 + eng-2"
+        estimated_hours: 40
+        details: |
+          - Parser YAML 02_evidence_hybrid.yaml
+          - Avaliador de regras seguro (simpleeval ou AST)
+          - Testes unitários (bordas ±ε para cada regra)
+      
+      - task: "Implementar módulo 03 (síndromes - 34)"
+        assignee: "eng-1 + eng-2"
+        estimated_hours: 40
+        details: |
+          - Parser YAML 03_syndromes_hybrid.yaml
+          - DAG de fusão (ALL/ANY/NEGATIVE logic)
+          - Short-circuit para críticos (ordem rígida)
+          - Testes unitários (cada síndrome isolada)
+      
+      - task: "Integração evidências → síndromes"
+        assignee: "eng-1"
+        estimated_hours: 16
+        details: "Pipeline completo: CBC → evidências → síndromes → log"
+      
+      - task: "Testes integração (pipeline E2E)"
+        assignee: "qa"
+        estimated_hours: 16
+        details: "50 casos sintéticos + 50 casos reais (subset IDOR)"
+    
+    milestone: "✅ Engine V0 funcional (evidências + síndromes)"
+  
+  # ---------------------------------------------------------------------------
+  # SPRINT 2: Missingness + Next_Steps + Output (2 semanas)
+  # ---------------------------------------------------------------------------
+  sprint_2:
+    name: "Missingness + Next_Steps + Output Policies"
+    duration: "2 semanas"
+    
+    tasks:
+      - task: "Implementar módulo 05 (missingness V2.3)"
+        assignee: "eng-2"
+        estimated_hours: 32
+        details: |
+          - Global policy (>30% missing → C0)
+          - Policies específicas (26 síndromes)
+          - Proxy logic (inferências seguras)
+          - Guaranteed output (6 níveis de fallback)
+          - Borderline rules (8 cenários)
+      
+      - task: "Implementar módulo 09 (next_steps_engine)"
+        assignee: "eng-1"
+        estimated_hours: 32
+        details: |
+          - Parser YAML 09_next_steps_engine_hybrid.yaml
+          - Triggers (34 síndromes → próximos passos)
+          - Priorização (level, cost, turnaround)
+          - Dedupe (mesmo teste por múltiplos triggers)
+          - Max 8 itens
+      
+      - task: "Implementar módulo 12 (output_policies)"
+        assignee: "eng-1 + eng-2"
+        estimated_hours: 24
+        details: |
+          - Seleção de card (hierarquia 6 níveis)
+          - Templates (critical, priority, routine, review_sample, borderline, c0_guidance)
+          - Render multi-formato (markdown, HTML, JSON, FHIR R4)
+          - Integração com módulos 05 (missingness) e 09 (next_steps)
+      
+      - task: "Testes integração (pipeline completo)"
+        assignee: "qa"
+        estimated_hours: 16
+        details: "100 casos (sintéticos + reais) verificando always-output"
+    
+    milestone: "✅ Pipeline completo V0 (normalização → card final)"
+  
+  # ---------------------------------------------------------------------------
+  # SPRINT 3: Auditoria + WORM Log (1 semana)
+  # ---------------------------------------------------------------------------
+  sprint_3:
+    name: "Auditoria (WORM log + Route Policy + Conflict Matrix)"
+    duration: "1 semana"
+    
+    tasks:
+      - task: "Implementar módulo 06 (route_policy)"
+        assignee: "eng-1"
+        estimated_hours: 16
+        details: |
+          - Precedence (9 críticos, severity_weight)
+          - Route_id = SHA256(evidences + syndromes + output_class + confidence)
+          - Alt_routes preservation
+      
+      - task: "Implementar módulo 07 (conflict_matrix)"
+        assignee: "eng-2"
+        estimated_hours: 16
+        details: |
+          - Negative pairs (12 pares)
+          - Soft conflicts (4 pares)
+          - Resolução por precedence (V0)
+          - Logging de conflitos no WORM
+      
+      - task: "Implementar módulo 08 (wormlog)"
+        assignee: "eng-1"
+        estimated_hours: 24
+        details: |
+          - JSONL append-only
+          - Segmenting diário
+          - HMAC-SHA256 (KMS-backed key)
+          - Hash chaining
+          - Retention 90d + purge automatizada
+      
+      - task: "Testes auditoria"
+        assignee: "qa"
+        estimated_hours: 8
+        details: "Verificar HMAC, chaining, append-only enforcement"
+    
+    milestone: "✅ Auditoria completa (WORM log + route_id + conflicts)"
+  
+  # ---------------------------------------------------------------------------
+  # SPRINT 4: Validação Red List + Retrospectiva (2 semanas)
+  # ---------------------------------------------------------------------------
+  sprint_4:
+    name: "Validação (Red List + Retrospectiva)"
+    duration: "2 semanas"
+    
+    tasks:
+      - task: "Red List validation (FN críticos = 0)"
+        assignee: "qa + hematologista"
+        estimated_hours: 40
+        details: |
+          **Red List (240 casos mínimo):**
+          - TMA/TTP: 40 casos
+          - Blástica (LMA/LLA): 40 casos
+          - Neutropenia grave (<0.5): 40 casos
+          - PLT crítica (<20): 40 casos
+          - CIVD: 40 casos
+          - Pseudo-trombocitopenia: 40 casos
+          
+          **Critério:** FN = 0 (sensibilidade 100% para críticos)
+          **Método:** Ground truth por adjudicação cega
+      
+      - task: "Retrospectiva geral (500 casos IDOR-SP)"
+        assignee: "qa + hematologista"
+        estimated_hours: 40
+        details: |
+          **Métricas:**
+          - Sensibilidade críticos: target ≥99%
+          - Especificidade global: target ≥80%
+          - Alert burden: target <20% (< 200/1000 casos)
+          - Taxa abstenção C0: target <10%
+          - FN críticos: 0 (obrigatório)
+          
+          **Subgrupos:**
+          - Por sexo (M/F)
+          - Por faixa etária (pediátrico, adulto, idoso)
+      
+      - task: "Ajustes finais (se falhas)"
+        assignee: "eng-1 + eng-2"
+        estimated_hours: 32
+        details: "Tuning de cutoffs/thresholds se FN críticos ou sens <99%"
+      
+      - task: "Documentação técnica + IFU draft"
+        assignee: "dr_abel + eng-1"
+        estimated_hours: 24
+        details: "TEC-001, SRS-001 update, IFU-001 draft"
+    
+    milestone: "✅ V0 validado (FN=0 críticos, sens≥99%, spec≥80%)"
+
+# =============================================================================
+# SEÇÃO 2: V1 - CALIBRAÇÃO (4 SEMANAS PÓS-V0)
+# =============================================================================
+v1_calibration:
+  
+  goal: "Adicionar confiança probabilística (C0/C1/C2) com Platt scaling"
+  
+  timeline: "4 semanas pós-V0"
+  
+  deliverables:
+    - "Platt calibration sobre scores V0"
+    - "Confidence mapping (C0/C1/C2) com explicações"
+    - "ECE (Expected Calibration Error) <0.05"
+    - "Validação retrospectiva atualizada"
+    - "IFU update (confidence levels)"
+  
+  # ---------------------------------------------------------------------------
+  # SPRINT 5: Platt Scaling (2 semanas)
+  # ---------------------------------------------------------------------------
+  sprint_5:
+    name: "Platt Scaling + Confidence Mapping"
+    duration: "2 semanas"
+    
+    tasks:
+      - task: "Coletar scores V0 (retrospectiva 500 casos)"
+        assignee: "qa"
+        estimated_hours: 8
+        details: |
+          Para cada síndrome, coletar:
+          - Raw score V0 (0.0-1.0)
+          - Ground truth (0 ou 1)
+          - Outcome real (adjudicação clínica)
+      
+      - task: "Treinar Platt scaling (Logistic Regression)"
+        assignee: "eng-1"
+        estimated_hours: 16
+        details: |
+          # Pseudocódigo
+          from sklearn.linear_model import LogisticRegression
+          
+          # Para cada síndrome
+          X = raw_scores_v0[:, np.newaxis]
+          y = ground_truth
+          
+          platt = LogisticRegression(C=1e5)  # Minimal regularization
+          platt.fit(X, y)
+          
+          prob_calibrated = platt.predict_proba(X)[:, 1]
+      
+      - task: "Mapear prob → C0/C1/C2"
+        assignee: "eng-2"
+        estimated_hours: 16
+        details: |
+          **Thresholds (a definir na validação):**
+          - C2 (alta confiança): prob ≥ 0.80
+          - C1 (evidência parcial): prob ≥ 0.60
+          - C0 (inconclusivo): prob < 0.60
+          
+          **Validar com calibration curves**
+      
+      - task: "Calcular ECE (Expected Calibration Error)"
+        assignee: "qa"
+        estimated_hours: 8
+        details: |
+          ECE = mean(|prob_predicted - accuracy_observed| per bin)
+          Target: ECE < 0.05
+      
+      - task: "Update módulo 05 (missingness) com C0/C1/C2"
+        assignee: "eng-1 + eng-2"
+        estimated_hours: 24
+        details: "Integrar Platt probs no cálculo de confidence"
+    
+    milestone: "✅ V1 com Platt calibration (ECE <0.05)"
+  
+  # ---------------------------------------------------------------------------
+  # SPRINT 6: Validação V1 (2 semanas)
+  # ---------------------------------------------------------------------------
+  sprint_6:
+    name: "Validação V1 + IFU Update"
+    duration: "2 semanas"
+    
+    tasks:
+      - task: "Retrospectiva V1 (500 casos)"
+        assignee: "qa + hematologista"
+        estimated_hours: 32
+        details: |
+          **Métricas adicionais V1:**
+          - Calibration curves (reliability diagram)
+          - ECE por síndrome
+          - Distribuição de C0/C1/C2
+          - Taxa de upgrade/downgrade vs V0
+      
+      - task: "A/B test V0 vs V1 (se possível)"
+        assignee: "qa"
+        estimated_hours: 16
+        details: "Comparar decisões clínicas: V0 (determinístico) vs V1 (calibrado)"
+      
+      - task: "Update IFU (confidence levels)"
+        assignee: "dr_abel + eng-1"
+        estimated_hours: 16
+        details: "IFU-001 §4: Interpretar C0/C1/C2 com exemplos clínicos"
+      
+      - task: "Documentação V1"
+        assignee: "eng-1"
+        estimated_hours: 8
+        details: "TEC-001 update (Platt scaling + calibration curves)"
+    
+    milestone: "✅ V1 validado (ECE <0.05, calibração robusta)"
+
+# =============================================================================
+# SEÇÃO 3: V2 - ML/GNN EXPLICÁVEL (4-6 SEMANAS, ROADMAP FUTURO)
+# =============================================================================
+v2_ml_gnn:
+  
+  goal: "Adicionar ML/GNN explicável para ranqueamento e refinamento de confiança"
+  
+  timeline: "4-6 semanas pós-V1 (roadmap futuro)"
+  
+  philosophy: |
+    ML/GNN NUNCA substitui regras críticas (safety by design).
+    Apenas refina ranking e confiança para síndromes de priority.
+  
+  deliverables:
+    - "Modelo ML explicável (logística monotônica ou árvore)"
+    - "GNN para fusão de evidências (attention weights)"
+    - "Explainability: SHAP/LIME + saliency maps"
+    - "Fairness audit (sem viés por raça/etnia)"
+    - "Drift monitoring (KL divergence)"
+    - "Validação prospectiva"
+  
+  # ---------------------------------------------------------------------------
+  # SPRINT 7-8: ML Explicável (3 semanas)
+  # ---------------------------------------------------------------------------
+  sprint_7_8:
+    name: "ML Explicável (Logística/Árvore + GNN)"
+    duration: "3 semanas"
+    
+    tasks:
+      - task: "Feature engineering (evidências → features)"
+        assignee: "eng-1"
+        estimated_hours: 24
+        details: |
+          **Features:**
+          - Evidências disparadas (binary 0/1)
+          - Valores numéricos normalizados
+          - Morfologia (triestado → one-hot)
+          - Idade/sexo (normalized)
+      
+      - task: "Treinar logística monotônica"
+        assignee: "eng-1"
+        estimated_hours: 24
+        details: |
+          **Monotonic constraints:**
+          - Hb ↓ → score anemia ↑
+          - PLT ↓ → score trombocitopenia ↑
+          - Garantir interpretabilidade clínica
+      
+      - task: "Treinar GNN (Graph Neural Network)"
+        assignee: "eng-2"
+        estimated_hours: 40
+        details: |
+          **Graph structure:**
+          - Nodes: evidências + síndromes
+          - Edges: evidência → síndrome (se regra disparada)
+          - Message passing: agregar evidências por síndrome
+          - Output: score refinado por síndrome
+          
+          **Explainability:**
+          - Attention weights nas arestas
+          - Saliency maps (quais evidências mais contribuíram)
+      
+      - task: "Integração ML → V0/V1 pipeline"
+        assignee: "eng-1 + eng-2"
+        estimated_hours: 24
+        details: |
+          **Workflow:**
+          1. V0/V1 gera decisão base (regras + Platt)
+          2. ML/GNN refina scores (apenas priorities)
+          3. Críticos NUNCA afetados por ML
+          4. Feature flags para enable/disable ML
+          5. Kill switch se drift detectado
+      
+      - task: "Explainability (SHAP/LIME)"
+        assignee: "eng-2"
+        estimated_hours: 16
+        details: |
+          **Por caso:**
+          - SHAP values (contribuição de cada feature)
+          - LIME (interpretação local)
+          - Saliency map (evidências mais importantes)
+    
+    milestone: "✅ ML/GNN explicável integrado (feature flags)"
+  
+  # ---------------------------------------------------------------------------
+  # SPRINT 9: Validação V2 + Fairness (2 semanas)
+  # ---------------------------------------------------------------------------
+  sprint_9:
+    name: "Validação V2 + Fairness Audit"
+    duration: "2 semanas"
+    
+    tasks:
+      - task: "Retrospectiva V2 (500 casos)"
+        assignee: "qa + hematologista"
+        estimated_hours: 32
+        details: |
+          **Métricas:**
+          - Sensibilidade/especificidade vs V1
+          - Alert burden (deve manter ou reduzir)
+          - Drift monitoring (baseline KL divergence)
+          - Explainability check (SHAP/LIME por 100 casos)
+      
+      - task: "Fairness audit"
+        assignee: "qa + external_auditor"
+        estimated_hours: 24
+        details: |
+          **Verificar:**
+          - Sem viés por sexo (M/F)
+          - Sem viés por faixa etária (pediátrico/adulto/idoso)
+          - Sem viés por etnia (se disponível, mas NÃO usar no modelo)
+          - Duffy-null exception: campo opcional `duffy_null_known` (boolean)
+      
+      - task: "Prospective pilot (100 casos novos)"
+        assignee: "qa + hematologista"
+        estimated_hours: 40
+        details: "Validação prospectiva com 100 casos novos (fora do treino)"
+      
+      - task: "Documentação V2"
+        assignee: "dr_abel + eng-1"
+        estimated_hours: 24
+        details: "TEC-001 update (ML/GNN + explainability + fairness)"
+    
+    milestone: "✅ V2 validado (ML seguro, explicável, fair)"
+
+# =============================================================================
+# SEÇÃO 4: OPERATIONAL READINESS (PARALELO COM V0/V1)
+# =============================================================================
+operational_readiness:
+  
+  description: "Tarefas operacionais em paralelo com development"
+  
+  tasks:
+    - task: "Deploy CI/CD (GitHub Actions / GitLab CI)"
+      assignee: "eng-1"
+      estimated_hours: 16
+      details: |
+        **Pipeline:**
+        - Linting (flake8, black, mypy)
+        - Unit tests (pytest)
+        - Integration tests
+        - Security scan (Snyk, Trivy)
+        - Build Docker image
+        - Deploy staging
+    
+    - task: "Setup KMS (AWS/Azure/GCP)"
+      assignee: "eng-2"
+      estimated_hours: 8
+      details: "Key para HMAC (WORM log) + key rotation policy"
+    
+    - task: "Setup PostgreSQL (TimescaleDB)"
+      assignee: "eng-1"
+      estimated_hours: 16
+      details: |
+        **Schema:**
+        - cases table (metadata + canonical_inputs)
+        - decisions table (route_id + syndromes + confidence)
+        - pending_orders table (next_steps tracking)
+        - case_state table (state machine)
+    
+    - task: "Setup FHIR endpoint (opcional)"
+      assignee: "eng-2"
+      estimated_hours: 24
+      details: |
+        **Resources:**
+        - DiagnosticReport (card final)
+        - Observation (CBC analitos)
+        - ServiceRequest (next_steps)
+    
+    - task: "Monitoring + Alerting (Prometheus + Grafana)"
+      assignee: "eng-1"
+      estimated_hours: 16
+      details: |
+        **KPIs:**
+        - Throughput (casos/hora)
+        - Latency P50/P95/P99
+        - FN/FP críticos (alerta se >0)
+        - Alert burden (alerta se >20%)
+        - Drift (KL divergence vs baseline)
+    
+    - task: "Backup + Disaster Recovery"
+      assignee: "eng-2"
+      estimated_hours: 16
+      details: |
+        **Backup:**
+        - WORM log: S3/GCS/Azure Blob (immutable buckets)
+        - PostgreSQL: daily snapshots + PITR
+        - YAMLs: Git + tags
+        
+        **RTO/RPO:**
+        - RTO: <4h (Recovery Time Objective)
+        - RPO: <1h (Recovery Point Objective)
+
+# =============================================================================
+# SEÇÃO 4B: CALIBRATION, RED LIST, CI ACCEPTANCE (v2.3.1)
+# =============================================================================
+
+calibration:
+  method: "isotonic_or_platt"
+  
+  # NOVO v2.3.1 — Toolchain sem scikit-learn
+  toolchain:
+    logistic_platt: "torch.nn (sigmoid) com validação hold-out"
+    isotonic: "piecewise monotônica implementada em numpy; fallback: sympy para ajustes"
+  
+  targets:
+    ece_max: 0.05    # Expected Calibration Error máximo
+    bins: 10          # Bins para calibração
+  
+  guardrails:
+    - "Não reduzir sensibilidade crítica vs baseline em nenhum sprint"
+
+red_list:
+  description: "Casos críticos obrigatórios (FN=0)"
+  
+  # NOVO v2.3.1 — Expandido
+  expand:
+    - "TMA (PLT<10 + esquistócitos ≥1%)"
+    - "Neutropenia grave (ANC<0.5)"
+    - "Blastic syndrome (WBC>100 + blastos)"
+    - "PLT crítica (<10)"
+    - "Anemia grave (Hb<6.5)"
+    - "Neutrofilia/left-shift crítico (WBC>11 + ANC>10)"
+    - "Thrombocitose crítica (PLT>1000)"
+    - "CIVD (D-dímero >500 + fibrinogênio <150)"
+    - "APL suspeita (promielócitos + coagulopatia)"
+    - "pseudo-trombocitopenia (citratado)"  # NOVO
+
+ci_acceptance:
+  description: "Critérios de aceitação para merge de PRs"
+  
+  # NOVO v2.3.1 — Expandido
+  criteria:
+    - "Zero FN em casos críticos de validação"
+    - "Sensibilidade crítica ≥95%"
+    - "Especificidade ≥80%"
+    - "Alert burden <50/1000 casos"
+    - "Sem regressão de FN críticos após merges"  # NOVO
+    - "ECE <0.05 (se calibração ativa)"
+    - "Todos os testes unitários passando"
+
+# =============================================================================
+# SEÇÃO 5: DEPENDENCIES E PRE-REQUISITOS
+# =============================================================================
+dependencies:
+  
+  team:
+    - role: "Backend Engineer 1"
+      skills: ["Python", "FastAPI", "PostgreSQL", "Docker"]
+      allocation: "full-time (12 sem)"
+    
+    - role: "Backend Engineer 2"
+      skills: ["Python", "ML/PyTorch", "YAML", "Security"]
+      allocation: "full-time (12 sem)"
+    
+    - role: "QA Engineer"
+      skills: ["Pytest", "Clinical validation", "Metrics"]
+      allocation: "full-time (12 sem)"
+    
+    - role: "Hematologista (Dr. Abel)"
+      skills: ["Ground truth adjudication", "Clinical review"]
+      allocation: "part-time (10h/semana)"
+    
+    - role: "External Auditor (optional V2)"
+      skills: ["Fairness audit", "Regulatory compliance"]
+      allocation: "1 week (Sprint 9)"
+  
+  data:
+    - "4.500 CBCs reais (IDOR-SP retrospective)"
+    - "500 casos ground truth adjudicados (cega)"
+    - "240 casos Red List (40 por síndrome crítica)"
+    - "100 casos prospective pilot (V2)"
+  
+  infra:
+    - "Git repository (GitHub/GitLab)"
+    - "CI/CD pipeline (GitHub Actions/GitLab CI)"
+    - "PostgreSQL/TimescaleDB (8GB RAM, 100GB storage)"
+    - "KMS (AWS/Azure/GCP)"
+    - "S3/GCS/Azure Blob (WORM log backup)"
+    - "Docker registry"
+    - "Staging + Production environments"
+
+# =============================================================================
+# SEÇÃO 6: RISKS E MITIGATIONS
+# =============================================================================
+risks:
+  
+  - risk: "FN críticos >0 na Red List"
+    severity: "critical"
+    likelihood: "medium"
+    mitigation: |
+      - Tuning agressivo de cutoffs críticos
+      - Adjudicação cega por 2 hematologistas (desempate)
+      - Adicionar casos limítrofes ao Red List
+      - Sprint 4 extra (2 sem) se necessário
+  
+  - risk: "Alert burden >20% (alert fatigue)"
+    severity: "high"
+    likelihood: "medium"
+    mitigation: |
+      - Ajustar severity_weights (módulo 06)
+      - Refinar borderline rules (módulo 05)
+      - V1 calibration reduz FP (Platt scaling)
+  
+  - risk: "Drift em produção (performance degradation)"
+    severity: "high"
+    likelihood: "low"
+    mitigation: |
+      - Monitoring de KL divergence vs baseline
+      - Alert automático se KL >0.15
+      - Kill switch para ML/GNN (V2)
+      - Re-calibration trimestral (Platt)
+  
+  - risk: "Key rotation failure (WORM log HMAC)"
+    severity: "medium"
+    likelihood: "low"
+    mitigation: |
+      - Overlap de 30 dias (keys antigas válidas para leitura)
+      - Automação de rotation (script + CI/CD)
+      - Backup de keys em cold storage
+
+# =============================================================================
+# SEÇÃO 7: METADATA
+# =============================================================================
+metadata:
+  version: "v1.0.0"
+  module: "runbook"
+  
+  timeline_total: "12-14 semanas"
+  phases:
+    V0: "8 semanas (determinístico)"
+    V1: "4 semanas (calibração)"
+    V2: "4-6 semanas (ML/GNN, roadmap futuro)"
+  
+  team_size: "3 (2 eng + 1 qa) + Dr. Abel (part-time)"
+  estimated_cost: "~$100k (12 sem × 3 FTE × $2.5k/semana)"
+
+notes: |
+  - V0 é MVP obrigatório para ANVISA (determinístico, FN=0 críticos)
+  - V1 adiciona valor clínico (confiança calibrada C0/C1/C2)
+  - V2 é opcional, mas recomendado para reduzir alert burden
+  - Red List validation é gate crítico (FN críticos = 0)
+  - Retrospectiva 500 casos valida performance geral
+  - WORM log + auditoria são mandatórios (ISO 13485, ANVISA)
+  - CI/CD + monitoring + backup são best practices operacionais
+  - Key rotation policy: anual (KMS)
+  - Retention policy: 90d (LGPD)
+
+# =============================================================================
+# FIM DO ARQUIVO
+# =============================================================================
+

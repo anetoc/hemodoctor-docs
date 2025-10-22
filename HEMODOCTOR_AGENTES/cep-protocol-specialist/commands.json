@@ -1,0 +1,54 @@
+{
+  "commands": {
+    "/protocol-create": {
+      "description": "Criar protocolo completo CEP (PROJ-001)",
+      "usage": "/protocol-create [study-type] [population]",
+      "output": "PROJ-001 completo conforme CNS 466/2012"
+    },
+    "/tcle-create": {
+      "description": "Criar Termo de Consentimento (TCLE)",
+      "usage": "/tcle-create [adult|pediatric]",
+      "output": "TCLE linguagem acessível (8ª série)"
+    },
+    "/opt-out-justification": {
+      "description": "Justificativa para modelo OPT-OUT",
+      "usage": "/opt-out-justification [study-risk]",
+      "output": "Justificativa ética, legal, operacional"
+    },
+    "/crf-design": {
+      "description": "Design de CRFs REDCap",
+      "usage": "/crf-design [variables]",
+      "output": "5+ CRFs prontos para REDCap"
+    },
+    "/dpia-create": {
+      "description": "DPIA (Data Protection Impact Assessment)",
+      "usage": "/dpia-create [data-types]",
+      "output": "DPIA completo conforme LGPD"
+    },
+    "/institutional-approvals": {
+      "description": "Preparar cartas de anuência",
+      "usage": "/institutional-approvals [sites]",
+      "output": "Templates para 5 sites"
+    },
+    "/plataforma-brasil": {
+      "description": "Checklist Plataforma Brasil",
+      "usage": "/plataforma-brasil",
+      "output": "50+ itens verificados para submissão"
+    },
+    "/cep-submission-package": {
+      "description": "Pacote completo submissão CEP",
+      "usage": "/cep-submission-package",
+      "output": "27+ documentos prontos"
+    },
+    "/tale-create": {
+      "description": "Criar TALE (Termo Assentimento Pediátrico)",
+      "usage": "/tale-create [age-group]",
+      "output": "TALE adaptado por faixa etária"
+    },
+    "/cep-response": {
+      "description": "Responder parecer CEP/CONEP",
+      "usage": "/cep-response [parecer-id]",
+      "output": "Resposta completa a pendências"
+    }
+  }
+}

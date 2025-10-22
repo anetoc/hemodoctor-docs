@@ -1,0 +1,85 @@
+{
+  "commands": {
+    "/clinical-protocol": {
+      "description": "Gerar protocolo de validação clínica completo",
+      "usage": "/clinical-protocol [população] [N-amostral] [sites]",
+      "examples": [
+        "/clinical-protocol adulto 1800 5-sites",
+        "/clinical-protocol pediatrico 1200 4-sites-especializados"
+      ],
+      "output": "Protocolo clínico com metodologia, endpoints, análise estatística"
+    },
+    "/sample-size": {
+      "description": "Calcular tamanho amostral necessário",
+      "usage": "/sample-size [sensibilidade] [especificidade] [poder] [alfa]",
+      "examples": [
+        "/sample-size 0.94 0.96 0.80 0.05",
+        "/sample-size 0.90 0.95 0.80 0.05"
+      ],
+      "output": "Cálculo de N com justificativa estatística"
+    },
+    "/endpoints-definition": {
+      "description": "Definir endpoints primários e secundários",
+      "usage": "/endpoints-definition [tipo-estudo] [população] [dispositivo]",
+      "examples": [
+        "/endpoints-definition diagnostic-accuracy adulto CDSS",
+        "/endpoints-definition performance-validation pediatrico software-medico"
+      ],
+      "output": "Endpoints com critérios de sucesso e métodos de análise"
+    },
+    "/statistical-plan": {
+      "description": "Gerar plano de análise estatística (SAP)",
+      "usage": "/statistical-plan [design] [endpoints] [população]",
+      "examples": [
+        "/statistical-plan prospectivo accuracy adulto+pediatrico",
+        "/statistical-plan multicêntrico performance geral"
+      ],
+      "output": "SAP completo com métodos estatísticos e critérios"
+    },
+    "/clinical-sites": {
+      "description": "Estratégia e seleção de sites clínicos",
+      "usage": "/clinical-sites [região] [especialidade] [N-pacientes]",
+      "examples": [
+        "/clinical-sites brasil hematologia 3000",
+        "/clinical-sites sudeste pediatria 1200"
+      ],
+      "output": "Lista de sites com capacidade e cronograma"
+    },
+    "/crf-design": {
+      "description": "Criar formulários de coleta de dados (CRF)",
+      "usage": "/crf-design [tipo-dados] [população] [endpoints]",
+      "examples": [
+        "/crf-design CBC-completo adulto accuracy",
+        "/crf-design hematologia-pediatrica criança safety+efficacy"
+      ],
+      "output": "CRFs estruturados para coleta de dados clínicos"
+    },
+    "/interim-analysis": {
+      "description": "Planejar análise interina do estudo",
+      "usage": "/interim-analysis [percentual] [critérios] [objetivos]",
+      "examples": [
+        "/interim-analysis 50% safety-only blinded",
+        "/interim-analysis 75% futility+efficacy conditional"
+      ],
+      "output": "Plano de análise interina com critérios de parada"
+    },
+    "/clinical-report": {
+      "description": "Gerar Clinical Study Report (CSR)",
+      "usage": "/clinical-report [população] [resultados] [conclusões]",
+      "examples": [
+        "/clinical-report adulto sens-94.3% aprovado",
+        "/clinical-report pediatrico eficácia-comprovada submit"
+      ],
+      "output": "CSR completo para submissão regulatória"
+    },
+    "/real-world-evidence": {
+      "description": "Estratégia para coleta de evidências do mundo real",
+      "usage": "/real-world-evidence [fonte-dados] [métricas] [prazo]",
+      "examples": [
+        "/real-world-evidence LIS-data performance 12-meses",
+        "/real-world-evidence hospital-usage satisfaction continuo"
+      ],
+      "output": "Plano RWE com fontes de dados e análises"
+    }
+  }
+}

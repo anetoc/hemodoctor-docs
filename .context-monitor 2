@@ -1,0 +1,26 @@
+# 🎯 CONTEXT MONITOR - Auto-Compact Configuration
+
+## Configuração
+- Limite Total: 200,000 tokens
+- Threshold Auto-Compact: 10% (20,000 tokens restantes)
+- Status Atual: ATIVO ✅
+
+## Regras
+1. Quando contexto < 20,000 tokens → AVISAR imediatamente
+2. Sugerir /compact para liberar contexto
+3. Salvar progresso em PROGRESS.md antes de compact
+
+## Ações ao Atingir Threshold
+1. 🚨 Avisar usuário: "Contexto em 10% - Auto-compact recomendado"
+2. Listar arquivos em memória mais pesados
+3. Sugerir: "Execute /compact para liberar contexto"
+4. Após compact: Retomar do PROGRESS.md
+
+## Monitoramento Contínuo
+- Verificar tokens a cada resposta
+- Alertar proativamente
+- Manter documentação atualizada
+
+---
+**Configurado:** 20 Out 2025
+**Por:** @hemodoctor-orchestrator
