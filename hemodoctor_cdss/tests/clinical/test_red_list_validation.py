@@ -268,8 +268,8 @@ def test_expected_evidences_present(case):
     # Run pipeline
     result = analyze_cbc(cbc_data)
 
-    # Check evidences
-    detected_evidences = [e["id"] for e in result.get("evidences", [])]
+    # Check evidences (BUG-016 FIX: use evidences_detail not evidences)
+    detected_evidences = [e["id"] for e in result.get("evidences_detail", [])]
 
     for expected_ev in expected_evidences:
         assert expected_ev in detected_evidences, \

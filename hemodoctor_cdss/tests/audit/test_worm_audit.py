@@ -741,16 +741,12 @@ def test_pseudonymization_collision_resistance():
 
 def test_retention_policy_1825_days(temp_worm_dir):
     """Test retention policy is 1825 days (5 years)."""
-    # KNOWN ISSUE: worm_log.py line 297-300 has timezone comparison bug
-    # It compares naive datetime (from filename) with aware datetime (from now())
-    # This causes TypeError. Skipping this test until bug is fixed.
-    # TODO: Fix worm_log.py line 297 to use timezone.utc
-    pytest.skip("KNOWN BUG: timezone-aware/naive comparison in purge_old_logs (line 297-300)")
+    # BUG-015 FIXED: timezone comparison now uses timezone.utc
 
 
 def test_purge_only_old_files(temp_worm_dir):
     """Test purge only deletes files older than retention period."""
-    pytest.skip("KNOWN BUG: timezone-aware/naive comparison in purge_old_logs (line 297-300)")
+    # BUG-015 FIXED: timezone comparison now uses timezone.utc
 
 
 def test_purge_never_deletes_current_day(temp_worm_dir, sample_cbc, sample_syndromes, sample_evidences):
@@ -810,19 +806,19 @@ def test_purge_invalid_filename_format(temp_worm_dir):
 
 def test_purge_multiple_old_files(temp_worm_dir):
     """Test purge deletes multiple old files."""
-    pytest.skip("KNOWN BUG: timezone-aware/naive comparison in purge_old_logs (line 297-300)")
+    # BUG-015 FIXED: timezone comparison now uses timezone.utc
 
 
 def test_purge_atomic_deletion(temp_worm_dir):
     """Test purge deletes files atomically (one by one)."""
-    pytest.skip("KNOWN BUG: timezone-aware/naive comparison in purge_old_logs (line 297-300)")
+    # BUG-015 FIXED: timezone comparison now uses timezone.utc
 
 
 def test_purge_custom_retention_period(temp_worm_dir):
     """Test purge with custom retention period."""
-    pytest.skip("KNOWN BUG: timezone-aware/naive comparison in purge_old_logs (line 297-300)")
+    # BUG-015 FIXED: timezone comparison now uses timezone.utc
 
 
 def test_purge_anvisa_fda_compliance(temp_worm_dir):
     """Test purge complies with ANVISA/FDA 5-year retention (1825 days)."""
-    pytest.skip("KNOWN BUG: timezone-aware/naive comparison in purge_old_logs (line 297-300)")
+    # BUG-015 FIXED: timezone comparison now uses timezone.utc

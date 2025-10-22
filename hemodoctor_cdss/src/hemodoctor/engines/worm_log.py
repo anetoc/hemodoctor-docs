@@ -294,7 +294,7 @@ def purge_old_logs(worm_dir: str = "wormlog/", retention_days: int = 1825) -> in
             # Parse date from filename (YYYY-MM-DD_*.jsonl)
             try:
                 date_str = filepath.stem.split("_")[0]
-                file_date = datetime.strptime(date_str, "%Y-%m-%d")
+                file_date = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
 
                 # Check if older than retention period
                 if file_date < cutoff_date:
