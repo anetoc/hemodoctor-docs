@@ -1,5 +1,5 @@
 """
-HemoDoctor CDSS v2.4.0
+HemoDoctor CDSS v2.6.0
 
 Clinical Decision Support System for Complete Blood Count (CBC) Analysis.
 
@@ -13,7 +13,7 @@ Author: Dr. Abel Costa (IDOR-SP)
 Generated: 2025-10-20
 """
 
-__version__ = "2.4.0"
+__version__ = "2.6.0"
 __author__ = "Dr. Abel Costa"
 __license__ = "Proprietary"
 

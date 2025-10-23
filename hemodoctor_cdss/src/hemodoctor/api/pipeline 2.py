@@ -155,7 +155,7 @@ def analyze_cbc(cbc_data: Dict[str, Any]) -> Dict[str, Any]:
         "top_syndromes": [s.id for s in syndromes],
         "evidences_present": [e.id for e in evidences if e.status == "present"],
         "route_id": route_id,
-        "version": "2.4.0",
+        "version": "2.6.0",
         "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
         "next_steps": next_steps_list,
         "conversion_log": conversion_log,

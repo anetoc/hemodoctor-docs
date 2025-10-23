@@ -36,7 +36,7 @@ from hemodoctor.engines.output_renderer import render_output
 app = FastAPI(
     title="HemoDoctor CDSS API",
     description="Clinical Decision Support System for CBC Analysis (SaMD Class III)",
-    version="2.4.0",
+    version="2.6.0",
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
@@ -113,7 +113,7 @@ class AnalysisResponse(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "version": "2.4.0",
+                "version": "2.6.0",
                 "timestamp": "2025-10-20T12:34:56.789Z",
                 "route_id": "sha256:abc123...",
                 "top_syndromes": ["S-NORMAL"],
@@ -250,7 +250,7 @@ async def health_check():
 
         return HealthResponse(
             status="healthy",
-            version="2.4.0",
+            version="2.6.0",
             timestamp=datetime.now(timezone.utc).isoformat() + "Z",
             yamls_loaded=yamls_loaded
         )
@@ -288,7 +288,7 @@ async def version_info():
     environment = os.getenv("ENVIRONMENT", "development")
 
     return VersionResponse(
-        version="2.4.0",
+        version="2.6.0",
         release_date="2025-10-20",
         environment=environment
     )
@@ -314,7 +314,7 @@ async def root():
     """
     return {
         "name": "HemoDoctor CDSS API",
-        "version": "2.4.0",
+        "version": "2.6.0",
         "description": "Clinical Decision Support System for CBC Analysis",
         "docs": "/docs",
         "health": "/health",

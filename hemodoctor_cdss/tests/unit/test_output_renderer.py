@@ -150,7 +150,7 @@ def test_render_output_json(sample_syndromes_critical, sample_next_steps, sample
 
     assert isinstance(result, str)
     data = json.loads(result)
-    assert data["version"] == "2.4.0"
+    assert data["version"] == "2.6.0"
     assert "route_id" in data
 
 
@@ -183,7 +183,7 @@ def test_render_markdown_critical(sample_syndromes_critical, sample_next_steps, 
 
     # Check header
     assert "# HemoDoctor" in result
-    assert "v2.4.0" in result
+    assert "v2.6.0" in result
     assert "abc123" in result
 
     # Check criticality
@@ -349,7 +349,7 @@ def test_render_json_version(sample_syndromes_critical, sample_next_steps, sampl
     )
 
     data = json.loads(result)
-    assert data["version"] == "2.4.0"
+    assert data["version"] == "2.6.0"
 
 
 def test_render_json_syndromes(sample_syndromes_critical, sample_next_steps, sample_cbc, sample_evidences):

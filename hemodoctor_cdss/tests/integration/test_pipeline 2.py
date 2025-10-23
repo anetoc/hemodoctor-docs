@@ -330,7 +330,7 @@ def test_pipeline_version_timestamp():
     Test that result includes version and timestamp.
 
     Expected:
-        - version: "2.4.0"
+        - version: "2.6.0"
         - timestamp: ISO 8601 format
     """
     cbc = {
@@ -342,7 +342,7 @@ def test_pipeline_version_timestamp():
     result = analyze_cbc(cbc)
 
     assert "version" in result
-    assert result["version"] == "2.4.0"
+    assert result["version"] == "2.6.0"
     assert "timestamp" in result
     assert "T" in result["timestamp"], "Timestamp should be ISO 8601"
     assert result["timestamp"].endswith("Z"), "Timestamp should be UTC"

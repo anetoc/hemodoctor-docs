@@ -146,7 +146,7 @@ class YAMLParser:
 
     @property
     def evidences(self) -> Dict[str, Any]:
-        """02_evidence_hybrid.yaml v2.4.0 - 79 evidences."""
+        """02_evidence_hybrid.yaml v2.6.0 - 79 evidences."""
         return self._data.get("evidences", {})
 
     @property

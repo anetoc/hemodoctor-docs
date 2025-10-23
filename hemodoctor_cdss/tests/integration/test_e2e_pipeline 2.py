@@ -44,7 +44,7 @@ def test_e2e_normal_adult_male():
     assert len(result["route_id"]) == 64
 
     # Version
-    assert result["version"] == "2.4.0"
+    assert result["version"] == "2.6.0"
 
 
 def test_e2e_normal_adult_female():
@@ -589,7 +589,7 @@ def test_e2e_version_consistency():
     result = analyze_cbc(cbc)
 
     # Version should be 2.4.0
-    assert result["version"] == "2.4.0"
+    assert result["version"] == "2.6.0"
 
 
 def test_e2e_output_structure_complete():

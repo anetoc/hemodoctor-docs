@@ -37,7 +37,7 @@ def test_root_endpoint(client):
     assert "name" in data
     assert "HemoDoctor" in data["name"]
     assert "version" in data
-    assert data["version"] == "2.4.0"
+    assert data["version"] == "2.6.0"
     assert "docs" in data
     assert data["docs"] == "/docs"
 
@@ -52,7 +52,7 @@ def test_health_check_success(client):
     data = response.json()
 
     assert data["status"] == "healthy"
-    assert data["version"] == "2.4.0"
+    assert data["version"] == "2.6.0"
     assert "timestamp" in data
     assert data["yamls_loaded"] == 16
 
@@ -78,7 +78,7 @@ def test_version_endpoint(client):
     assert response.status_code == 200
     data = response.json()
 
-    assert data["version"] == "2.4.0"
+    assert data["version"] == "2.6.0"
     assert data["release_date"] == "2025-10-20"
     assert "environment" in data  # Should be "development" by default
 
@@ -131,7 +131,7 @@ def test_analyze_response_version(client):
     response = client.post("/analyze", json=cbc_data)
     data = response.json()
 
-    assert data["version"] == "2.4.0"
+    assert data["version"] == "2.6.0"
 
 
 def test_analyze_response_route_id(client):
@@ -451,7 +451,7 @@ def test_pydantic_analysis_response_example():
     from hemodoctor.api.main import AnalysisResponse
 
     response = AnalysisResponse(
-        version="2.4.0",
+        version="2.6.0",
         timestamp="2025-10-20T12:34:56Z",
         route_id="sha256:abc123",
         top_syndromes=["S-NORMAL"],
@@ -464,7 +464,7 @@ def test_pydantic_analysis_response_example():
         }
     )
 
-    assert response.version == "2.4.0"
+    assert response.version == "2.6.0"
     assert len(response.top_syndromes) == 1
 
 

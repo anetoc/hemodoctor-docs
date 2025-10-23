@@ -4,7 +4,7 @@ Evidence Engine - Evaluates 79 Clinical Evidence Rules
 This module implements safe evaluation of clinical evidence rules using
 simpleeval (NEVER eval()). Handles tri-state logic and missing data gracefully.
 
-Based on: 02_evidence_hybrid.yaml v2.4.0 (79 evidences)
+Based on: 02_evidence_hybrid.yaml v2.6.0 (79 evidences)
 
 Safety:
 - Uses simpleeval for expression evaluation

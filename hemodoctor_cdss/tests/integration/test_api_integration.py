@@ -32,7 +32,7 @@ def test_api_root_endpoint():
     assert "name" in data
     assert "HemoDoctor" in data["name"]
     assert "version" in data
-    assert data["version"] == "2.4.0"
+    assert data["version"] == "2.6.0"
 
 
 def test_api_health_endpoint_healthy():
@@ -67,7 +67,7 @@ def test_api_version_endpoint():
     assert response.status_code == 200
     data = response.json()
 
-    assert data["version"] == "2.4.0"
+    assert data["version"] == "2.6.0"
     # Check for any additional metadata
     assert "release_date" in data or "environment" in data or "timestamp" in data
 

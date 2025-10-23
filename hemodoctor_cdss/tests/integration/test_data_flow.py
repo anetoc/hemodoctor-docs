@@ -42,7 +42,7 @@ def test_dataflow_cbc_to_worm_log():
     assert all(c in "0123456789abcdef" for c in result["route_id"])
 
     # Version should be 2.4.0
-    assert result["version"] == "2.4.0"
+    assert result["version"] == "2.6.0"
 
     # Timestamp should be valid ISO format
     timestamp_str = result["timestamp"].rstrip("Z") if result["timestamp"].endswith("Z") else result["timestamp"]

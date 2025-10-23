@@ -161,7 +161,7 @@ def test_compute_hmac_format():
     entry = {
         "event_ts": "2025-10-21T12:34:56Z",
         "route_id": "abc123",
-        "engine_version": "2.4.0"
+        "engine_version": "2.6.0"
     }
 
     signature = compute_hmac(entry)

@@ -105,7 +105,7 @@ def render_markdown(
     lines.append("")
     lines.append(f"**Data:** {datetime.now(timezone.utc).strftime('%d/%m/%Y %H:%M UTC')}")
     lines.append(f"**Route ID:** `{route_id[:16]}...`")
-    lines.append(f"**Versão:** v2.4.0")
+    lines.append(f"**Versão:** v2.6.0")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -264,7 +264,7 @@ def render_json(
         >>> json_str = render_json(syndromes, next_steps, cbc, evidences, route_id)
         >>> data = json.loads(json_str)
         >>> data["version"]
-        '2.4.0'
+        '2.6.0'
     """
     import json
 
@@ -289,7 +289,7 @@ def render_json(
 
     # Build JSON structure
     output = {
-        "version": "2.4.0",
+        "version": "2.6.0",
         "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
         "route_id": route_id,
         "syndromes": syndrome_data,

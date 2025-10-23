@@ -77,7 +77,7 @@ def log_to_worm(
             "route_id": "sha256:def456...",
             "top_syndromes": ["S-TMA", "S-PLT-CRITICA"],
             "evidences_present": ["E-PLT-CRIT-LOW", "E-SCHISTOCYTES-GE1PCT"],
-            "engine_version": "2.4.0",
+            "engine_version": "2.6.0",
             "hmac_signature": "hmac-sha256:ghi789..."
         }
 
@@ -189,7 +189,7 @@ def build_log_entry(
         "evidence_count": len(evidence_ids),
         "syndrome_count": len(syndrome_ids),
         "top_syndrome_criticality": syndromes[0].criticality if syndromes and hasattr(syndromes[0], 'criticality') else "unknown",
-        "engine_version": "2.4.0",
+        "engine_version": "2.6.0",
     }
 
     return entry
