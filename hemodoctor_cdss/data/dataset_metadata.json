@@ -1,0 +1,207 @@
+{
+  "generated_at": "2025-10-23T00:26:40.168663",
+  "version": "1.0.0",
+  "total_cases": 50000,
+  "random_seed": 42,
+  "syndrome_distribution": {
+    "S-NEUTROPENIA-GRAVE": {
+      "target": 2000,
+      "actual": 1925,
+      "percentage": 3.85
+    },
+    "S-BLASTIC-SYNDROME": {
+      "target": 1000,
+      "actual": 993,
+      "percentage": 1.99
+    },
+    "S-TMA": {
+      "target": 500,
+      "actual": 500,
+      "percentage": 1.0
+    },
+    "S-PLT-CRITICA": {
+      "target": 1500,
+      "actual": 1464,
+      "percentage": 2.93
+    },
+    "S-ANEMIA-GRAVE": {
+      "target": 2500,
+      "actual": 2419,
+      "percentage": 4.84
+    },
+    "S-NEUTROFILIA-LEFTSHIFT-CRIT": {
+      "target": 3000,
+      "actual": 2855,
+      "percentage": 5.71
+    },
+    "S-THROMBOCITOSE-CRIT": {
+      "target": 1000,
+      "actual": 957,
+      "percentage": 1.91
+    },
+    "S-CIVD": {
+      "target": 500,
+      "actual": 476,
+      "percentage": 0.95
+    },
+    "S-APL-SUSPEITA": {
+      "target": 250,
+      "actual": 250,
+      "percentage": 0.5
+    },
+    "S-IDA": {
+      "target": 4000,
+      "actual": 3898,
+      "percentage": 7.8
+    },
+    "S-IDA-INFLAM": {
+      "target": 1500,
+      "actual": 1406,
+      "percentage": 2.81
+    },
+    "S-ACD": {
+      "target": 2000,
+      "actual": 2000,
+      "percentage": 4.0
+    },
+    "S-BETA-THAL": {
+      "target": 1500,
+      "actual": 1468,
+      "percentage": 2.94
+    },
+    "S-ALFA-THAL": {
+      "target": 1000,
+      "actual": 893,
+      "percentage": 1.79
+    },
+    "S-MACRO-B12-FOLATE": {
+      "target": 1500,
+      "actual": 1436,
+      "percentage": 2.87
+    },
+    "S-HEMOLYSIS": {
+      "target": 1000,
+      "actual": 958,
+      "percentage": 1.92
+    },
+    "S-APLASIA-RETIC-LOW": {
+      "target": 500,
+      "actual": 500,
+      "percentage": 1.0
+    },
+    "S-LEUCOERITROBLASTOSE": {
+      "target": 500,
+      "actual": 500,
+      "percentage": 1.0
+    },
+    "S-HB-SICKLE": {
+      "target": 750,
+      "actual": 711,
+      "percentage": 1.42
+    },
+    "S-PSEUDO-THROMBO": {
+      "target": 1000,
+      "actual": 1000,
+      "percentage": 2.0
+    },
+    "S-PTI": {
+      "target": 1250,
+      "actual": 1175,
+      "percentage": 2.35
+    },
+    "S-THROMBOCITOSE": {
+      "target": 2000,
+      "actual": 1895,
+      "percentage": 3.79
+    },
+    "S-LYMPHOPROLIFERATIVE": {
+      "target": 1000,
+      "actual": 977,
+      "percentage": 1.95
+    },
+    "S-EOSINOFILIA": {
+      "target": 1500,
+      "actual": 1429,
+      "percentage": 2.86
+    },
+    "S-MONOCITOSE-CRONICA": {
+      "target": 750,
+      "actual": 727,
+      "percentage": 1.45
+    },
+    "S-BASOFILIA": {
+      "target": 500,
+      "actual": 492,
+      "percentage": 0.98
+    },
+    "S-CML": {
+      "target": 500,
+      "actual": 457,
+      "percentage": 0.91
+    },
+    "S-MPN-POSSIBLE": {
+      "target": 1000,
+      "actual": 960,
+      "percentage": 1.92
+    },
+    "S-PV": {
+      "target": 750,
+      "actual": 695,
+      "percentage": 1.39
+    },
+    "S-ERITROCITOSE-SECUNDARIA": {
+      "target": 1000,
+      "actual": 924,
+      "percentage": 1.85
+    },
+    "S-MIELOFIBROSE": {
+      "target": 500,
+      "actual": 457,
+      "percentage": 0.91
+    },
+    "S-ESFEROCITOSE": {
+      "target": 500,
+      "actual": 472,
+      "percentage": 0.94
+    },
+    "S-PNH": {
+      "target": 250,
+      "actual": 236,
+      "percentage": 0.47
+    },
+    "S-NORMAL": {
+      "target": 5000,
+      "actual": 4659,
+      "percentage": 9.32
+    },
+    "S-REVIEW-SAMPLE": {
+      "target": 500,
+      "actual": 498,
+      "percentage": 1.0
+    },
+    "EDGE-BORDERLINE": {
+      "target": 2500,
+      "actual": 2398,
+      "percentage": 4.8
+    },
+    "EDGE-MULTI-SYNDROME": {
+      "target": 2500,
+      "actual": 2444,
+      "percentage": 4.89
+    },
+    "EDGE-MISSING-DATA": {
+      "target": 2500,
+      "actual": 2496,
+      "percentage": 4.99
+    }
+  },
+  "field_coverage": {
+    "core_cbc": 15,
+    "complementary": 10,
+    "molecular": 9,
+    "morphology": 17,
+    "metadata": 2,
+    "coagulation": 4,
+    "total": 57
+  }
+}
