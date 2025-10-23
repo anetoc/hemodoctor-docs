@@ -1,0 +1,293 @@
+# 00_config_hybrid.yaml
+# YAML de Configuração Híbrido - HemoDoctor + SADMH + Dev Team
+# Versão: v1.0.0
+# Data: 2025-10-19
+# Autores: Dr. Abel Costa (IDOR-SP) + AI Medical Device Specialist
+
+version: config_hybrid_v1.0.0
+
+# =============================================================================
+# UNIDADES (Dev Team base + SADMH expansão + HemoDoctor LOINC)
+# =============================================================================
+units:
+  # CBC Core
+  hb: g/dL                    # LOINC 718-7
+  ht: '%'                     # LOINC 4544-3
+  rbc: 1e12/L                 # LOINC 789-8
+  mcv: fL                     # LOINC 787-2
+  mch: pg                     # LOINC 785-6
+  mchc: g/dL                  # LOINC 786-4
+  rdw: '%'                    # LOINC 788-0
+  wbc: 1e9/L                  # LOINC 6690-2
+  anc: 1e9/L                  # LOINC 751-8
+  lymphocytes_abs: 1e9/L      # LOINC 731-0
+  eosinophils_abs: 1e9/L      # LOINC 711-2
+  basophils_abs: 1e9/L        # LOINC 704-7
+  monocytes_abs: 1e9/L        # LOINC 742-7
+  plt: 1e9/L                  # LOINC 777-3
+  mpv: fL                     # LOINC 32623-1
+  reticulocytes: 1e9/L        # LOINC 4679-7
+
+  # Complementary Tests
+  ferritin: ng/mL             # LOINC 2276-4
+  tsat: '%'                   # LOINC 2502-3
+  crp: mg/L                   # LOINC 1988-5
+  ldh: U/L                    # LOINC 2532-0
+  bt_indireta: mg/dL          # LOINC 1968-7
+  haptoglobin: mg/dL          # LOINC 4542-7
+  b12: pg/mL                  # LOINC 2132-9
+  folate: ng/mL               # LOINC 2284-8
+  hba2: '%'                   # LOINC 4576-5
+
+  # Bone Marrow (V1.1)
+  blastos_medula: '%'
+  cd34_pct: '%'
+
+  # Coagulation (V1.2)
+  pt: s
+  aptt: s
+  fibrinogenio: mg/dL
+  d_dimer: ng/mL
+
+# =============================================================================
+# CUTOFFS CRÍTICOS (Dev Team pragmático + SADMH expansão + HemoDoctor SRS-001)
+# =============================================================================
+cutoffs:
+  # CRÍTICOS (Dev Team short-circuit gates)
+  hb_critical_low:
+    adult_m: 6.5              # HemoDoctor SRS-001 severe anemia
+    adult_f: 6.0
+    pediatric_0_28d: 10.0     # Neonatal
+    pediatric_1_12m: 8.5      # Infant
+    pediatric_1_3y: 9.0       # Toddler
+    pediatric_4_12y: 10.0     # Child
+    pediatric_13_18y: 11.0    # Adolescent
+    pregnant: 9.5             # SADMH pregnancy
+
+  plt_critical_low: 10e9       # Dev Team <10 critical
+  plt_high: 450e9              # Dev Team thrombocytosis
+  plt_clonal_persistente: 650e9 # Dev Team MPN threshold
+
+  anc_very_critical: 0.2       # Dev Team <0.2 very critical
+  anc_critical: 0.5            # Dev Team <0.5 critical
+  wbc_very_high: 100e9         # Dev Team blastic concern
+
+  # SÉRIE VERMELHA (pragmático)
+  mcv_low_adult: 80            # HemoDoctor/Dev Team microcytic
+  mcv_low_child: 75            # Dev Team pediatric
+  mcv_high_adult: 100          # HemoDoctor/Dev Team macrocytic
+  rdw_high: 14                 # Dev Team anisocytosis
+
+  # COMPLEMENTARES (Dev Team + SADMH)
+  ferritin_ida_low: 30         # Dev Team IDA threshold
+  tsat_ida_low: 20             # Dev Team %
+  crp_inflam_high: 10          # Dev Team inflammation
+  ldh_high: 500                # Dev Team hemolysis
+  bt_indirect_high: 1.0        # Dev Team mg/dL
+  haptoglobin_low: 40          # Dev Team hemolysis
+  b12_low: 300                 # Dev Team pg/mL
+  folate_low: 3.1              # Dev Team ng/mL
+  hba2_beta_thal: 3.5          # SADMH beta-thal trait
+
+  # LEUCÓCITOS
+  eosinophils_high: 1.5        # Dev Team eosinophilia
+  basophils_high: 0.2          # Dev Team basophilia
+  lymphocytes_high: 5.0        # Dev Team lymphocytosis
+
+  # MORFOLOGIA (Dev Team triestado)
+  schistocytes_critical_pct: 1.0  # ≥1% TMA concern (Dev Team)
+
+# =============================================================================
+# CUTOFFS REFINADOS (Ajustes Dr. Abel Costa 2025-10-19)
+# =============================================================================
+cutoffs_refinados:
+  # Trombocitose (prioridade apenas se clonal provável)
+  thrombocytosis:
+    clonal_threshold: 650e9        # PLT ≥650 → priority automático
+    moderate_threshold: 450e9      # PLT 450-649 → avaliar perfil
+    reactive_exclusion:            # Se todos normais → reativo C1
+      crp_normal: "<=10"
+      ferritin_normal: "<=30"
+      tsat_normal: "<=20"
+  
+  # Neutrofilia/Left shift (critical apenas se critérios combinados)
+  neutrofilia_leftshift:
+    wbc_threshold: 11e9            # WBC > 11 obrigatório
+    anc_threshold: 10e9            # ANC > 10 OU left shift
+    crp_required: true             # Se CRP ausente → baixar para priority C1
+  
+  # CIVD (requer ≥2 marcadores)
+  civd:
+    d_dimer_threshold: 500         # ng/mL
+    fibrinogen_low: 150            # mg/dL
+    required_markers: 2            # Mínimo 2 de: D-dímero alto, fibrinogênio baixo, PT/APTT prolongado
+  
+  # TMA (short-circuit apenas com PLT crítica + esquistócitos)
+  tma:
+    plt_critical: 10e9
+    schistocytes_required: true
+    hemolysis_pattern: optional    # Reforça, mas não obrigatório
+
+# =============================================================================
+# FAIXAS ETÁRIAS (Dev Team + SADMH altitude opcional)
+# =============================================================================
+age_groups:
+  neonatal:
+    min_days: 0
+    max_days: 28
+    label: "Neonato (0-28 dias)"
+  
+  infant:
+    min_days: 29
+    max_days: 365
+    label: "Lactente (1-12 meses)"
+  
+  toddler:
+    min_years: 1
+    max_years: 3
+    label: "Criança pequena (1-3 anos)"
+  
+  child:
+    min_years: 4
+    max_years: 12
+    label: "Criança (4-12 anos)"
+  
+  adolescent:
+    min_years: 13
+    max_years: 18
+    label: "Adolescente (13-18 anos)"
+  
+  adult:
+    min_years: 19
+    max_years: 59
+    label: "Adulto (19-59 anos)"
+  
+  elderly:
+    min_years: 60
+    max_years: 120
+    label: "Idoso (≥60 anos)"
+
+# SADMH opcional: altitude adjustment
+altitude_adjustment:
+  sea_level:
+    min_m: 0
+    max_m: 1000
+    hb_adjustment: 0.0
+  
+  moderate:
+    min_m: 1001
+    max_m: 2500
+    hb_adjustment: 0.5     # +0.5 g/dL
+  
+  high:
+    min_m: 2501
+    max_m: 10000
+    hb_adjustment: 1.0     # +1.0 g/dL
+
+# =============================================================================
+# SAFETY (Dev Team + HemoDoctor TEC-002)
+# =============================================================================
+safety:
+  # Morfologia crítica
+  schistocytes_critical_pct: 1.0
+  blastos_critical_pct: 20.0     # SADMH blast threshold
+  
+  # Timeouts (HemoDoctor SRS-001 v2.1 NFR-001)
+  p99_latency_max_s: 5           # P99 ≤5s target
+  timeout_max_s: 30              # 30s timeout emergency
+  
+  # Alert throttling (HemoDoctor SRS-001 REQ-HD-006)
+  max_critical_alerts_per_hour: 3
+  max_high_alerts_per_hour: 10
+
+# =============================================================================
+# PRÉ-ANALÍTICO (Ajustes Dr. Abel Costa 2025-10-19)
+# =============================================================================
+pre_analytical_gates:
+  mchc_implausible:
+    min: 25
+    max: 37
+    action: "review_sample"
+    reason: "MCHC impossível - suspeita de erro pré-analítico"
+  
+  cold_agglutinin_suspect:
+    trigger: "(mchc > 37) and (mcv < 80) and (hb < hb_critical_low)"
+    action: "review_sample"
+    reason: "Suspeita aglutinina fria - recoleta com amostra aquecida"
+  
+  pseudo_thrombocytopenia_suspect:
+    trigger: "(plt < 100e9) and (mpv > 12) and (aglomerados_plaquetarios unknown)"
+    action: "review_sample"
+    reason: "Recoleta em citrato/PLT-F; esfregaço para confirmar pseudo-trombocitopenia"
+
+# =============================================================================
+# CONFIDENCE MAPPING V1 (Dev Team + SADMH)
+# =============================================================================
+confidence_mapping_v1:
+  # Threshold para C0/C1/C2
+  c2_threshold: 0.80            # C2 (high confidence) se prob ≥0.80
+  c1_threshold: 0.60            # C1 (medium) se 0.60 ≤ prob < 0.80
+  
+  # Abstenção (Dev Team + SADMH)
+  unknown_missing_rate_threshold: 0.30  # >30% missing → C0 (abstain)
+  
+  # Platt scaling (Dev Team V1)
+  platt_enabled: true            # Enable Platt calibration
+  platt_params:
+    A: 1.0                       # To be trained on validation set
+    B: 0.0                       # To be trained
+
+# =============================================================================
+# RULE WEIGHTS (Dev Team combine logic)
+# =============================================================================
+rule_weights:
+  all: 1.0                       # ALL rules peso 1.0 cada
+  any: 0.5                       # ANY rules peso 0.5 cada
+  negative: -0.3                 # NEGATIVE rules peso -0.3
+
+# =============================================================================
+# PERFORMANCE (HemoDoctor + Dev Team)
+# =============================================================================
+performance:
+  batch_mode: true               # Dev Team batch processing
+  max_cases_per_hour: 1000       # Dev Team throughput target
+  
+  retention:
+    production_years: 5          # HemoDoctor LGPD 5 anos
+    batch_days: 90               # Dev Team batch 30-90 dias
+
+# =============================================================================
+# OBSERVABILITY (HemoDoctor + Dev Team)
+# =============================================================================
+monitoring:
+  metrics_enabled: true
+  prometheus_port: 9090
+  
+  kpis:
+    - name: "fn_critical"
+      target: 0                  # Dev Team Red List FN=0 obrigatório
+    - name: "specificity"
+      target: 0.80               # Dev Team ≥80%
+    - name: "alert_burden"
+      target: 50                 # <50/1000 casos
+    - name: "abstention_rate"
+      target: 0.10               # <10% C0
+
+# =============================================================================
+# METADATA (SADMH opcional fairness by design)
+# =============================================================================
+metadata_config:
+  # Dev Team: age, sex apenas (sem race/ethnicity por design)
+  required:
+    - age_years
+    - sex                        # M/F/Unknown
+  
+  optional_sadmh:
+    - pregnancy                  # boolean (SADMH)
+    - altitude_m                 # meters (SADMH)
+    # race_ethnicity: REMOVED (fairness by architecture)
+
+# =============================================================================
+# FIM DO ARQUIVO
+# =============================================================================
+

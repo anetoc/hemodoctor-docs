@@ -1,0 +1,1120 @@
+# HemoDoctor Hybrid V1.0 - Next Steps Engine
+# Integração SADMH V2.3 Always-Output Design
+# Dr. Abel Costa (IDOR-SP) - Outubro 2025
+# Baseado em: SADMH 09_next_steps_engine.yaml + 34 Síndromes Híbridas
+
+version: hybrid_v1.0.0
+module: next_steps_engine
+description: >
+  Motor inteligente de próximos passos clínicos.
+  Garante output útil mesmo com dados parciais.
+  Prioriza exames por impacto clínico, custo e turnaround.
+  Integrado com 34 síndromes híbridas e 75 evidências.
+
+# ================================================================================
+# CONFIGURAÇÃO GLOBAL
+# ================================================================================
+
+prioritization:
+  levels: [critical, priority, routine]
+  tie_break: cost_then_turnaround
+  cost_bands:
+    low:    ['CBC-repeat', 'CRP', 'Ferritina', 'TSat', 'Esfregaço', 'VHS']
+    mid:    ['LDH', 'Haptoglobina', 'BT-indireta', 'BT-direta', 'B12', 'Folato', 
+             'Reticulócitos', 'HbA2', 'DAT/Coombs', 'Creatinina']
+    high:   ['BCR-ABL', 'JAK2', 'CALR', 'MPL', 'ADAMTS13', 'Complemento (C3/C4/CH50)', 
+             'Imunofenotipagem', 'Citogenética', 'NGS painel mieloide', 'Medula óssea']
+  turnaround:
+    fast:   ['CBC', 'Esfregaço', 'CRP', 'Ferritina', 'Creatinina']  # 2-24h
+    medium: ['LDH', 'B12', 'Folato', 'DAT', 'HbA2']                  # 1-3 dias
+    slow:   ['JAK2', 'BCR-ABL', 'ADAMTS13', 'Citogenética', 'NGS']  # 5-21 dias
+
+render:
+  max_items: 8
+  group_by_level: true
+  deduplicate_by_test: true
+  show_cost_band: true
+  show_turnaround: true
+  show_rationale: true
+
+templates:
+  item: "{level} · {test} — motivo: {rationale} (custo: {cost}, turnaround: {turnaround}, pré-req: {prereq})"
+  header: "## PRÓXIMOS PASSOS RECOMENDADOS ({count} exames)"
+  footer: "Atualizar caso ao receber resultados para reconciliação automática."
+
+# ================================================================================
+# TRIGGERS POR SÉRIE HEMATOLÓGICA
+# ================================================================================
+
+triggers:
+
+  # ============================================================================
+  # SÉRIE VERMELHA - CRÍTICOS
+  # ============================================================================
+
+  - id: trigger-anemia-grave
+    when: "(sex=='M' and hb < 6.5) or (sex=='F' and hb < 6.0)"
+    syndromes: [S-ANEMIA-GRAVE]
+    suggest:
+      - level: critical
+        test: Reticulócitos
+        rationale: "Diferenciar regenerativa (hemólise, sangramento) vs hiporregenerativa (aplasia, infiltração)"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: critical
+        test: Esfregaço urgente
+        rationale: "Avaliar morfologia (esquistócitos, blastos, diseritropoese)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: LDH
+        rationale: "Marcador de hemólise/TMA/turnover celular"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: priority
+        test: Haptoglobina
+        rationale: "Hemólise intravascular"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: priority
+        test: BT indireta
+        rationale: "Hemólise (icterícia pré-hepática)"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+
+  # ============================================================================
+  # SÉRIE VERMELHA - PRIORIDADE
+  # ============================================================================
+
+  - id: trigger-ida
+    when: "(mcv < 80) and (rdw > 14.0) and ((sex=='M' and hb < 13.0) or (sex=='F' and hb < 12.0)) and (ferritin is None or tsat is None)"
+    syndromes: [S-IDA]
+    suggest:
+      - level: priority
+        test: Ferritina
+        rationale: "Confirmar IDA (ferritina <30 ng/mL) vs ACD (ferritina 30-100 com inflamação)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: TSat
+        rationale: "TSat <20% confirma deficiência de ferro funcional"
+        cost: low
+        turnaround: fast
+        prereq: Ferro sérico
+      - level: routine
+        test: CRP
+        rationale: "Diferenciar IDA pura (CRP normal) vs ACD/IDA-inflam (CRP >10 mg/L)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: routine
+        test: CBC repeat (2-4 semanas)
+        rationale: "Avaliar resposta à reposição de ferro"
+        cost: low
+        turnaround: fast
+        prereq: Tratamento iniciado
+
+  - id: trigger-beta-thal
+    when: "(mcv < 80) and (rdw <= 14.0) and (rbc >= 5.0) and (hba2 is None)"
+    syndromes: [S-BETA-THAL]
+    suggest:
+      - level: priority
+        test: HbA2 (eletroforese de hemoglobina)
+        rationale: "HbA2 >3.5% confirma β-talassemia trait"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: routine
+        test: Ferritina
+        rationale: "Excluir IDA concomitante (comum em mulheres)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+
+  - id: trigger-alfa-thal
+    when: "(mcv < 80) and (rdw <= 14.0) and (rbc >= 5.5) and (hba2 is not None and hba2 <= 3.5)"
+    syndromes: [S-ALFA-THAL]
+    suggest:
+      - level: routine
+        test: Estudo molecular para α-talassemia
+        rationale: "HbA2 normal com microcitose + RBC elevado sugere α-thal trait"
+        cost: high
+        turnaround: slow
+        prereq: Eletroforese normal
+      - level: routine
+        test: Aconselhamento genético
+        rationale: "Avaliar risco reprodutivo (hidropsia fetal se ambos pais α-thal)"
+        cost: mid
+        turnaround: medium
+        prereq: Confirmação molecular
+
+  - id: trigger-acd
+    when: "((ferritin >= 100) or (crp > 10)) and (tsat < 20) and (mcv < 85 or (sex=='M' and hb < 13.0) or (sex=='F' and hb < 12.0))"
+    syndromes: [S-ACD]
+    suggest:
+      - level: priority
+        test: Ferritina
+        rationale: "ACD: ferritina 30-100 (leve) ou >100 (moderada)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: CRP
+        rationale: "Marcador de inflamação (ACD esperado se CRP >10 mg/L)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: TSat
+        rationale: "TSat <20% em ACD (ferro sequestrado, não deficiente)"
+        cost: low
+        turnaround: fast
+        prereq: Ferro sérico
+      - level: routine
+        test: Investigar doença inflamatória/crônica de base
+        rationale: "ACD é secundária (artrite reumatoide, neoplasia, infecção crônica, DRC)"
+        cost: mid
+        turnaround: medium
+        prereq: Clínica
+
+  - id: trigger-macro-b12-folate
+    when: "(mcv > 100) and ((sex=='M' and hb < 13.0) or (sex=='F' and hb < 12.0)) and (b12 is None or folate is None)"
+    syndromes: [S-MACRO-B12, S-MACRO-FOLATE]
+    suggest:
+      - level: priority
+        test: Vitamina B12
+        rationale: "B12 <200 pg/mL = deficiência; 200-300 = limítrofe"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: priority
+        test: Folato
+        rationale: "Folato <3.1 ng/mL = deficiência"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: routine
+        test: Anticorpo anti-fator intrínseco
+        rationale: "Se B12 baixa: confirmar anemia perniciosa (autoimune)"
+        cost: mid
+        turnaround: medium
+        prereq: B12 <200
+      - level: routine
+        test: LDH
+        rationale: "Elevado em megaloblástica (destruição intramedular)"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: routine
+        test: CBC repeat (4-8 semanas)
+        rationale: "Avaliar resposta à reposição (normalização MCV)"
+        cost: low
+        turnaround: fast
+        prereq: Tratamento iniciado
+
+  - id: trigger-hemolysis
+    when: "(reticulocytes is None or haptoglobin is None or ldh is None or bt_indireta is None) and ((policromasia == true) or (esferocitos == true) or ((sex=='M' and hb < 13.0) or (sex=='F' and hb < 12.0)))"
+    syndromes: [S-HEMOLYSIS]
+    suggest:
+      - level: priority
+        test: Reticulócitos
+        rationale: "Reticulócitos >100×10^9/L = hemólise regenerativa"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: priority
+        test: LDH
+        rationale: "LDH >500 U/L sugere hemólise ou TMA"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: priority
+        test: Haptoglobina
+        rationale: "Haptoglobina <40 mg/dL = hemólise intravascular"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: priority
+        test: BT indireta
+        rationale: "BT indireta >1.0 mg/dL = hemólise (icterícia pré-hepática)"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: routine
+        test: DAT (Coombs direto)
+        rationale: "Se positivo: anemia hemolítica autoimune (AIHA)"
+        cost: mid
+        turnaround: medium
+        prereq: Hemólise confirmada
+      - level: routine
+        test: G6PD
+        rationale: "Se hemólise episódica pós-oxidante (favismo, infecção)"
+        cost: mid
+        turnaround: medium
+        prereq: Clínica sugestiva
+      - level: routine
+        test: Piruvato quinase (PK)
+        rationale: "Se hemólise crônica desde infância (enzimopenia hereditária)"
+        cost: high
+        turnaround: slow
+        prereq: G6PD normal
+
+  - id: trigger-aplasia-retic-low
+    when: "(reticulocytes < 20) and ((sex=='M' and hb < 13.0) or (sex=='F' and hb < 12.0))"
+    syndromes: [S-APLASIA-RETIC-LOW]
+    suggest:
+      - level: priority
+        test: Reticulócitos
+        rationale: "Reticulócitos <20×10^9/L = hiporregenerativa (aplasia, infiltração)"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: priority
+        test: Parvovírus B19 (IgM/IgG)
+        rationale: "Se anemia súbita em paciente com hemólise de base (aplasia transitória)"
+        cost: mid
+        turnaround: medium
+        prereq: Clínica compatível
+      - level: routine
+        test: Esfregaço + leucograma
+        rationale: "Avaliar diseritropoese, citopenias associadas (MDS, aplasia)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+
+  - id: trigger-mds
+    when: "((hiposegmentacao == true) or (eritroblastos == true)) and ((sex=='M' and hb < 13.0) or (sex=='F' and hb < 12.0))"
+    syndromes: [S-MDS]
+    suggest:
+      - level: priority
+        test: Esfregaço detalhado
+        rationale: "Displasia em ≥10% das células de ≥1 linhagem (hiposegmentação, pseudo-Pelger)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: Citogenética (cariótipo medular)
+        rationale: "Del(5q), trissomia 8, -7/del(7q) = MDS"
+        cost: high
+        turnaround: slow
+        prereq: Persistência >3 meses
+      - level: routine
+        test: NGS painel mieloide
+        rationale: "Mutações SF3B1, ASXL1, TP53 = prognóstico MDS"
+        cost: high
+        turnaround: slow
+        prereq: Citogenética ou clínica refratária
+      - level: routine
+        test: Medula óssea (aspirado + biópsia)
+        rationale: "Confirmar displasia, % blastos, celularidade, fibrose"
+        cost: high
+        turnaround: slow
+        prereq: Persistência ou citopenias múltiplas
+
+  - id: trigger-mm-mgus
+    when: "((rouleaux == true) or (corpos_howell_jolly == true)) and (hb < 12)"
+    syndromes: [S-MM-MGUS]
+    suggest:
+      - level: priority
+        test: Eletroforese de proteínas séricas + Imunofixação
+        rationale: "Detectar pico monoclonal (gamopatia)"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: priority
+        test: Cadeias leves livres (FLC κ/λ)
+        rationale: "Avaliar FLC ratio (κ/λ <0.26 ou >1.65 = clonal)"
+        cost: mid
+        turnaround: medium
+        prereq: Eletroforese
+      - level: routine
+        test: Cálcio sérico
+        rationale: "Hipercalcemia = critério CRAB (mieloma ativo)"
+        cost: low
+        turnaround: fast
+        prereq: Gamopatia confirmada
+      - level: routine
+        test: Creatinina
+        rationale: "Insuficiência renal = critério CRAB"
+        cost: low
+        turnaround: fast
+        prereq: Gamopatia confirmada
+      - level: routine
+        test: Medula óssea + Radiografia esqueleto
+        rationale: "Plasmocitose >10% + lesões líticas = mieloma múltiplo"
+        cost: high
+        turnaround: slow
+        prereq: Gamopatia + anemia/CRAB
+
+  - id: trigger-pnh
+    when: "(hpn_pos == true) or ((hemolysis == true) and (coombs_pos == false))"
+    syndromes: [S-PNH]
+    suggest:
+      - level: priority
+        test: Citometria de fluxo (CD55/CD59)
+        rationale: "Clone HPN (deficiência GPI) se ≥1% granulócitos"
+        cost: high
+        turnaround: slow
+        prereq: Hemólise Coombs-negativa
+      - level: routine
+        test: LDH
+        rationale: "Marcador de hemólise intravascular (elevado em HPN)"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: routine
+        test: D-dímero
+        rationale: "Avaliar risco trombótico (comum em HPN)"
+        cost: mid
+        turnaround: medium
+        prereq: Clone confirmado
+
+  - id: trigger-hb-sickle
+    when: "(hbs_pos == true) or (falciformes == true)"
+    syndromes: [S-HB-SICKLE]
+    suggest:
+      - level: priority
+        test: Eletroforese de hemoglobina
+        rationale: "Confirmar HbS, quantificar HbF (proteção)"
+        cost: mid
+        turnaround: medium
+        prereq: CBC + esfregaço
+      - level: routine
+        test: Aconselhamento genético
+        rationale: "Herança recessiva; risco reprodutivo se ambos portadores"
+        cost: mid
+        turnaround: medium
+        prereq: Confirmação diagnóstica
+      - level: routine
+        test: Hidroxiureia (tratamento)
+        rationale: "Aumenta HbF, reduz crises vaso-oclusivas"
+        cost: mid
+        turnaround: medium
+        prereq: Anemia falciforme sintomática
+
+  # ============================================================================
+  # SÉRIE BRANCA - CRÍTICOS
+  # ============================================================================
+
+  - id: trigger-neutropenia-grave
+    when: "(anc < 0.5)"
+    syndromes: [S-NEUTROPENIA-GRAVE]
+    suggest:
+      - level: critical
+        test: CBC urgente (repetir em 24-48h)
+        rationale: "Confirmar neutropenia persistente vs transitória"
+        cost: low
+        turnaround: fast
+        prereq: CBC inicial
+      - level: critical
+        test: Esfregaço urgente
+        rationale: "Avaliar displasia, hiposegmentação, blastos"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: Revisar medicações
+        rationale: "Neutropenia iatrogênica (quimioterapia, metotrexato, clozapina, carbimazol)"
+        cost: low
+        turnaround: fast
+        prereq: Clínica
+      - level: priority
+        test: Sorologias virais (HIV, CMV, EBV)
+        rationale: "Infecções virais podem causar neutropenia"
+        cost: mid
+        turnaround: medium
+        prereq: Clínica sugestiva
+      - level: routine
+        test: G-CSF (tratamento)
+        rationale: "Se neutropenia febril ou refratária"
+        cost: mid
+        turnaround: fast
+        prereq: Protocolo institucional
+
+  - id: trigger-blastic-syndrome
+    when: "(blasts == true)"
+    syndromes: [S-BLASTIC-SYNDROME]
+    suggest:
+      - level: critical
+        test: Esfregaço urgente com contagem de blastos
+        rationale: "Blastos ≥20% = leucemia aguda; <20% = SMD/LMMC"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: critical
+        test: Imunofenotipagem (flow cytometry)
+        rationale: "Diferenciar LMA (CD13+/CD33+) vs LLA (CD10+/CD19+ ou CD3+)"
+        cost: high
+        turnaround: medium
+        prereq: Esfregaço
+      - level: priority
+        test: Citogenética + FISH + NGS
+        rationale: "Estratificação de risco (t(15;17), t(8;21), inv(16), FLT3, NPM1)"
+        cost: high
+        turnaround: slow
+        prereq: Imunofenotipagem
+      - level: priority
+        test: Medula óssea (aspirado + biópsia)
+        rationale: "Celularidade, % blastos, displasia, fibrose"
+        cost: high
+        turnaround: slow
+        prereq: Planejamento terapêutico
+
+  - id: trigger-neutrofilia-leftshift-crit
+    when: "(wbc > 11) and ((anc > 10) or (bastoes == true) or (promielocitos == true) or (mielocitos == true) or (metamielocitos == true)) and ((crp > 10) or (bastoes == true) or (promielocitos == true) or (mielocitos == true) or (metamielocitos == true))"
+    syndromes: [S-NEUTROFILIA-LEFTSHIFT-CRIT]
+    suggest:
+      - level: critical
+        test: Esfregaço urgente
+        rationale: "Avaliar intensidade do desvio (reativo vs leucemia)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: CRP
+        rationale: "CRP >10 mg/L sugere infecção/inflamação grave (reativo)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: Culturas (sangue, urina, foco suspeito)
+        rationale: "Investigar foco infeccioso"
+        cost: mid
+        turnaround: medium
+        prereq: Clínica
+      - level: routine
+        test: BCR-ABL
+        rationale: "Se WBC muito alto (>50) e sem foco clínico: descartar LMC"
+        cost: high
+        turnaround: slow
+        prereq: Esfregaço sem foco reativo
+
+  - id: trigger-apl-suspeita
+    when: "(promielocitos == true) and ((plt < 150) or (pt > 15) or (aptt > 40))"
+    syndromes: [S-APL-SUSPEITA]
+    suggest:
+      - level: critical
+        test: Esfregaço URGENTE (patologista experiente)
+        rationale: "Promielócitos anormais com bastões de Auer em feixe (fagots)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: critical
+        test: FISH para t(15;17) ou PCR PML-RARA
+        rationale: "Confirmar LPA (M3) - EMERGÊNCIA HEMATOLÓGICA"
+        cost: high
+        turnaround: medium
+        prereq: Esfregaço suspeito
+      - level: critical
+        test: Coagulograma completo (PT/APTT/Fib/D-dímero)
+        rationale: "CIVD é comum e potencialmente fatal em LPA"
+        cost: mid
+        turnaround: fast
+        prereq: CBC
+      - level: critical
+        test: ATRA (ácido trans-retinóico) - TRATAMENTO EMPÍRICO
+        rationale: "Iniciar IMEDIATAMENTE se alta suspeita (não aguardar confirmação)"
+        cost: mid
+        turnaround: fast
+        prereq: Suspeita clínica + esfregaço
+
+  # ============================================================================
+  # SÉRIE BRANCA - PRIORIDADE
+  # ============================================================================
+
+  - id: trigger-lymphoproliferative
+    when: "(lymphocytes_abs > 5.0) and (bcr_abl_pos is None)"
+    syndromes: [S-LYMPHOPROLIFERATIVE]
+    suggest:
+      - level: priority
+        test: Imunofenotipagem (flow cytometry)
+        rationale: "Detectar clone B (CD19+/CD5+/CD20+) ou T (CD3+/CD4+/CD8+)"
+        cost: high
+        turnaround: slow
+        prereq: Persistência >3 meses
+      - level: routine
+        test: CBC repeat (4-8 semanas)
+        rationale: "Linfocitose reativa (EBV/CMV) resolve em 4-8 semanas"
+        cost: low
+        turnaround: fast
+        prereq: CBC inicial
+      - level: routine
+        test: Sorologias virais (EBV, CMV)
+        rationale: "Linfocitose reativa por infecção viral aguda"
+        cost: mid
+        turnaround: medium
+        prereq: Clínica sugestiva (febre, linfonodos)
+
+  - id: trigger-eosinophilia
+    when: "(eosinophils_abs >= 1.5)"
+    syndromes: [S-EOSINOPHILIA]
+    suggest:
+      - level: routine
+        test: IgE total
+        rationale: "IgE elevado sugere alergia ou parasitose"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: routine
+        test: Parasitológico de fezes (3 amostras)
+        rationale: "Helmintos (Ascaris, Strongyloides, Ancylostoma)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: routine
+        test: Revisar medicações
+        rationale: "DRESS (eosinofilia + exantema por droga)"
+        cost: low
+        turnaround: fast
+        prereq: Clínica
+      - level: routine
+        test: Ecocardiograma + troponina
+        rationale: "Se eosinófilos >1.5 persistente: avaliar miocardite eosinofílica"
+        cost: mid
+        turnaround: medium
+        prereq: Persistência >6 meses
+
+  - id: trigger-cml
+    when: "(wbc > 11) and (bcr_abl_pos == true)"
+    syndromes: [S-CML]
+    suggest:
+      - level: priority
+        test: BCR-ABL (PCR quantitativo)
+        rationale: "Confirmar LMC e quantificar carga molecular (baseline para TKI)"
+        cost: high
+        turnaround: slow
+        prereq: CBC + esfregaço
+      - level: priority
+        test: Medula óssea (aspirado + citogenética)
+        rationale: "Cromossomo Philadelphia t(9;22), % blastos, fibrose"
+        cost: high
+        turnaround: slow
+        prereq: BCR-ABL confirmado
+      - level: routine
+        test: Imatinibe (tratamento)
+        rationale: "TKI de primeira linha (400 mg/dia)"
+        cost: mid
+        turnaround: fast
+        prereq: Diagnóstico confirmado
+
+  # ============================================================================
+  # SÉRIE PLAQUETÁRIA - CRÍTICOS
+  # ============================================================================
+
+  - id: trigger-plt-critica
+    when: "(plt < 20)"
+    syndromes: [S-PLT-CRITICA]
+    suggest:
+      - level: critical
+        test: Esfregaço urgente
+        rationale: "Excluir pseudo-trombocitopenia (clumps/satelitismo)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: critical
+        test: MPV
+        rationale: "MPV >12 fL sugere consumo periférico (PTI, TMA) vs produção baixa (aplasia)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: Recoleta em citrato (tubo azul) ou PLT-F
+        rationale: "Confirmar se não é artefato (EDTA-induced pseudo-trombocitopenia)"
+        cost: low
+        turnaround: fast
+        prereq: Esfregaço com clumps
+      - level: priority
+        test: Avaliar risco hemorrágico (petéquias, mucosas)
+        rationale: "PLT <10 = risco espontâneo; <20 = risco pós-trauma"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: routine
+        test: Transfusão de plaquetas
+        rationale: "Se sangramento ativo ou PLT <10 com risco"
+        cost: mid
+        turnaround: fast
+        prereq: Protocolo institucional
+
+  - id: trigger-tma
+    when: "(plt < 30) and (esquistocitos == true)"
+    syndromes: [S-TMA]
+    suggest:
+      - level: critical
+        test: Esfregaço URGENTE
+        rationale: "Confirmar esquistócitos ≥1% (fragmentação mecânica)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: critical
+        test: LDH
+        rationale: "LDH >500 U/L = hemólise intravascular (TMA, PTT, SHU)"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: critical
+        test: Creatinina
+        rationale: "Insuficiência renal = SHU/SHUa (vs PTT pura)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: D-dímero
+        rationale: "Elevado em TMA (não específico)"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: priority
+        test: ADAMTS13 atividade + inibidor
+        rationale: "ADAMTS13 <10% = PTT; >10% = SHU/SHUa/TMA secundária"
+        cost: high
+        turnaround: slow
+        prereq: Creatinina
+      - level: priority
+        test: Complemento (C3, C4, CH50)
+        rationale: "C3 baixo = SHUa (complemento-mediada)"
+        cost: high
+        turnaround: slow
+        prereq: ADAMTS13 >10%
+      - level: routine
+        test: Escore PLASMIC
+        rationale: "Predizer PTT (se ≥5: risco alto; se <5: considerar SHU)"
+        cost: low
+        turnaround: fast
+        prereq: CBC + creatinina
+
+  - id: trigger-civd
+    when: "((d_dimer > 500) or (fibrinogen < 150) or (pt > 15) or (aptt > 40)) and ((plt < 150) or (esquistocitos == true))"
+    syndromes: [S-CIVD]
+    suggest:
+      - level: critical
+        test: Coagulograma completo (PT/APTT/Fibrinogênio/D-dímero)
+        rationale: "CIVD: ≥2 alterados (D-dímero >500, Fib <150, PT >15s, APTT >40s)"
+        cost: mid
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: Esfregaço
+        rationale: "Esquistócitos presentes em 50% dos casos de CIVD"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: Investigar causa de base
+        rationale: "CIVD é sempre secundária (sepse, neoplasia, obstetrícia, trauma)"
+        cost: mid
+        turnaround: medium
+        prereq: Clínica
+      - level: routine
+        test: Suporte hemostático (plasma fresco, crioprecipitado)
+        rationale: "Conforme protocolo ISTH (sangramento ativo)"
+        cost: mid
+        turnaround: fast
+        prereq: CIVD confirmada
+
+  - id: trigger-thrombocitose-crit
+    when: "(plt >= 1000)"
+    syndromes: [S-THROMBOCITOSE-CRIT]
+    suggest:
+      - level: critical
+        test: JAK2 V617F
+        rationale: "Positivo em 50-60% das trombocitemias essenciais (TE)"
+        cost: high
+        turnaround: slow
+        prereq: CBC + esfregaço
+      - level: priority
+        test: CALR exon 9
+        rationale: "Positivo em 20-30% das TE (JAK2-negativa)"
+        cost: high
+        turnaround: slow
+        prereq: JAK2 negativo
+      - level: priority
+        test: MPL W515
+        rationale: "Positivo em 3-5% das TE (JAK2/CALR-negativa)"
+        cost: high
+        turnaround: slow
+        prereq: JAK2/CALR negativos
+      - level: routine
+        test: AAS (ácido acetilsalicílico) 100 mg/dia
+        rationale: "Profilaxia antitrombótica se clone confirmado"
+        cost: low
+        turnaround: fast
+        prereq: TE confirmada
+
+  # ============================================================================
+  # SÉRIE PLAQUETÁRIA - PRIORIDADE
+  # ============================================================================
+
+  - id: trigger-thrombocitose
+    when: "(plt > 450) and ((crp is None) or (ferritin is None))"
+    syndromes: [S-THROMBOCITOSE]
+    suggest:
+      - level: routine
+        test: CRP
+        rationale: "CRP >10 mg/L sugere trombocitose reativa (infecção, inflamação)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: routine
+        test: Ferritina
+        rationale: "Ferritina <30 ng/mL: trombocitose reativa por deficiência de ferro"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: routine
+        test: CBC repeat (2-6 semanas)
+        rationale: "Persistência sem reatividade = investigar clone (JAK2/CALR/MPL)"
+        cost: low
+        turnaround: fast
+        prereq: CBC inicial
+      - level: routine
+        test: JAK2/CALR/MPL
+        rationale: "Se persistente e CRP/ferritina normais: descartar neoplasia mieloproliferativa"
+        cost: high
+        turnaround: slow
+        prereq: Persistência + exclusão de reativo
+
+  - id: trigger-pti
+    when: "(plt < 150) and (antiplatelet_ab_pos == true)"
+    syndromes: [S-PTI]
+    suggest:
+      - level: priority
+        test: Anticorpos antiplaquetários (anti-GPIIb/IIIa, anti-GPIb/IX)
+        rationale: "Confirmar PTI autoimune (sensibilidade 50-60%)"
+        cost: mid
+        turnaround: medium
+        prereq: CBC + esfregaço
+      - level: routine
+        test: Excluir causas secundárias (HIV, HCV, LES, LLC)
+        rationale: "Trombocitopenia imune secundária"
+        cost: mid
+        turnaround: medium
+        prereq: Clínica
+      - level: routine
+        test: Corticosteroide ou IVIG
+        rationale: "Tratamento se PLT <30 ou sangramento"
+        cost: mid
+        turnaround: fast
+        prereq: PTI confirmada
+
+  - id: trigger-hit-possible
+    when: "(plt < 150) and (d_dimer > 500)"
+    syndromes: [S-HIT-POSSIBLE]
+    suggest:
+      - level: priority
+        test: Escore 4Ts (Timing, Thrombocytopenia magnitude, Thrombosis, oTher causes)
+        rationale: "Escore ≥4 = risco intermediário/alto de HIT"
+        cost: low
+        turnaround: fast
+        prereq: Clínica (exposição a heparina nos últimos 5-14 dias)
+      - level: priority
+        test: Anticorpos anti-PF4/heparina (ELISA)
+        rationale: "Confirmar HIT (se 4Ts ≥4)"
+        cost: mid
+        turnaround: medium
+        prereq: 4Ts ≥4
+      - level: routine
+        test: Teste funcional (SRA, HIPA)
+        rationale: "Gold standard para HIT (se ELISA indeterminado)"
+        cost: high
+        turnaround: slow
+        prereq: ELISA inconclusivo
+      - level: routine
+        test: Suspender TODA heparina + iniciar anticoagulante alternativo
+        rationale: "HIT confirmada = risco trombótico 30-50% (argatrobana, fondaparinux)"
+        cost: mid
+        turnaround: fast
+        prereq: 4Ts ≥4
+
+  - id: trigger-pseudo-thrombo
+    when: "(plt < 150) and ((mpv > 12) or (aglomerados_plaquetarios == true))"
+    syndromes: [S-PSEUDO-THROMBO]
+    suggest:
+      - level: priority
+        test: Recoleta em citrato (tubo azul) ou PLT-F
+        rationale: "Pseudo-trombocitopenia por EDTA (aglomeração in vitro)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: Esfregaço (revisar por patologista)
+        rationale: "Confirmar clumps plaquetários ou satelitismo"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: routine
+        test: Análise óptica de plaquetas (impedância vs fluorescência)
+        rationale: "Método alternativo se EDTA-dependente"
+        cost: low
+        turnaround: fast
+        prereq: Clumps confirmados
+
+  - id: trigger-mpn-possible
+    when: "(plt > 450) and ((jak2_pos == true) or (calr_pos == true) or (mpl_pos == true))"
+    syndromes: [S-MPN-POSSIBLE]
+    suggest:
+      - level: priority
+        test: JAK2 V617F
+        rationale: "Mutação driver em 95% PV, 50-60% TE, 50-60% MF"
+        cost: high
+        turnaround: slow
+        prereq: CBC + esfregaço
+      - level: priority
+        test: CALR exon 9
+        rationale: "Mutação driver em 20-30% TE, 20-30% MF (JAK2-negativas)"
+        cost: high
+        turnaround: slow
+        prereq: JAK2 negativo
+      - level: priority
+        test: MPL W515
+        rationale: "Mutação driver em 3-5% TE, 5-10% MF (JAK2/CALR-negativas)"
+        cost: high
+        turnaround: slow
+        prereq: JAK2/CALR negativos
+      - level: routine
+        test: Medula óssea (aspirado + biópsia)
+        rationale: "Avaliar morfologia (MF: fibrose; TE: megacariócitos pleomórficos)"
+        cost: high
+        turnaround: slow
+        prereq: Clone confirmado
+
+  # ============================================================================
+  # MÚLTIPLAS SÉRIES - PRIORIDADE
+  # ============================================================================
+
+  - id: trigger-pancytopenia
+    when: "((sex=='M' and hb < 13.0) or (sex=='F' and hb < 12.0)) and (plt < 150) and (wbc < 4)"
+    syndromes: [S-PANCYTOPENIA]
+    suggest:
+      - level: priority
+        test: Reticulócitos
+        rationale: "Hiporregenerativos (<20) = falência medular vs hiperesplenismo"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: priority
+        test: Esfregaço detalhado
+        rationale: "Displasia, blastos, células peludas (leucemia de células cabeludas)"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: Medula óssea (aspirado + biópsia)
+        rationale: "Celularidade (hipoplasia <25% = aplasia; hipercelular = MDS/infiltração)"
+        cost: high
+        turnaround: slow
+        prereq: Persistência ou gravidade
+      - level: routine
+        test: Citogenética + FISH + NGS
+        rationale: "MDS, leucemia aleucêmica, HPN clone"
+        cost: high
+        turnaround: slow
+        prereq: Medula óssea
+      - level: routine
+        test: Sorologias virais (HIV, HCV, HBV, CMV, EBV, Parvovírus)
+        rationale: "Aplasia transitória ou pancitopenia viral"
+        cost: mid
+        turnaround: medium
+        prereq: Clínica
+      - level: routine
+        test: Ultrassom de abdome
+        rationale: "Esplenomegalia (hiperesplenismo = sequestro)"
+        cost: mid
+        turnaround: fast
+        prereq: Exame físico
+
+  - id: trigger-leucoeritroblastose
+    when: "(eritroblastos == true) and ((wbc < 4) or (wbc > 11))"
+    syndromes: [S-LEUCOERITROBLASTOSE]
+    suggest:
+      - level: priority
+        test: Esfregaço detalhado
+        rationale: "Eritroblastos + leucócitos imaturos = reação leucoeritroblástica"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: LDH
+        rationale: "Elevado em estresse medular, infiltração, hemólise"
+        cost: mid
+        turnaround: medium
+        prereq: CBC
+      - level: priority
+        test: Medula óssea (biópsia)
+        rationale: "Infiltração (metástase, linfoma, mielofibrose) vs estresse (sepse, hemólise)"
+        cost: high
+        turnaround: slow
+        prereq: Persistência
+      - level: routine
+        test: Citogenética + NGS
+        rationale: "Se infiltração: classificar neoplasia primária"
+        cost: high
+        turnaround: slow
+        prereq: Medula óssea com infiltração
+
+  - id: trigger-policitemia
+    when: "((sex=='M' and ((hb > 18.5) or (ht > 52))) or (sex=='F' and ((hb > 16.5) or (ht > 48))))"
+    syndromes: [S-POLICITEMIA]
+    suggest:
+      - level: priority
+        test: CBC repeat (2-4 semanas)
+        rationale: "Confirmar persistência (descartar hemoconcentração aguda)"
+        cost: low
+        turnaround: fast
+        prereq: CBC inicial
+      - level: priority
+        test: Gasometria arterial + Saturação O2
+        rationale: "SatO2 <92% = policitemia secundária (hipóxia)"
+        cost: mid
+        turnaround: fast
+        prereq: CBC
+      - level: priority
+        test: Eritropoietina (EPO) sérica
+        rationale: "EPO baixa = PV; EPO alta = secundária (tumores, altitudehistória de tabagismo)"
+        cost: mid
+        turnaround: medium
+        prereq: CBC + gasometria
+      - level: routine
+        test: JAK2 V617F
+        rationale: "Positivo em 95% das policitemia vera (PV)"
+        cost: high
+        turnaround: slow
+        prereq: EPO baixa
+      - level: routine
+        test: Medula óssea (biópsia)
+        rationale: "Hipercelularidade trilinear (PV) vs eritroide isolada (secundária)"
+        cost: high
+        turnaround: slow
+        prereq: JAK2 confirmado
+
+  # ============================================================================
+  # REVIEW SAMPLE (PRÉ-ANALÍTICO)
+  # ============================================================================
+
+  - id: trigger-review-sample
+    when: "(mchc > 37.0) or (aglomerados_plaquetarios == true)"
+    syndromes: [S-REVIEW-SAMPLE]
+    suggest:
+      - level: critical
+        test: Recoleta com amostra aquecida (37°C)
+        rationale: "MCHC >37 sugere aglutinina fria (auto-aglutinação)"
+        cost: low
+        turnaround: fast
+        prereq: CBC com MCHC implausível
+      - level: critical
+        test: Recoleta em citrato (tubo azul) ou PLT-F
+        rationale: "Pseudo-trombocitopenia por aglomeração plaquetária"
+        cost: low
+        turnaround: fast
+        prereq: CBC com PLT baixa + clumps
+      - level: routine
+        test: Revisão analítica (pré-analítico, analisador, calibração)
+        rationale: "Erro laboratorial (hemólise in vitro, tubo errado, contaminação)"
+        cost: low
+        turnaround: fast
+        prereq: Valores implausíveis
+
+  # ============================================================================
+  # BORDERLINE / ROTINA (OUTPUT GARANTIDO)
+  # ============================================================================
+
+  - id: trigger-borderline-microcytosis
+    when: "(mcv >= 80) and (mcv < 82)"
+    syndromes: []  # Rotina, não síndrome
+    suggest:
+      - level: routine
+        test: CBC repeat (2-6 semanas)
+        rationale: "MCV borderline: repetir para confirmar tendência"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: routine
+        test: Ferritina
+        rationale: "Se anemia limítrofe: descartar deficiência de ferro precoce"
+        cost: low
+        turnaround: fast
+        prereq: Anemia ou tendência
+
+  - id: trigger-borderline-thrombocytosis
+    when: "(plt >= 450) and (plt < 500)"
+    syndromes: []  # Rotina
+    suggest:
+      - level: routine
+        test: CBC repeat (2-6 semanas)
+        rationale: "Plaquetas borderline: repetir para confirmar persistência"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: routine
+        test: CRP
+        rationale: "Se persistente: descartar reativo (infecção/inflamação)"
+        cost: low
+        turnaround: fast
+        prereq: Persistência
+
+  - id: trigger-borderline-wbc
+    when: "((wbc >= 3.8) and (wbc < 4)) or ((wbc > 11) and (wbc < 12))"
+    syndromes: []  # Rotina
+    suggest:
+      - level: routine
+        test: CBC repeat (2-6 semanas)
+        rationale: "Leucócitos borderline: repetir para confirmar tendência"
+        cost: low
+        turnaround: fast
+        prereq: CBC
+      - level: routine
+        test: Esfregaço
+        rationale: "Se persistente: avaliar morfologia (atipia, left-shift)"
+        cost: low
+        turnaround: fast
+        prereq: Persistência
+
+# ================================================================================
+# VALIDAÇÃO E TESTES
+# ================================================================================
+
+validation:
+  test_cases:
+    - name: "IDA clássica (dados completos)"
+      input: {hb: 9.5, sex: 'F', mcv: 72, rdw: 16, ferritin: 8, tsat: 12, crp: 3}
+      expected_syndromes: [S-IDA]
+      expected_tests: []  # Nenhum (já tem ferritina/TSat)
+    
+    - name: "IDA suspeita (dados parciais)"
+      input: {hb: 9.5, sex: 'F', mcv: 72, rdw: 16}
+      expected_syndromes: [S-IDA]
+      expected_tests: [Ferritina, TSat, CRP]
+    
+    - name: "TMA crítica"
+      input: {plt: 25, esquistocitos: true, ldh: 980, creatinine: 2.1}
+      expected_syndromes: [S-TMA]
+      expected_tests: []  # Já tem LDH/Cr; falta apenas ADAMTS13/Complemento
+    
+    - name: "Neutropenia grave"
+      input: {anc: 0.3}
+      expected_syndromes: [S-NEUTROPENIA-GRAVE]
+      expected_tests: ["CBC urgente", "Esfregaço urgente"]
+    
+    - name: "Borderline MCV"
+      input: {hb: 13.8, sex: 'M', mcv: 81, rdw: 12}
+      expected_syndromes: []
+      expected_tests: ["CBC repeat"]
+
+  metrics:
+    - name: "Coverage"
+      target: "100% das 34 síndromes têm trigger"
+    - name: "Dedupe"
+      target: "0 testes duplicados por caso"
+    - name: "Prioritization"
+      target: "Críticos sempre primeiro, custo/turnaround respeitados"
+
+# ================================================================================
+# FIM DO ARQUIVO
+# ================================================================================
+

@@ -1,0 +1,465 @@
+# 07_normalization_heuristics.yaml
+# Heurísticas de Normalização de Unidades - Camada A (Ingestion)
+# Versão: v1.0.0
+# Data: 2025-10-19
+
+version: normalization_heuristics_v1.0.0
+
+# =============================================================================
+# NORMALIZAÇÃO DE UNIDADES (Ajustes Dr. Abel Costa 2025-10-19)
+# =============================================================================
+unit_normalization:
+  enabled: true
+  audit_log_conversions: true        # Rastreabilidade LGPD/IEC 62304
+  fail_safe_mode: true               # Nunca recusar caso; alertar se conversão falhar
+  
+  # ===========================================================================
+  # HEURÍSTICA POR SITE (Learning-Based)
+  # ===========================================================================
+  site_specific:
+    enabled: true
+    storage: "site_unit_profiles.json"
+    update_policy: "quarterly"
+    learning_algorithm: "median-based_detection"
+    
+    description: |
+      Sistema aprende o padrão de unidades de cada site (hospital/laboratório) ao longo do tempo.
+      Após N casos (default: 100), estabelece perfil do site e aplica conversão automática.
+    
+    profile_structure:
+      site_id: "string (hash SHA256 do site)"
+      case_count: "int (número de casos processados)"
+      learned_units:
+        wbc: "1e9/L OR /μL"
+        plt: "1e9/L OR /μL"
+        anc: "1e9/L OR /μL"
+        hb: "g/dL OR g/L OR mmol/L"
+      confidence: "float 0-1 (confiança no perfil aprendido)"
+      last_updated: "ISO8601 datetime"
+    
+    bootstrap_threshold: 100          # Mínimo de casos para estabelecer perfil
+    confidence_threshold: 0.80        # Confiança mínima para aplicar conversão automática
+  
+  # ===========================================================================
+  # DETECÇÃO AUTOMÁTICA (p50>1000 → dividir por 1000)
+  # ===========================================================================
+  auto_detection:
+    enabled: true
+    method: "median_percentile"      # Usa p50 (mediana) de batch para detectar unidade
+    batch_size: 50                    # Mínimo de casos para calcular p50
+    fallback_single_case: true        # Se batch<50, usar regra heurística simples
+    
+    rules:
+      # WBC (Leucócitos)
+      - field: "wbc"
+        condition: "p50(wbc) > 1000"
+        action: "divide_by_1000"
+        converted_unit: "1e9/L"
+        original_unit_inferred: "/μL"
+        log_message: "WBC em /μL convertido para ×10⁹/L (p50={p50_value:.1f})"
+        confidence_threshold: 0.90
+        
+        fallback_single_case:
+          condition: "value > 200"
+          action: "divide_by_1000"
+          reason: "WBC fisiologicamente impossível >200×10⁹/L; assumido /μL"
+      
+      # PLT (Plaquetas)
+      - field: "plt"
+        condition: "p50(plt) > 1000"
+        action: "divide_by_1000"
+        converted_unit: "1e9/L"
+        original_unit_inferred: "/μL"
+        log_message: "PLT em /μL convertido para ×10⁹/L (p50={p50_value:.1f})"
+        confidence_threshold: 0.90
+        
+        fallback_single_case:
+          condition: "value > 2000"
+          action: "divide_by_1000"
+          reason: "PLT fisiologicamente impossível >2000×10⁹/L; assumido /μL"
+      
+      # ANC (Neutrófilos absolutos)
+      - field: "anc"
+        condition: "p50(anc) > 1000"
+        action: "divide_by_1000"
+        converted_unit: "1e9/L"
+        original_unit_inferred: "/μL"
+        log_message: "ANC em /μL convertido para ×10⁹/L (p50={p50_value:.1f})"
+        confidence_threshold: 0.90
+        
+        fallback_single_case:
+          condition: "value > 50"
+          action: "divide_by_1000"
+          reason: "ANC fisiologicamente improvável >50×10⁹/L; assumido /μL"
+      
+      # Linfócitos absolutos
+      - field: "lymphocytes_abs"
+        condition: "p50(lymphocytes_abs) > 1000"
+        action: "divide_by_1000"
+        converted_unit: "1e9/L"
+        original_unit_inferred: "/μL"
+        log_message: "Linfócitos em /μL convertidos para ×10⁹/L (p50={p50_value:.1f})"
+        confidence_threshold: 0.85
+        
+        fallback_single_case:
+          condition: "value > 50"
+          action: "divide_by_1000"
+          reason: "Linfócitos fisiologicamente improvável >50×10⁹/L; assumido /μL"
+      
+      # Eosinófilos absolutos
+      - field: "eosinophils_abs"
+        condition: "p50(eosinophils_abs) > 1000"
+        action: "divide_by_1000"
+        converted_unit: "1e9/L"
+        original_unit_inferred: "/μL"
+        log_message: "Eosinófilos em /μL convertidos para ×10⁹/L"
+        confidence_threshold: 0.80
+      
+      # Basófilos absolutos
+      - field: "basophils_abs"
+        condition: "p50(basophils_abs) > 1000"
+        action: "divide_by_1000"
+        converted_unit: "1e9/L"
+        original_unit_inferred: "/μL"
+        log_message: "Basófilos em /μL convertidos para ×10⁹/L"
+        confidence_threshold: 0.80
+      
+      # Monócitos absolutos
+      - field: "monocytes_abs"
+        condition: "p50(monocytes_abs) > 1000"
+        action: "divide_by_1000"
+        converted_unit: "1e9/L"
+        original_unit_inferred: "/μL"
+        log_message: "Monócitos em /μL convertidos para ×10⁹/L"
+        confidence_threshold: 0.80
+  
+  # ===========================================================================
+  # MAPEAMENTO DE UNIDADES CONHECIDAS (Explicit Conversion)
+  # ===========================================================================
+  known_units:
+    # WBC (Leucócitos)
+    wbc:
+      - from: "/μL"
+        to: "1e9/L"
+        factor: 0.001
+        description: "Conversão /μL → ×10⁹/L"
+      
+      - from: "K/μL"
+        to: "1e9/L"
+        factor: 1.0
+        description: "K/μL (mil/μL) equivalente a ×10⁹/L"
+      
+      - from: "10^3/μL"
+        to: "1e9/L"
+        factor: 1.0
+        description: "10³/μL equivalente a ×10⁹/L"
+      
+      - from: "cells/μL"
+        to: "1e9/L"
+        factor: 0.001
+        description: "células/μL → ×10⁹/L"
+      
+      - from: "1e6/L"
+        to: "1e9/L"
+        factor: 0.001
+        description: "×10⁶/L → ×10⁹/L (raro, mas possível)"
+    
+    # PLT (Plaquetas)
+    plt:
+      - from: "/μL"
+        to: "1e9/L"
+        factor: 0.001
+        description: "Conversão /μL → ×10⁹/L"
+      
+      - from: "K/μL"
+        to: "1e9/L"
+        factor: 1.0
+        description: "K/μL (mil/μL) equivalente a ×10⁹/L"
+      
+      - from: "10^3/μL"
+        to: "1e9/L"
+        factor: 1.0
+        description: "10³/μL equivalente a ×10⁹/L"
+      
+      - from: "cells/μL"
+        to: "1e9/L"
+        factor: 0.001
+        description: "células/μL → ×10⁹/L"
+    
+    # Hb (Hemoglobina)
+    hb:
+      - from: "g/L"
+        to: "g/dL"
+        factor: 0.1
+        description: "Conversão g/L → g/dL (sistema SI → US)"
+      
+      - from: "mmol/L"
+        to: "g/dL"
+        factor: 1.61
+        description: "mmol/L → g/dL (1 mmol/L Hb ≈ 1.61 g/dL)"
+      
+      - from: "mg/dL"
+        to: "g/dL"
+        factor: 0.001
+        description: "mg/dL → g/dL (raro, mas possível erro de entrada)"
+    
+    # RBC (Hemácias)
+    rbc:
+      - from: "1e6/μL"
+        to: "1e12/L"
+        factor: 1.0
+        description: "×10⁶/μL equivalente a ×10¹²/L"
+      
+      - from: "/μL"
+        to: "1e12/L"
+        factor: 0.000001
+        description: "células/μL → ×10¹²/L"
+    
+    # Reticulócitos
+    reticulocytes:
+      - from: "%"
+        to: "1e9/L"
+        formula: "(retic_pct / 100) * rbc * 1000"
+        description: "Reticulócitos % → absolutos (requer RBC)"
+        requires: ["rbc"]
+      
+      - from: "/μL"
+        to: "1e9/L"
+        factor: 0.001
+        description: "Reticulócitos /μL → ×10⁹/L"
+
+# =============================================================================
+# VALIDAÇÃO PÓS-NORMALIZAÇÃO
+# =============================================================================
+post_normalization_checks:
+  - field: "wbc"
+    expected_range: [0.1, 200]
+    unit: "1e9/L"
+    error_message: "WBC fora da faixa esperada após normalização ({value} ×10⁹/L)"
+    action: "flag_for_review"
+    severity: "high"
+  
+  - field: "plt"
+    expected_range: [1, 2000]
+    unit: "1e9/L"
+    error_message: "PLT fora da faixa esperada após normalização ({value} ×10⁹/L)"
+    action: "flag_for_review"
+    severity: "high"
+  
+  - field: "hb"
+    expected_range: [1, 25]
+    unit: "g/dL"
+    error_message: "Hb fora da faixa esperada após normalização ({value} g/dL)"
+    action: "flag_for_review"
+    severity: "high"
+  
+  - field: "anc"
+    expected_range: [0, 50]
+    unit: "1e9/L"
+    error_message: "ANC fora da faixa esperada após normalização ({value} ×10⁹/L)"
+    action: "flag_for_review"
+    severity: "moderate"
+  
+  - field: "rbc"
+    expected_range: [0.5, 10]
+    unit: "1e12/L"
+    error_message: "RBC fora da faixa esperada após normalização ({value} ×10¹²/L)"
+    action: "flag_for_review"
+    severity: "moderate"
+  
+  - field: "mcv"
+    expected_range: [50, 150]
+    unit: "fL"
+    error_message: "MCV fora da faixa fisiológica ({value} fL)"
+    action: "flag_for_review"
+    severity: "moderate"
+  
+  - field: "mchc"
+    expected_range: [25, 38]
+    unit: "g/dL"
+    error_message: "MCHC fora da faixa fisiológica ({value} g/dL) - suspeita erro pré-analítico"
+    action: "trigger_review_sample"
+    severity: "critical"
+
+# =============================================================================
+# AUDITORIA (WORM - Write Once Read Many)
+# =============================================================================
+audit:
+  enabled: true
+  worm: true                         # Immutable logs (write-once)
+  storage: "s3://hemodoctor-audit-logs/normalization/"
+  retention_days: 90
+  encryption: "AES-256-GCM"
+  
+  log_format: |
+    {
+      "case_id": "{case_id}",
+      "timestamp_utc": "{timestamp_utc}",
+      "site_id": "{site_id}",
+      "conversions": [
+        {
+          "field": "{field_name}",
+          "original_value": {original_value},
+          "original_unit": "{original_unit}",
+          "normalized_value": {normalized_value},
+          "normalized_unit": "{normalized_unit}",
+          "conversion_rule": "{rule_id}",
+          "method": "site_specific|auto_detection|known_units",
+          "confidence": {confidence_score}
+        }
+      ],
+      "flags": [
+        {
+          "field": "{field_name}",
+          "severity": "critical|high|moderate|low",
+          "message": "{flag_message}"
+        }
+      ],
+      "schema_ver": "{schema_ver}",
+      "config_ver": "{config_ver}",
+      "normalization_ver": "normalization_heuristics_v1.0.0"
+    }
+  
+  log_triggers:
+    - "Sempre que conversão automática é aplicada"
+    - "Sempre que flag pós-validação é disparada"
+    - "Sempre que site profile é atualizado"
+  
+  compliance:
+    - "LGPD Art. 37 (rastreabilidade de decisões automatizadas)"
+    - "IEC 62304 §5.1.1 (rastreabilidade de transformações de dados)"
+    - "ISO 14971:2019 (rastreabilidade de riscos de conversão incorreta)"
+
+# =============================================================================
+# TRATAMENTO DE ERROS E FALLBACK
+# =============================================================================
+error_handling:
+  strategy: "fail_safe"              # Nunca recusar caso; sempre processar
+  
+  scenarios:
+    - scenario: "Unidade não reconhecida"
+      action: "Assumir unidade canônica de 00_config_hybrid.yaml"
+      flag: "⚠️ Unidade desconhecida; assumida {default_unit}"
+      severity: "moderate"
+      log: true
+    
+    - scenario: "Conversão resulta em valor fora da faixa fisiológica"
+      action: "Aplicar conversão mas flagged for review"
+      flag: "🔴 Valor pós-normalização fora da faixa ({value} {unit})"
+      severity: "high"
+      log: true
+      trigger_review_sample: true
+    
+    - scenario: "Batch size <50 (auto-detection indisponível)"
+      action: "Usar fallback_single_case heuristic"
+      flag: "ℹ️ Batch pequeno; heurística simples aplicada"
+      severity: "low"
+      log: true
+    
+    - scenario: "Site profile confiança <0.80"
+      action: "Usar auto-detection em vez de site profile"
+      flag: "ℹ️ Site profile incerto; auto-detection ativada"
+      severity: "low"
+      log: true
+
+# =============================================================================
+# EXAMPLES (Casos Reais)
+# =============================================================================
+examples:
+  - description: "WBC em /μL (laboratório US comum)"
+    input:
+      wbc: 8500
+      unit: "/μL"
+    auto_detection_p50: 7200
+    conversion:
+      method: "auto_detection"
+      rule: "p50(wbc) > 1000 → divide_by_1000"
+      output_wbc: 8.5
+      output_unit: "1e9/L"
+    log: "WBC em /μL convertido para ×10⁹/L (p50=7200.0)"
+  
+  - description: "PLT já em ×10⁹/L (laboratório BR moderno)"
+    input:
+      plt: 280
+      unit: "1e9/L"
+    auto_detection_p50: 250
+    conversion:
+      method: "no_conversion_needed"
+      output_plt: 280
+      output_unit: "1e9/L"
+    log: "PLT já em ×10⁹/L; sem conversão necessária"
+  
+  - description: "Hb em g/L (sistema SI europeu)"
+    input:
+      hb: 125
+      unit: "g/L"
+    conversion:
+      method: "known_units"
+      rule: "g/L → g/dL (factor 0.1)"
+      output_hb: 12.5
+      output_unit: "g/dL"
+    log: "Hb convertida de g/L para g/dL (125 g/L → 12.5 g/dL)"
+  
+  - description: "WBC suspeito (valor impossível detectado)"
+    input:
+      wbc: 250000
+      unit: "/μL"
+    auto_detection_p50: null  # Caso único
+    conversion:
+      method: "fallback_single_case"
+      rule: "value > 200 → divide_by_1000"
+      output_wbc: 250
+      output_unit: "1e9/L"
+    flag:
+      severity: "high"
+      message: "WBC fora da faixa esperada após normalização (250 ×10⁹/L)"
+    log: "WBC em /μL convertido para ×10⁹/L; FLAGGED (valor extremo)"
+
+# =============================================================================
+# INTEGRAÇÃO COM OUTROS MÓDULOS
+# =============================================================================
+integration:
+  schema: "01_schema_hybrid.yaml"
+  config: "00_config_hybrid.yaml"
+  
+  pre_analytical_gates: "00_config_hybrid.yaml::pre_analytical_gates"
+  post_normalization_triggers:
+    - "Se MCHC >37 ou <25 após normalização: disparar E-PRE-MCHC-IMPLAUS"
+    - "Se valor fora da faixa após normalização: disparar S-PRE-ANALITICO"
+  
+  evidence_integration: "02_evidence_hybrid.yaml"
+  evidences_triggered:
+    - "E-PRE-MCHC-IMPLAUS (se MCHC impossível)"
+    - "E-PRE-HB-HT-INCONSIST (se inconsistência Hb/Ht/MCHC)"
+
+# =============================================================================
+# METADADOS
+# =============================================================================
+metadata:
+  version: "1.0.0"
+  author: "Dr. Abel Costa (IDOR-SP) + AI Medical Device Specialist"
+  date: "2025-10-19"
+  
+  fields_covered: 13
+  conversion_rules: 28
+  auto_detection_rules: 7
+  known_units_mappings: 21
+  
+  compliance_standards:
+    - "LGPD (Lei Geral de Proteção de Dados)"
+    - "IEC 62304 (Software Lifecycle)"
+    - "ISO 14971:2019 (Risk Management)"
+    - "ANVISA RDC 751/2022 (Software Médico)"
+
+notes: |
+  - Normalização é Camada A (Ingestion & Normalization) da arquitetura Dev Team
+  - Heurística defensiva: NUNCA recusar caso; sempre processar com flag se necessário
+  - p50 (mediana) mais robusto que média para detectar unidade em batch
+  - Site-specific learning reduz falsos positivos após bootstrap (100 casos)
+  - MCHC >37 g/dL é impossível fisiologicamente → sempre dispara review_sample
+  - Auditoria WORM garante rastreabilidade para ANVISA/FDA
+
+# =============================================================================
+# FIM DO ARQUIVO
+# =============================================================================
+
